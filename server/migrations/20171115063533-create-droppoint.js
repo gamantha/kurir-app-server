@@ -15,8 +15,14 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
-      type: {
+      position: {
         type: Sequelize.ENUM('start', 'end'),
+      },
+      address: {
+        type: Sequelize.STRING,
+      },
+      type: {
+        type: Sequelize.ENUM('predefined', 'userdefined'),
       },
       createdAt: {
         allowNull: false,
