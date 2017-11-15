@@ -7,7 +7,7 @@ module.exports = function (sequelize, DataTypes) {
     phone: DataTypes.STRING,
   });
   Receiver.associate = function (models) {
-
+    Receiver.belongsToMany(models.Item, { through: 'ReceiverItem', foreignKey: 'receiverId' });
   };
   return Receiver;
 };

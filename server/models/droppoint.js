@@ -9,7 +9,7 @@ module.exports = function (sequelize, DataTypes) {
     type: DataTypes.ENUM('predefined', 'userdefined'),
   });
   Droppoint.associate = function (models) {
-
+    Droppoint.belongsTo(models.Item, { foreignKey: 'itemId' });
   };
   return Droppoint;
 };

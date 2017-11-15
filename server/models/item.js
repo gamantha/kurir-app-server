@@ -10,7 +10,10 @@ module.exports = function (sequelize, DataTypes) {
     isReceived: DataTypes.BOOLEAN,
   });
   Item.associate = function (models) {
-
+    Item.belongsToMany(models.Sender, { through: 'SenderItem', foreignKey: 'itemId' });
+    Item.belongsToMany(models.Receiver, { through: 'ReceiverItem', foreignKey: 'itemId' });
+    Item.hasMany(models.Droppoint, { foreignKey: 'itemId' });
+    Item.hasOne(models.Courier, { foreignKey: 'itemId' });
   };
   return Item;
 };
