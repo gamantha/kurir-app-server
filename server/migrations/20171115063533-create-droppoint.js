@@ -2,7 +2,7 @@
 
 module.exports = {
   up(queryInterface, Sequelize) {
-    return queryInterface.createTable('Senders', {
+    return queryInterface.createTable('Droppoints', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,17 +12,8 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
-      address: {
-        type: Sequelize.STRING,
-      },
-      email: {
-        type: Sequelize.STRING,
-      },
-      password: {
-        type: Sequelize.STRING,
-      },
-      phone: {
-        type: Sequelize.STRING,
+      type: {
+        type: Sequelize.ENUM('start', 'end'),
       },
       createdAt: {
         allowNull: false,
@@ -31,10 +22,10 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-      },
+      }
     });
   },
   down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Senders');
+    return queryInterface.dropTable('Droppoints');
   },
 };

@@ -1,10 +1,11 @@
 
 
 module.exports = function (sequelize, DataTypes) {
-  let Item = sequelize.define('Item', {
+  const Item = sequelize.define('Item', {
     name: DataTypes.STRING,
     price: DataTypes.STRING,
     isAvailable: DataTypes.BOOLEAN,
+    isThroughDroppoint: DataTypes.BOOLEAN,
   });
   Item.associate = function (models) {
 
