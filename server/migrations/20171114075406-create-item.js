@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      itemId: {
+        type: Sequelize.INTEGER,
+      },
       name: {
         type: Sequelize.STRING,
       },
@@ -19,6 +22,9 @@ module.exports = {
         type: Sequelize.BOOLEAN,
       },
       isThroughDroppoint: {
+        type: Sequelize.BOOLEAN,
+      },
+      isReceived: {
         type: Sequelize.BOOLEAN,
       },
       createdAt: {
