@@ -21,7 +21,7 @@ module.exports = {
       isAvailable: {
         type: Sequelize.BOOLEAN,
       },
-      isThroughDroppoint: {
+      isOnDroppoint: {
         type: Sequelize.BOOLEAN,
       },
       isReceived: {

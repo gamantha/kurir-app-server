@@ -6,7 +6,7 @@ module.exports = function (sequelize, DataTypes) {
     name: DataTypes.STRING,
     price: DataTypes.STRING,
     isAvailable: DataTypes.BOOLEAN,
-    isThroughDroppoint: DataTypes.BOOLEAN,
+    isOnDroppoint: DataTypes.BOOLEAN,
     isReceived: DataTypes.BOOLEAN,
   });
   Item.associate = function (models) {
