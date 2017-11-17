@@ -9,6 +9,7 @@
   "author": "bm",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "pg": "^7.4.0",

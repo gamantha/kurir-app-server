@@ -24,8 +24,8 @@ https://nodejs.org/en/download/
 ```
 npm install
 ```
-5. Still on the same directory type
+Still on the same directory type
 ```
 node app.js
 ```
-6. Congrats! If you seen "app listening on 3000" at your terminal then your server is already running!
+Congrats! If you seen "app listening on 3000" at your terminal then your server is already running!
