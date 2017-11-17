@@ -2,12 +2,20 @@
 
 module.exports = function (sequelize, DataTypes) {
   const Item = sequelize.define('Item', {
-    itemId: DataTypes.INTEGER,
     name: DataTypes.STRING,
     price: DataTypes.STRING,
-    isAvailable: DataTypes.BOOLEAN,
-    isOnDroppoint: DataTypes.BOOLEAN,
-    isReceived: DataTypes.BOOLEAN,
+    isAvailable: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+    isOnDroppoint: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    isReceived: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   });
   Item.associate = function (models) {
     Item.belongsToMany(models.Sender, { through: 'SenderItem', foreignKey: 'itemId' });

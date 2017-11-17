@@ -11,7 +11,7 @@ Node.js
 Express
 
 ### Database
-Postgres
+Postgres using Sequelize as ORM
 
 ### How to run the server
 
