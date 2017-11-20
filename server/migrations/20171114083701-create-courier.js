@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      itemId: {
+        type: Sequelize.INTEGER,
+      },
       name: {
         type: Sequelize.STRING,
       },
@@ -22,6 +25,9 @@ module.exports = {
         type: Sequelize.BOOLEAN,
       },
       isPaid: {
+        type: Sequelize.BOOLEAN,
+      },
+      isHasItem: {
         type: Sequelize.BOOLEAN,
       },
       phone: {

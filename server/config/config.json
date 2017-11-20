@@ -2,7 +2,7 @@
   "development": {
     "username": "postgres",
     "password": 12345,
-    "database": "kurir_app",
+    "database": "kurir_mobile",
     "host": "127.0.0.1",
     "port": 5432,
     "dialect": "postgres"

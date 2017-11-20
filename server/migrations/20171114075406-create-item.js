@@ -9,16 +9,37 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      senderId: {
+        type: Sequelize.INTEGER,
+      },
+      receiverId: {
+        type: Sequelize.INTEGER,
+      },
+      weight: {
+        type: Sequelize.FLOAT,
+      },
       name: {
         type: Sequelize.STRING,
       },
       price: {
         type: Sequelize.STRING,
       },
-      isAvailable: {
+      value: {
+        type: Sequelize.STRING,
+      },
+      isPicked: {
         type: Sequelize.BOOLEAN,
       },
-      isOnDroppoint: {
+      isOnStartDroppoint: {
+        type: Sequelize.BOOLEAN,
+      },
+      isOnTravel: {
+        type: Sequelize.BOOLEAN,
+      },
+      isOnEndDroppoint: {
+        type: Sequelize.BOOLEAN,
+      },
+      isOnTheWayToReceiver: {
         type: Sequelize.BOOLEAN,
       },
       isReceived: {

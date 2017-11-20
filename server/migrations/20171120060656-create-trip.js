@@ -2,27 +2,33 @@
 
 module.exports = {
   up(queryInterface, Sequelize) {
-    return queryInterface.createTable('Droppoints', {
+    return queryInterface.createTable('Trips', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      itemId: {
+      courierId: {
         type: Sequelize.INTEGER,
       },
       name: {
         type: Sequelize.STRING,
       },
-      position: {
-        type: Sequelize.ENUM('start', 'end'),
-      },
-      status: {
-        type: Sequelize.ENUM('predefined', 'userdefined'),
-      },
-      address: {
+      origin: {
         type: Sequelize.STRING,
+      },
+      destination: {
+        type: Sequelize.STRING,
+      },
+      date: {
+        type: Sequelize.STRING,
+      },
+      hour: {
+        type: Sequelize.STRING,
+      },
+      type: {
+        type: Sequelize.ENUM('train', 'plane', 'car'),
       },
       createdAt: {
         allowNull: false,
@@ -35,6 +41,6 @@ module.exports = {
     });
   },
   down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Droppoints');
+    return queryInterface.dropTable('Trips');
   },
 };
