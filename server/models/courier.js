@@ -13,7 +13,7 @@ module.exports = function (sequelize, DataTypes) {
     password: DataTypes.STRING,
   });
   Courier.associate = function (models) {
-    Courier.hasOne(models.Trips, { foreignKey: 'courierId' });
+    Courier.hasOne(models.Trip, { foreignKey: 'courierId' });
   };
   return Courier;
 };
