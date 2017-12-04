@@ -4,8 +4,18 @@ const methods = {};
 
 methods.create = (req, res) => {
   const { name } = req.body;
+  const { deadline } = req.body;
+  const { price } = req.body;
+  const { value } = req.body;
+  const { note } = req.body;
+  const { weight } = req.body;
   models.Item.create({
     name,
+    deadline,
+    price,
+    value,
+    note,
+    weight,
   })
     .then((item, err) => {
       if (err) {

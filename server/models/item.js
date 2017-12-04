@@ -2,6 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
   const Item = sequelize.define('Item', {
+    orderId: DataTypes.INTEGER,
     courierId: DataTypes.INTEGER,
     senderId: DataTypes.INTEGER,
     receiverId: DataTypes.INTEGER,
