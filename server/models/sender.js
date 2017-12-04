@@ -9,6 +9,8 @@ module.exports = function (sequelize, DataTypes) {
     phone: DataTypes.STRING,
   });
   Sender.associate = function (models) {
+    Sender.hasMany(models.Reputation, { foreignKey: 'senderId' });
+    Sender.hasOne(models.Pickup, { foreignKey: 'senderId' });
   };
   return Sender;
 };

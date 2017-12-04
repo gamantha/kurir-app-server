@@ -9,6 +9,9 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
+      courierId: {
+        type: Sequelize.INTEGER,
+      },
       senderId: {
         type: Sequelize.INTEGER,
       },
@@ -21,11 +24,26 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
+      deadline: {
+        type: Sequelize.STRING,
+      },
       price: {
         type: Sequelize.STRING,
       },
       value: {
         type: Sequelize.STRING,
+      },
+      note: {
+        type: Sequelize.STRING,
+      },
+      statusMsg: {
+        type: Sequelize.STRING,
+      },
+      isCustomPickupAddress: {
+        type: Sequelize.BOOLEAN,
+      },
+      isExpensive: {
+        type: Sequelize.BOOLEAN,
       },
       isPicked: {
         type: Sequelize.BOOLEAN,

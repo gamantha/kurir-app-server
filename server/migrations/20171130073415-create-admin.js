@@ -2,7 +2,7 @@
 
 module.exports = {
   up(queryInterface, Sequelize) {
-    return queryInterface.createTable('Couriers', {
+    return queryInterface.createTable('Admins', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -12,38 +12,14 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
-      address: {
-        type: Sequelize.STRING,
-      },
-      phone: {
-        type: Sequelize.STRING,
-      },
-      email: {
+      username: {
         type: Sequelize.STRING,
       },
       password: {
         type: Sequelize.STRING,
       },
-      idUrl: {
-        type: Sequelize.STRING,
-      },
-      isHasItem: {
+      isDroppoint: {
         type: Sequelize.BOOLEAN,
-      },
-      isVerified: {
-        type: Sequelize.BOOLEAN,
-      },
-      isPaid: {
-        type: Sequelize.BOOLEAN,
-      },
-      isBlocked: {
-        type: Sequelize.BOOLEAN,
-      },
-      isEmployee: {
-        type: Sequelize.BOOLEAN,
-      },
-      baggageSpace: {
-        type: Sequelize.FLOAT,
       },
       createdAt: {
         allowNull: false,
@@ -56,6 +32,6 @@ module.exports = {
     });
   },
   down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Couriers');
+    return queryInterface.dropTable('Admins');
   },
 };

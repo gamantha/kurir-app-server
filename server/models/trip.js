@@ -10,5 +10,8 @@ module.exports = function (sequelize, DataTypes) {
     hour: DataTypes.STRING,
     type: DataTypes.ENUM('train', 'plane', 'car'),
   });
+  Trip.associate = function (models) {
+    Trip.belongsTo(models.Courier, { foreignKey: 'courierId' });
+  }
   return Trip;
 };

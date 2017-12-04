@@ -2,12 +2,24 @@
 
 module.exports = function (sequelize, DataTypes) {
   const Item = sequelize.define('Item', {
+    courierId: DataTypes.INTEGER,
     senderId: DataTypes.INTEGER,
     receiverId: DataTypes.INTEGER,
     weight: DataTypes.FLOAT,
     name: DataTypes.STRING,
+    deadline: DataTypes.STRING,
     price: DataTypes.STRING,
     value: DataTypes.STRING,
+    note: DataTypes.STRING,
+    statusMsg: DataTypes.STRING,
+    isCustomPickupAddress: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    isExpensive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     isPicked: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -36,8 +48,9 @@ module.exports = function (sequelize, DataTypes) {
   Item.associate = function (models) {
     Item.belongsTo(models.Sender, { foreignKey: 'senderId' });
     Item.belongsTo(models.Receiver, { foreignKey: 'receiverId' });
+    Item.belongsTo(models.Courier, { foreignKey: 'courierId' });
     Item.hasMany(models.Droppoint, { foreignKey: 'itemId' });
-    Item.hasOne(models.Courier, { foreignKey: 'itemId' });
+    Item.hasOne(models.Category, { foreignKey: 'itemId' });
   };
   return Item;
 };
