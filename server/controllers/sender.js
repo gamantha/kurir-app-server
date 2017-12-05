@@ -23,4 +23,9 @@ methods.create = (req, res) => {
     });
 };
 
+methods.login = (req, res) => {
+  const { email } = req.body;
+  const { password } = req.body;
+};
+
 module.exports = methods;
