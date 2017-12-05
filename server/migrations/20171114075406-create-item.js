@@ -48,6 +48,9 @@ module.exports = {
       isExpensive: {
         type: Sequelize.BOOLEAN,
       },
+      isOnFirstDropsite: {
+        type: Sequelize.BOOLEAN,
+      },
       isPicked: {
         type: Sequelize.BOOLEAN,
       },

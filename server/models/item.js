@@ -21,6 +21,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    isOnFirstDropsite: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     isPicked: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -52,6 +56,7 @@ module.exports = function (sequelize, DataTypes) {
     Item.belongsTo(models.Courier, { foreignKey: 'courierId' });
     Item.hasMany(models.Droppoint, { foreignKey: 'itemId' });
     Item.hasOne(models.Category, { foreignKey: 'itemId' });
+    Item.hasOne(models.Pickup, { foreignKey: 'itemId' });
   };
   return Item;
 };

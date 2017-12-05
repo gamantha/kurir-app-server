@@ -25,4 +25,29 @@ methods.create = (req, res) => {
     });
 };
 
+methods.itemHasCustomPickupAddress = (req, res) => {
+  models.Item.findOne({
+    where: {
+      id: req.params.itemId,
+    },
+  })
+    .then((item) => {
+      item.update({
+        isCustomPickupAddress: true,
+      });
+    })
+    .then(() => {
+      models.Pickup.create({
+        itemId: req.body.itemId,
+        senderId: req.body.senderId,
+        name: req.body.name,
+        note: req.body.note,
+        address: req.body.address,
+      })
+        .then(() => {
+          res.json({ msg: 'berhasil ubah jadi punya custom pickup address', ok: true });
+        });
+    });
+};
+
 module.exports = methods;
