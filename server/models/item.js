@@ -5,6 +5,7 @@ module.exports = function (sequelize, DataTypes) {
     orderId: DataTypes.INTEGER,
     courierId: DataTypes.INTEGER,
     senderId: DataTypes.INTEGER,
+    categoryId: DataTypes.INTEGER,
     receiverId: DataTypes.INTEGER,
     weight: DataTypes.FLOAT,
     name: DataTypes.STRING,
@@ -54,6 +55,7 @@ module.exports = function (sequelize, DataTypes) {
     Item.belongsTo(models.Sender, { foreignKey: 'senderId' });
     Item.belongsTo(models.Receiver, { foreignKey: 'receiverId' });
     Item.belongsTo(models.Courier, { foreignKey: 'courierId' });
+    Item.belongsTo(models.Category, { foreignKey: 'categoryId' });
     Item.hasMany(models.Droppoint, { foreignKey: 'itemId' });
     Item.hasOne(models.Category, { foreignKey: 'itemId' });
     Item.hasOne(models.Pickup, { foreignKey: 'itemId' });

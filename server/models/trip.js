@@ -9,6 +9,7 @@ module.exports = function (sequelize, DataTypes) {
     date: DataTypes.STRING,
     hour: DataTypes.STRING,
     type: DataTypes.ENUM('train', 'plane', 'car'),
+    baggageSpace: DataTypes.FLOAT,
   });
   Trip.associate = function (models) {
     Trip.belongsTo(models.Courier, { foreignKey: 'courierId' });

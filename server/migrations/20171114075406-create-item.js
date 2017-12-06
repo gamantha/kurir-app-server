@@ -18,6 +18,9 @@ module.exports = {
       senderId: {
         type: Sequelize.INTEGER,
       },
+      categoryId: {
+        type: Sequelize.INTEGER,
+      },
       receiverId: {
         type: Sequelize.INTEGER,
       },
