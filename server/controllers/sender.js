@@ -11,15 +11,20 @@ methods.create = (req, res) => {
   const { phone } = req.body;
   const saltRounds = 10;
   const hash = bcrypt.hashSync(password, saltRounds);
-  models.Sender.create({
+  models.User.create({
     name,
     email,
     address,
     password: hash,
     phone,
   })
-    .then((sender) => {
-      res.json({ sender, msg: 'berhasil membuat sender baru', ok: true });
+    .then((user) => {
+      models.Sender.create({
+        userId: user.id,
+      })
+        .then((sender) => {
+          res.json({ sender, msg: 'berhasil membuat sender baru', ok: true });
+        });
     });
 };
 
