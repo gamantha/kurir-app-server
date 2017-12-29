@@ -1,6 +1,19 @@
 const app = require('express')();
-
+const cors = require('cors');
 const bodyParser = require('body-parser');
+require('dotenv').config();
+
+app.use(cors());
+
+// passport
+const Sender = require('./controllers/sender');
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password',
+}, Sender.login));
 
 // port setup
 app.set('port', process.env.PORT || 3000);
