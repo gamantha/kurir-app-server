@@ -1,11 +1,13 @@
 const nodemailer = require('nodemailer');
-const models = require('../models');
 const randtoken = require('rand-token').generator({
   source: 'math',
   chars: 'numeric',
 });
+const bcrypt = require('bcrypt');
 
 const verifCode = randtoken.generate(6);
+
+const models = require('../models');
 
 const methods = {};
 
@@ -22,7 +24,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-methods.forgotPassword = (req, res) => {
+methods.getVeriCodeForgotPassword = (req, res) => {
   models.User.findOne({
     where: {
       email: req.body.email,
@@ -34,6 +36,9 @@ methods.forgotPassword = (req, res) => {
         ok: false,
       });
     } else {
+      user.update({
+        forgotPassVeriCode: verifCode,
+      });
       const mailOptions = {
         from: 'Kurir.id',
         to: `${req.body.email}`,
@@ -48,6 +53,38 @@ methods.forgotPassword = (req, res) => {
         res.json({ info, verifCode });
       });
     }
+  });
+};
+
+methods.checkForgotPassVeriCode = (req, res) => {
+  models.User.findOne({
+    where: {
+      email: req.body.email,
+    },
+  }).then((user) => {
+    if (user.forgotPassVeriCode === req.body.veriCode) {
+      res.json({ msg: 'sama', ok: true });
+    } else {
+      res.json({ msg: 'tidak sama', ok: false });
+    }
+  });
+};
+
+methods.changePassword = (req, res) => {
+  models.User.findOne({
+    where: {
+      email: req.body.email,
+    },
+  }).then((user) => {
+    const saltRounds = 10;
+    const hash = bcrypt.hashSync(req.body.password, saltRounds);
+    user
+      .update({
+        password: hash,
+      })
+      .then(() => {
+        res.json({ msg: 'berhasil ubah password', ok: true });
+      });
   });
 };
 
