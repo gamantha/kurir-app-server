@@ -1,5 +1,11 @@
-// const SMTPConnection = require('nodemailer/lib/smtp-connection');
 const nodemailer = require('nodemailer');
+const models = require('../models');
+const randtoken = require('rand-token').generator({
+  source: 'math',
+  chars: 'numeric',
+});
+
+const verifCode = randtoken.generate(6);
 
 const methods = {};
 
@@ -10,32 +16,38 @@ const transporter = nodemailer.createTransport({
   auth: {
     type: 'OAuth2',
     user: 'bhirmbani@gmail.com',
-    clientId: '518406956753-qrdaqiqumrhe8t1g6ikdh4d1kl7v3nhs.apps.googleusercontent.com',
-    clientSecret: 'e7ee00hwRqc8Z1wZ0A8De9cT',
-    refreshToken: '1/MuC91DgJ6fTv_Zfz-fx2_VMtzMb9pQK81tVB1tMb0m4o8TuoclQp_wEe7Z_53_TQ',
+    clientId: process.env.nodeMailerClientId,
+    clientSecret: process.env.nodeMailerclientSecret,
+    refreshToken: process.env.nodeMailerRefreshToken,
   },
 });
 
-const mailOptions = {
-  from: 'Kurir.id',
-  to: 'bhiraws1@gmail.com',
-  subject: 'hello',
-  text: 'test',
-  html: '<b>Hello world?</b>',
-};
-
-methods.sendTestEmail = (req, res) => {
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      res.json({ error });
+methods.forgotPassword = (req, res) => {
+  models.User.findOne({
+    where: {
+      email: req.body.email,
+    },
+  }).then((user) => {
+    if (!user) {
+      res.json({
+        msg: 'Anda memasukkan email yang belum terdaftar. Silakan daftar lebih dulu',
+        ok: false,
+      });
+    } else {
+      const mailOptions = {
+        from: 'Kurir.id',
+        to: `${req.body.email}`,
+        subject: 'hello',
+        text: 'test',
+        html: `<b>this is your verification code: </b>${verifCode}`,
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          res.json({ error });
+        }
+        res.json({ info, verifCode });
+      });
     }
-    res.json({ info });
-    console.log('Message sent: %s', info.messageId);
-    // Preview only available when sending through an Ethereal account
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-
-    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@blurdybloop.com>
-    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
   });
 };
 

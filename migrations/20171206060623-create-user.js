@@ -1,5 +1,3 @@
-
-
 module.exports = {
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('Users', {
@@ -22,6 +20,9 @@ module.exports = {
         type: Sequelize.STRING,
       },
       password: {
+        type: Sequelize.STRING,
+      },
+      forgotPassVeriCode: {
         type: Sequelize.STRING,
       },
       createdAt: {
