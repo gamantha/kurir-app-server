@@ -64,6 +64,9 @@ methods.checkForgotPassVeriCode = (req, res) => {
   }).then((user) => {
     if (user.forgotPassVeriCode === req.body.veriCode) {
       res.json({ msg: 'sama', ok: true });
+      user.update({
+        forgotPassVeriCode: null,
+      });
     } else {
       res.json({ msg: 'tidak sama', ok: false });
     }
