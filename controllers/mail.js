@@ -25,6 +25,7 @@ const transporter = nodemailer.createTransport({
 });
 
 methods.getVeriCodeForgotPassword = (req, res) => {
+  console.log(req.body)
   models.User.findOne({
     where: {
       email: req.body.email,
@@ -50,7 +51,9 @@ methods.getVeriCodeForgotPassword = (req, res) => {
         if (error) {
           res.json({ error });
         }
-        res.json({ info, verifCode });
+        res.json({
+          info, verifCode, ok: true, msg: 'silakan cek email Anda',
+        });
       });
     }
   });
