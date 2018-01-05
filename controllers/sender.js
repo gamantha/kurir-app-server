@@ -51,7 +51,6 @@ methods.login = (email, password, next) => {
 
 methods.getUsers = (req, res) => {
   models.User.findAll().then((users) => {
-    console.log(users);
     res.json({ users });
   });
 };
