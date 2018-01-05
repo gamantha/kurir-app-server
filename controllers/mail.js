@@ -25,7 +25,6 @@ const transporter = nodemailer.createTransport({
 });
 
 methods.getVeriCodeForgotPassword = (req, res) => {
-  console.log(req.body)
   models.User.findOne({
     where: {
       email: req.body.email,
