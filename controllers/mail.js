@@ -5,8 +5,6 @@ const randtoken = require('rand-token').generator({
 });
 const bcrypt = require('bcrypt');
 
-const verifCode = randtoken.generate(6);
-
 const models = require('../models');
 
 const methods = {};
@@ -25,6 +23,7 @@ const transporter = nodemailer.createTransport({
 });
 
 methods.getVeriCodeForgotPassword = (req, res) => {
+  const verifCode = randtoken.generate(6);
   models.User.findOne({
     where: {
       email: req.body.email,
@@ -51,7 +50,10 @@ methods.getVeriCodeForgotPassword = (req, res) => {
           res.json({ error });
         }
         res.json({
-          info, verifCode, ok: true, msg: 'silakan cek email Anda',
+          info,
+          verifCode,
+          ok: true,
+          msg: 'silakan cek email Anda',
         });
       });
     }
