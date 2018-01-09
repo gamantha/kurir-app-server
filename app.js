@@ -7,11 +7,11 @@ require('dotenv').config();
 app.use(cors());
 
 // passport
-const Sender = require('./controllers/sender');
+const User = require('./controllers/user');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password' }, Sender.login));
+passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password' }, User.login));
 
 // port setup
 app.set('port', process.env.PORT || 3000);
@@ -36,12 +36,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 // routes
 const item = require('./routes/item');
-const sender = require('./routes/sender');
+const user = require('./routes/user');
 const receiver = require('./routes/receiver');
 const mail = require('./routes/mail');
 
 app.use('/api/item', item);
-app.use('/api/sender', sender);
+app.use('/api/user', user);
 app.use('/api/receiver', receiver);
 app.use('/api/mail', mail);
 

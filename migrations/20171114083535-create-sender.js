@@ -1,5 +1,3 @@
-
-
 module.exports = {
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('Senders', {
@@ -11,6 +9,18 @@ module.exports = {
       },
       userId: {
         type: Sequelize.INTEGER,
+      },
+      city: {
+        type: Sequelize.STRING,
+      },
+      name: {
+        type: Sequelize.STRING,
+      },
+      address: {
+        type: Sequelize.STRING,
+      },
+      phone: {
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

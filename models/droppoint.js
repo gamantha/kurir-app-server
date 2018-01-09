@@ -1,5 +1,3 @@
-
-
 module.exports = function (sequelize, DataTypes) {
   const Droppoint = sequelize.define('Droppoint', {
     itemId: DataTypes.INTEGER,

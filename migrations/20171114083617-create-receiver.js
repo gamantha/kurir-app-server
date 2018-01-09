@@ -1,5 +1,3 @@
-
-
 module.exports = {
   up(queryInterface, Sequelize) {
     return queryInterface.createTable('Receivers', {
@@ -8,6 +6,9 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
+      },
+      city: {
+        type: Sequelize.STRING,
       },
       name: {
         type: Sequelize.STRING,
