@@ -2,13 +2,13 @@ const express = require('express');
 const passport = require('passport');
 
 const router = express.Router();
-const user = require('../controllers/user');
+const User = require('../controllers/user');
 
-router.get('/', user.getUsers);
-router.post('/create', user.create);
+router.get('/', User.getUsers);
+router.post('/create', User.create);
 router.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
-  const { loggedUser } = req;
-  res.json(loggedUser);
+  const { user } = req;
+  res.json(user);
 });
 
 module.exports = router;

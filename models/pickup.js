@@ -1,5 +1,3 @@
-
-
 module.exports = function (sequelize, DataTypes) {
   const Pickup = sequelize.define('Pickup', {
     itemId: DataTypes.INTEGER,

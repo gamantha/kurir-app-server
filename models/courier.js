@@ -1,5 +1,3 @@
-
-
 module.exports = function (sequelize, DataTypes) {
   const Courier = sequelize.define('Courier', {
     userId: DataTypes.INTEGER,

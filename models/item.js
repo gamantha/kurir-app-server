@@ -1,5 +1,3 @@
-
-
 module.exports = function (sequelize, DataTypes) {
   const Item = sequelize.define('Item', {
     orderId: DataTypes.INTEGER,
