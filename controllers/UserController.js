@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import helpers from '../helpers';
-import Response from '../helpers/Response';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 import { UserService, SenderService } from '../services/index';
 
@@ -16,7 +15,7 @@ export default class UserController {
   get(req, res) {
     this.service.findAll((rows) => {
       const result = new ResponseBuilder().setData(rows).build();
-      Response.respond(res, result);
+      res.status(200).json(result);
     });
   }
 
@@ -32,9 +31,11 @@ export default class UserController {
         userId: user.id,
       };
       this.senderService.create(senderPayload, () => {
-        res.json({
-          user, msg: 'berhasil membuat sender baru', ok: true,
-        });
+        const result = new ResponseBuilder().setData(user)
+          .setMessage('successfully created new sender')
+          .setSuccess(true)
+          .build();
+        res.json(result);
       });
     });
   }
@@ -52,12 +53,22 @@ export default class UserController {
           ok: true,
         });
         next(null, {
-          token: helpers.createJWT(userData),
-          ok: true,
-          msg: `berhasil login dengan email ${email}`,
+          data: {
+            token: helpers.createJWT(userData),
+          },
+          meta: {
+            message: 'Logged in successfully',
+            success: true,
+          },
         });
       } else {
-        next(null, { msg: 'password salah', ok: false });
+        next(null, {
+          data: {},
+          meta: {
+            message: 'invalid password',
+            success: false,
+          },
+        });
       }
     });
   }
