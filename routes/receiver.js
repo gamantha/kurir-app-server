@@ -1,8 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { receiverController } from '../controllers';
 
 const router = express.Router();
-const receiver = require('../controllers/receiver');
 
-router.post('/create', receiver.create);
+router.post('/', (req, res) => {
+  receiverController.create(req, res);
+});
 
 module.exports = router;
