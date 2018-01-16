@@ -35,7 +35,7 @@ export default class UserController {
           .setMessage('successfully created new sender')
           .setSuccess(true)
           .build();
-        res.json(result);
+        res.status(201).json(result);
       });
     });
   }

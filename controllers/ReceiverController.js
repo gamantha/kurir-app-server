@@ -23,7 +23,7 @@ export default class ReceiverController {
       } else {
         response.setData(result).setMessage('success').setSuccess(true).build();
       }
-      res.status(200).json(response);
+      res.status(201).json(response);
     });
   }
 }
