@@ -63,7 +63,13 @@ app.use((err, req, res, next) => {
 
   // render the error page
   res.status(err.status || 500);
-  res.send(err.message);
+  res.json({
+    data: {},
+    meta: {
+      message: err.message,
+      success: false,
+    },
+  });
 });
 
 app.listen(app.get('port'), () => {
