@@ -20,12 +20,9 @@ export default class ReceiverController {
     this.service.create(payload, (result) => {
       const response = new ResponseBuilder();
       if (!result) {
-        response.setData({}).setMeta({
-          message: 'fail to create receiver',
-          success: false,
-        }).build();
+        response.setData({}).setMessage('fail to create receiver').setSuccess(false).build();
       } else {
-        response.setData(result).setMeta({ message: 'success', success: true }).build();
+        response.setData(result).setMessage('success').setSuccess(true).build();
       }
       Response.respond(res, response);
     });
