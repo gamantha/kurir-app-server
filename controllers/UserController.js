@@ -12,64 +12,70 @@ export default class UserController {
     this.senderService = new SenderService();
   }
 
-  get(req, res) {
-    this.service.findAll((rows) => {
-      const result = new ResponseBuilder().setData(rows).build();
-      res.status(200).json(result);
-    });
+  async get(req, res) {
+    try {
+      const response = await this.service.findAll();
+      res.status(200).json(new ResponseBuilder().setData(response).build());
+    } catch (error) {
+      res.status(400).json(new ResponseBuilder().setMessage(error).setSuccess(false).build());
+    }
   }
 
-  create(req, res) {
+  async create(req, res) {
     const { email, password } = req.body;
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
     const payload = {
       email, password: hash,
     };
-    this.service.create(payload, (user) => {
+    try {
+      const response = await this.service.create(payload);
       const senderPayload = {
-        userId: user.id,
+        userId: response.id,
       };
-      this.senderService.create(senderPayload, () => {
-        const result = new ResponseBuilder().setData(user)
-          .setMessage('successfully created new sender')
-          .setSuccess(true)
-          .build();
-        res.status(201).json(result);
-      });
-    });
+      await this.senderService.create(senderPayload);
+      res.status(201).json(new ResponseBuilder()
+        .setData(response)
+        .setMessage('successfully created new sender')
+        .build());
+    } catch (error) {
+      res.status(400).json(new ResponseBuilder().setMessage(error).setSuccess(false).build());
+    }
   }
 
-  login(email, password, next) {
-    this.service.findOne({
-      where: { email },
-    }, (user) => {
-      if (!user) {
-        next(null, { msg: 'email salah/tidak tersedia', ok: false });
-      } else if (bcrypt.compareSync(password, user.password)) {
-        const userData = Object.assign({
-          email: user.email,
-          id: user.id,
-          ok: true,
-        });
-        next(null, {
-          data: {
-            token: helpers.createJWT(userData),
-          },
-          meta: {
-            message: 'Logged in successfully',
-            success: true,
-          },
-        });
-      } else {
-        next(null, {
-          data: {},
-          meta: {
-            message: 'invalid password',
-            success: false,
-          },
-        });
-      }
-    });
+  async login(email, password, next) {
+    const user = await this.service.findOne();
+    if (!user) {
+      next(null, {
+        meta: {
+          message: 'email salah/tidak tersedia',
+          success: false,
+        },
+        data: {},
+      });
+    } else if (bcrypt.compareSync(password, user.password)) {
+      const userData = Object.assign({
+        email: user.email,
+        id: user.id,
+        ok: true,
+      });
+      next(null, {
+        data: {
+          token: helpers.createJWT(userData),
+        },
+        meta: {
+          message: 'Logged in successfully',
+          success: true,
+        },
+      });
+    } else {
+      next(null, {
+        data: {},
+        meta: {
+          message: 'invalid password',
+          success: false,
+        },
+      });
+    }
   }
 }
