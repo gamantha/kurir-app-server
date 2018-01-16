@@ -58,9 +58,6 @@ sequelize db:migrate
    https://docs.google.com/document/d/1_PzesWJ1NjizSSfq3MFWycS0FJ5_YF9U92FpifEie1U/edit?usp=sharing
 
 On root directory type:
-
-```
-node app.js
-```
+run with `npm run start`
 
 Congrats! If you seen "app listening on 3000" at your terminal then your server is already running!
