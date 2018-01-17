@@ -30,10 +30,10 @@ export default class ReceiverController {
       const {
         page,
         limit,
-        attributes,
+        fields,
         order,
       } = req.query;
-      const response = await this.service.paginate(req, page, limit, order, attributes);
+      const response = await this.service.paginate(req, page, limit, order, fields);
       res.status(200).json(new ResponseBuilder()
         .setData(response.data)
         .setTotal(response.total)
