@@ -26,7 +26,6 @@ export default (req, res, next) => {
   // validate token
   try {
     const token = parseToken(authorization);
-    console.log(token, 'token parsed');
     jwt.verify(token, process.env.SECRET);
   } catch (error) {
     response.setMessage(error.message).setSuccess(false).build();
