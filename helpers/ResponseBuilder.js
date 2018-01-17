@@ -50,10 +50,28 @@ export default class ResponseBuilder {
 
   /**
    * message setter
-   * @param {String} message 
+   * @param {String} message
    */
   setMessage(message) {
     this.meta.message = message;
+    return this;
+  }
+
+  /**
+   * set the total row count
+   * @param {Integer} total
+   */
+  setTotal(total) {
+    this.meta.total = total;
+    return this;
+  }
+
+  /**
+   * set row count fetched
+   * @param {Integer} count
+   */
+  setCount(count) {
+    this.meta.count = count;
     return this;
   }
 
