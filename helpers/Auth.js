@@ -22,14 +22,23 @@ export default (req, res, next) => {
       .setSuccess(false)
       .build();
     res.status(403).json(response);
+    return;
   }
   // validate token
   try {
     const token = parseToken(authorization);
-    jwt.verify(token, process.env.SECRET);
+    const result = jwt.verify(token, process.env.SECRET);
+    /**
+     * Pass token payload to next function
+     * it'll be accessible through res.locals.user
+     * */
+    res.locals.user = {
+      email: result.email,
+      id: result.id,
+    };
   } catch (error) {
-    response.setMessage(error.message).setSuccess(false).build();
-    res.status(401).json(response);
+    res.status(401).json(response.setMessage(error.message).setSuccess(false).build());
+    return;
   }
   next();
 };
