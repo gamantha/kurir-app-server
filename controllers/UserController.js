@@ -33,13 +33,19 @@ export default class UserController {
       const senderPayload = {
         userId: response.id,
       };
-      await this.senderService.create(senderPayload);
-      res.status(201).json(new ResponseBuilder()
-        .setData(response)
-        .setMessage('successfully created new sender')
-        .build());
+      try {
+        await this.senderService.create(senderPayload);
+        res.status(201).json(new ResponseBuilder()
+          .setData(response)
+          .setMessage('successfully created new sender')
+          .build());
+      } catch (error) {
+        res.status(400).json(new ResponseBuilder()
+          .setMessage(error.message).setSuccess(false).build());
+      }
     } catch (error) {
-      res.status(400).json(new ResponseBuilder().setMessage(error).setSuccess(false).build());
+      res.status(400).json(new ResponseBuilder()
+        .setMessage(error.message).setSuccess(false).build());
     }
   }
 
