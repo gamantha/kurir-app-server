@@ -1,7 +1,10 @@
 import express from 'express';
 import { receiverController } from '../controllers';
+import Auth from '../helpers/Auth';
 
 const router = express.Router();
+
+router.use(Auth);
 
 router.get('/', (req, res) => {
   receiverController.get(req, res);
