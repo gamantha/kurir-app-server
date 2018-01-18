@@ -16,6 +16,10 @@ module.exports = {
       forgotPassVeriCode: {
         type: Sequelize.STRING,
       },
+      role: {
+        type: Sequelize.STRING,
+        defaultValue: 'sender',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

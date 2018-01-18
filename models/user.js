@@ -3,6 +3,7 @@ module.exports = function (sequelize, DataTypes) {
     email: DataTypes.STRING,
     password: DataTypes.STRING,
     forgotPassVeriCode: DataTypes.STRING,
+    role: DataTypes.STRING,
   });
   User.associate = function (models) {
     User.hasMany(models.Sender, { foreignKey: 'userId' });
