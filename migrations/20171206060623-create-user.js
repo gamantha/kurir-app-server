@@ -16,6 +16,9 @@ module.exports = {
       forgotPassVeriCode: {
         type: Sequelize.STRING,
       },
+      isACourier: {
+        type: Sequelize.BOOLEAN,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
