@@ -1,0 +1,12 @@
+dist/*
+migrations/*
+test/*
+models/*
+config/*
+seeders/*
+*.json
+app.js
+*.log
+*.lock
+readme.md
+Procfile
