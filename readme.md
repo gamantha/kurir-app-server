@@ -57,7 +57,14 @@ sequelize db:migrate
 2. db relation:
    https://docs.google.com/document/d/1_PzesWJ1NjizSSfq3MFWycS0FJ5_YF9U92FpifEie1U/edit?usp=sharing
 
-On root directory type:
-run with `npm run start`
 
-Congrats! If you seen "app listening on 3000" at your terminal then your server is already running!
+### Start the app
+- run the seeder with `sequelize db:seed:all` you'll have default user come with email: `test@development.com`, password: `testpassword`.
+- start the server by running `npm run start`
+- fetch the token by POST `email` and `password` to `localhost:3000/api/user/login`
+
+### Testing
+- create mysql database and name it `database_test`
+- run `sequelize --env test db:migrate:all` to run migration on you testing database.
+- run `sequelize --env test db:seed --seed seeders/20180118112739-seed-test-user.js` to seed the test user [run this just once.].
+- run `npm run test` to run all the test.
