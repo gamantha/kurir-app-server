@@ -4,7 +4,7 @@
   "description": "server untuk kurir-app",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --compilers js:babel-core/register ./test/*",
+    "test": "NODE_ENV=test mocha --compilers js:babel-core/register ./test/* --exit --timeout 5000",
     "babel-node": "babel-node",
     "start": "nodemon --exec npm run babel-node -- ./app.js",
     "build": "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./migrations"
@@ -37,6 +37,7 @@
     "eslint": "^4.11.0",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0",
-    "mocha": "^5.0.0"
+    "mocha": "^5.0.0",
+    "mysql2": "^1.5.1"
   }
 }
