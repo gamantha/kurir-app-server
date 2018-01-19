@@ -1,5 +1,3 @@
-import validator from '../helpers/UniqueValidator';
-
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define('User', {
     username: {
@@ -27,7 +25,6 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       validate: {
         isEmail: true,
-        isUnique: validator('User', 'email'),
       },
     },
     password: DataTypes.STRING,

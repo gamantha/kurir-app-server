@@ -17,16 +17,21 @@ export default class UserController {
       const response = await this.service.findAll();
       res.status(200).json(new ResponseBuilder().setData(response).build());
     } catch (error) {
-      res.status(400).json(new ResponseBuilder().setMessage(error).setSuccess(false).build());
+      res.status(400).json(new ResponseBuilder()
+        .setMessage(error)
+        .setSuccess(false)
+        .build());
     }
   }
 
   async create(req, res) {
-    const { email, password } = req.body;
+    const { email, password, username } = req.body;
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
     const payload = {
-      email, password: hash,
+      email,
+      password: hash,
+      username,
     };
     try {
       const response = await this.service.create(payload);
@@ -41,11 +46,15 @@ export default class UserController {
           .build());
       } catch (error) {
         res.status(400).json(new ResponseBuilder()
-          .setMessage(error.message).setSuccess(false).build());
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build());
       }
     } catch (error) {
       res.status(400).json(new ResponseBuilder()
-        .setMessage(error.message).setSuccess(false).build());
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
     }
   }
 
