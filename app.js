@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import logger from 'morgan';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
+
 import { userController } from './controllers';
 // routes import
 import user from './routes/user';
@@ -17,7 +18,10 @@ require('dotenv').config();
 
 app.use(cors());
 
-passport.use(new LocalStrategy({ usernameField: 'email', passwordField: 'password' }, userController.login.bind(userController)));
+passport.use(new LocalStrategy(
+  { usernameField: 'email', passwordField: 'password' },
+  userController.login.bind(userController),
+));
 
 // port setup
 app.set('port', process.env.PORT || 3000);
@@ -42,7 +46,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 //   console.log('Error %s', err.message);
 // });
 
-
 app.use('/api/item', item);
 app.use('/api/user', user);
 app.use('/api/receiver', receiver);
@@ -50,7 +53,7 @@ app.use('/api/mail', mail);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-  let err = new Error('Not Found');
+  const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });

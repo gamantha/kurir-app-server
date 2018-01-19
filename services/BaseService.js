@@ -25,7 +25,7 @@ export default class BaseService {
       }
       throw Error('fail to fetch data');
     } catch (error) {
-      throw (error.message);
+      throw error.message;
     }
   }
 
@@ -57,6 +57,15 @@ export default class BaseService {
       }
       throw Error('fail to insert data');
     } catch (error) {
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        let errMsg = null;
+        if (error.errors[0].message === 'email must be unique') {
+          errMsg = 'Oops. Looks we already have this email registered. Perharps another one?';
+        } else if (error.errors[0].message === 'username must be unique') {
+          errMsg = 'Oops. Username already exist. Please choose another.';
+        }
+        throw Error(errMsg);
+      }
       throw Error(error.message);
     }
   }
@@ -109,8 +118,7 @@ export default class BaseService {
   async paginate(req, page = 1, limit, orders, attributes) {
     limit = typeof limit !== 'undefined' ? parseInt(limit) : 10;
     attributes = typeof attributes !== 'undefined' ? attributes.split(',') : {};
-    const order = typeof orders !== 'undefined' ? BaseService.parseOrder(orders)
-      : ['id', 'ASC'];
+    const order = typeof orders !== 'undefined' ? BaseService.parseOrder(orders) : ['id', 'ASC'];
     const offset = typeof page !== 'undefined' ? (page - 1) * limit : page;
     try {
       const response = await this.model.findAndCountAll({
@@ -163,7 +171,7 @@ export default class BaseService {
         reject(new Error('page cannot be 0'));
       }
       const baseUrl = `${config.domain.base_url}${url}?page=`;
-      let links = {
+      const links = {
         prev: null,
         next: null,
         last: baseUrl + lastPage,

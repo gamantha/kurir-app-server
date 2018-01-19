@@ -14,24 +14,26 @@ export default class ReceiverController {
       name, address, phone, city,
     } = req.body;
     const payload = {
-      name, address, phone, city,
+      name,
+      address,
+      phone,
+      city,
     };
     try {
       const response = await this.service.create(payload);
       res.status(201).json(new ResponseBuilder().setData(response).build());
     } catch (error) {
       res.status(400).json(new ResponseBuilder()
-        .setMessage(error.message).setSuccess(false).build());
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
     }
   }
 
   async get(req, res) {
     try {
       const {
-        page,
-        limit,
-        fields,
-        order,
+        page, limit, fields, order,
       } = req.query;
       const response = await this.service.paginate(req, page, limit, order, fields);
       res.status(200).json(new ResponseBuilder()
@@ -42,7 +44,9 @@ export default class ReceiverController {
         .build());
     } catch (error) {
       res.status(400).json(new ResponseBuilder()
-        .setMessage(error.message).setSuccess(false).build());
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
     }
   }
 
@@ -53,7 +57,9 @@ export default class ReceiverController {
       res.status(200).json(new ResponseBuilder().setData(response).build());
     } catch (error) {
       res.status(404).json(new ResponseBuilder()
-        .setMessage(error.message).setSuccess(false).build());
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
     }
   }
 
@@ -64,7 +70,9 @@ export default class ReceiverController {
       res.status(200).json(new ResponseBuilder().setData({}).build());
     } catch (error) {
       res.status(404).json(new ResponseBuilder()
-        .setMessage(error.message).setSuccess(false).build());
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
     }
   }
 
@@ -74,14 +82,19 @@ export default class ReceiverController {
       name, address, phone, city,
     } = req.body;
     const payload = {
-      name, address, phone, city,
+      name,
+      address,
+      phone,
+      city,
     };
     try {
       const response = await this.service.update(payload, { id });
       res.status(200).json(new ResponseBuilder().setData(response).build());
     } catch (error) {
       res.status(404).json(new ResponseBuilder()
-        .setMessage(error.message).setSuccess(false).build());
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
     }
   }
 }
