@@ -34,7 +34,7 @@ export default class UserController {
       username,
     };
     try {
-      const response = await this.service.create(payload);
+      const response = await this.service.register(payload, password);
       const senderPayload = {
         userId: response.id,
       };

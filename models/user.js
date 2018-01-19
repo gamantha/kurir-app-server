@@ -3,6 +3,8 @@ module.exports = function (sequelize, DataTypes) {
     username: {
       type: DataTypes.STRING,
       isUnique: true,
+      allowNull: false,
+      defaultValue: '',
       validate: {
         min: {
           args: 3,
@@ -17,14 +19,19 @@ module.exports = function (sequelize, DataTypes) {
           args: /^[A-Za-z][A-Za-z0-9-]+$/i, // must start with letter and only have letters, numbers, dashes
           msg: 'Username must start with a letter, have no spaces, and be 3 - 40 characters.',
         },
+        notEmpty: { msg: 'Please input username' },
       },
     },
     email: {
       type: DataTypes.STRING,
       isUnique: true,
       allowNull: false,
+      defaultValue: '',
       validate: {
-        isEmail: true,
+        isEmail: {
+          msg: 'Please input an email address',
+        },
+        notEmpty: { msg: 'Please input email address' },
       },
     },
     password: DataTypes.STRING,
