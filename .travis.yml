@@ -14,7 +14,7 @@ before_install:
   - "cp config/config.travis.json config/config.json"
   - "mysql -e 'CREATE DATABASE database_test;'"
   - "npm install"
-  - "sequelize --env test db:migrate:all"
+  - "sequelize --env test db:migrate"
   - "sequelize --env test db:seed --seed seeders/20180118112739-seed-test-user.js "
 
 script:
