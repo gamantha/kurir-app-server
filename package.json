@@ -4,7 +4,7 @@
   "description": "server untuk kurir-app",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --compilers js:babel-core/register ./test/*",
+    "test": "NODE_ENV=test mocha --compilers js:babel-core/register ./test/* --exit --timeout 5000",
     "babel-node": "babel-node",
     "start": "nodemon --exec npm run babel-node -- ./app.js",
     "build": "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./migrations"
