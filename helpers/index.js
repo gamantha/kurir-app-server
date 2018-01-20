@@ -8,4 +8,3 @@ methods.createJWT = (data) => {
 };
 
 module.exports = methods;
-

@@ -37,9 +37,11 @@ export default (req, res, next) => {
       id: result.id,
     };
   } catch (error) {
-    res.status(401).json(response.setMessage(error.message).setSuccess(false).build());
+    res.status(401).json(response
+      .setMessage(error.message)
+      .setSuccess(false)
+      .build());
     return;
   }
   next();
 };
-

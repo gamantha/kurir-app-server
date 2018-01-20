@@ -1,5 +1,3 @@
-
-
 module.exports = function (sequelize, DataTypes) {
   const Admin = sequelize.define('Admin', {
     droppointId: DataTypes.INTEGER,
@@ -10,6 +8,6 @@ module.exports = function (sequelize, DataTypes) {
   });
   Admin.associate = function (models) {
     Admin.belongsTo(models.Droppoint, { foreignKey: 'droppointId' });
-  }
+  };
   return Admin;
 };

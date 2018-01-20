@@ -7,8 +7,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      email: {
+      username: {
+        allowNull: false,
         type: Sequelize.STRING,
+        unique: true,
+      },
+      email: {
+        allowNull: false,
+        type: Sequelize.STRING,
+        unique: true,
+        isEmail: true,
       },
       password: {
         type: Sequelize.STRING,
