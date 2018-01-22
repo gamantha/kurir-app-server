@@ -1,6 +1,5 @@
 import { MailService } from '../services';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import { mailController } from './index';
 const localBaseUrl = require('../config/config.json');
 
 export default class MailController {
@@ -17,10 +16,8 @@ export default class MailController {
         apiKey: process.env.mailgunPrivateApiKey,
         domain: process.env.mailgunDomain,
       });
-      // const Mail = this.service.mailgunMsg;
-      // const { from, to, subject, text } = Mail;
       const mailOptions = {
-        from: 'bhirmbani@gmail.com',
+        from: 'Kurir.id <noreply@kurir.id>',
         to: email,
         subject: 'Welcome to Kurir.id',
         text: 'Please verify your account by clicking on this link',
@@ -31,7 +28,7 @@ export default class MailController {
           .status(200)
           .json(
             new ResponseBuilder()
-              .setData({ msg: 'ok kirim sent regis email' })
+              .setData({ msg: 'successfully sent verification link' })
               .build()
           );
       } catch (error) {
