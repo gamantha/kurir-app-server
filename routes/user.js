@@ -12,9 +12,13 @@ router.post('/create', (req, res) => {
   userController.create(req, res);
 });
 
-router.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
-  const { user } = req;
-  res.json(user);
-});
+router.post(
+  '/login',
+  passport.authenticate('local', { session: false }),
+  (req, res) => {
+    const { user } = req;
+    res.json(user);
+  }
+);
 
 module.exports = router;

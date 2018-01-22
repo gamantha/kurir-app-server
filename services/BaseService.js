@@ -109,7 +109,10 @@ export default class BaseService {
   async paginate(req, page = 1, limit, orders, attributes) {
     limit = typeof limit !== 'undefined' ? parseInt(limit) : 10;
     attributes = typeof attributes !== 'undefined' ? attributes.split(',') : {};
-    const order = typeof orders !== 'undefined' ? BaseService.parseOrder(orders) : ['id', 'ASC'];
+    const order =
+      typeof orders !== 'undefined'
+        ? BaseService.parseOrder(orders)
+        : ['id', 'ASC'];
     const offset = typeof page !== 'undefined' ? (page - 1) * limit : page;
     try {
       const response = await this.model.findAndCountAll({
@@ -120,7 +123,11 @@ export default class BaseService {
       });
       try {
         const lastPage = Math.ceil(response.count / limit);
-        const links = await BaseService.generateLinks(page, lastPage, req.baseUrl);
+        const links = await BaseService.generateLinks(
+          page,
+          lastPage,
+          req.baseUrl
+        );
         if (response) {
           return {
             data: response.rows,

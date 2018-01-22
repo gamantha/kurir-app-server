@@ -7,6 +7,8 @@ const bcrypt = require('bcrypt');
 
 const models = require('../models');
 
+const localBaseUrl = require('../config/config.json');
+
 const methods = {};
 
 const transporter = nodemailer.createTransport({
@@ -28,10 +30,11 @@ methods.getVeriCodeForgotPassword = (req, res) => {
     where: {
       email: req.body.email,
     },
-  }).then((user) => {
+  }).then(user => {
     if (!user) {
       res.json({
-        msg: 'Anda memasukkan email yang belum terdaftar. Silakan daftar lebih dulu',
+        msg:
+          'Anda memasukkan email yang belum terdaftar. Silakan daftar lebih dulu',
         ok: false,
       });
     } else {
@@ -65,7 +68,7 @@ methods.checkForgotPassVeriCode = (req, res) => {
     where: {
       email: req.body.email,
     },
-  }).then((user) => {
+  }).then(user => {
     if (user.forgotPassVeriCode === req.body.veriCode) {
       res.json({ msg: 'sama', ok: true });
       user.update({
@@ -82,7 +85,7 @@ methods.changePassword = (req, res) => {
     where: {
       email: req.body.email,
     },
-  }).then((user) => {
+  }).then(user => {
     const saltRounds = 10;
     const hash = bcrypt.hashSync(req.body.password, saltRounds);
     user
@@ -92,6 +95,25 @@ methods.changePassword = (req, res) => {
       .then(() => {
         res.json({ msg: 'berhasil ubah password', ok: true });
       });
+  });
+};
+
+methods.sentRegistrationVerif = (req, res) => email => {
+  const mailOptions = {
+    from: 'Kurir.id',
+    to: `${email}`,
+    subject: 'Welcome to Kurir.id',
+    text: 'Please verify your account by clicking on this link',
+    html: `<b>click this to verify your email: </b> http://${localBaseUrl}/api/mail/registration`,
+  };
+  transporter.sendMail(mailOptions, error => {
+    if (error) {
+      res.json({ error });
+    }
+    res.json({
+      ok: true,
+      msg: 'silakan cek email Anda',
+    });
   });
 };
 

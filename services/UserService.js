@@ -21,7 +21,8 @@ export default class UserService extends BaseService {
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         if (error.errors[0].message === 'email must be unique') {
-          errMsg = 'Oops. Looks we already have this email registered. Perharps another one?';
+          errMsg =
+            'Oops. Looks we already have this email registered. Perharps another one?';
         } else if (error.errors[0].message === 'username must be unique') {
           errMsg = 'Oops. Username already exist. Please choose another.';
         }
