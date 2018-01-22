@@ -1,5 +1,4 @@
 import express from 'express';
-import passport from 'passport';
 import { userController } from '../controllers';
 
 const router = express.Router();
@@ -12,9 +11,8 @@ router.post('/create', (req, res) => {
   userController.create(req, res);
 });
 
-router.post('/login', passport.authenticate('local', { session: false }), (req, res) => {
-  const { user } = req;
-  res.json(user);
+router.post('/login', (req, res) => {
+  userController.login(req, res);
 });
 
 module.exports = router;
