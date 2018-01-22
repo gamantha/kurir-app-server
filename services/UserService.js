@@ -1,21 +1,26 @@
+import UserRepository from '../repositories/UserRepository';
 import BaseService from './BaseService';
-import models from '../models';
 
-export default class UserService extends BaseService {
+export default class SenderService extends BaseService {
   /**
    * User specific service class
    */
   constructor() {
-    super(models.User);
+    super(new UserRepository());
   }
 
+  /**
+   * Register user.
+   * @param {Object} payload 
+   * @param {String} password 
+   */
   async register(payload, password) {
     let errMsg = null;
     try {
       if (password === '') {
         throw Error('password cannot be blank');
       }
-      const response = await this.model.create(payload);
+      const response = await this.repository.create(payload);
       if (response) return response;
       throw Error('fail to insert data');
     } catch (error) {
