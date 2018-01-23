@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   var Token = sequelize.define('Token', {
     accessToken: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
     },
     refreshToken: {
       type: DataTypes.STRING,
@@ -13,13 +13,10 @@ module.exports = (sequelize, DataTypes) => {
     userAgent: {
       type: DataTypes.STRING,
     },
-  }, {
-      classMethods: {
-        associate: function (models) {
-          // associations can be defined here
-          Token.belongsTo(models.User, { foreignKey: 'userId' });
-        }
-      }
-    });
+  });
+  Token.associate = function (models) {
+    // associations can be defined here
+    Token.belongsTo(models.User, { foreignKey: 'userId' });
+  }
   return Token;
 };
