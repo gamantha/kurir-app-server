@@ -21,7 +21,6 @@ describe('Login', () => {
   ];
 
   before((done) => {
-    console.log('sss');
     models.Token.destroy({
       where: {},
       truncate: true,
@@ -78,13 +77,13 @@ describe('Login', () => {
   });
 
   describe('Refresh token attempt', () => {
-    it('should return 400 refreshtoken not found', (done) => {
+    it('should return 400 refresh token not found', (done) => {
       chai.request(app)
         .post('/api/user/refreshtoken')
+        .set('Authorization', `bearer ${accessToken}`)
         .send({
           refreshToken: 'randomrefreshtoken'
         })
-        .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
           res.should.have.status(400);
           res.body.should.include.keys(baseResponseStructure);
@@ -92,15 +91,15 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 400 refresh token not found', (done) => {
+    it('should return 401 unauthenticated', (done) => {
       chai.request(app)
         .post('/api/user/refreshtoken')
-        .send({
-          refreshToken: refreshToken
-        })
         .set('Authorization', 'bearer randomebearertoken')
+        .send({
+          refreshToken
+        })
         .end((err, res) => {
-          res.should.have.status(400);
+          res.should.have.status(401);
           res.body.should.include.keys(baseResponseStructure);
           res.body.meta.success.should.be.eql(false);
           done();
@@ -109,10 +108,10 @@ describe('Login', () => {
     it('should return 200 token refreshed', (done) => {
       chai.request(app)
         .post('/api/user/refreshtoken')
-        .send({
-          refreshToken: refreshToken
-        })
         .set('Authorization', `bearer ${accessToken}`)
+        .send({
+          refreshToken
+        })
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.include.keys(baseResponseStructure);
