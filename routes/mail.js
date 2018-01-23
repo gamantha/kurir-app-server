@@ -12,7 +12,7 @@ router.get('/check-email-is-valid/', (req, res) => {
 });
 
 router.post('/sent-register-validation-link', (req, res) => {
-  mailController.sentRegisValidationLink(req, res);
+  mailController.sendRegisValidationLink(req, res);
 });
 
 module.exports = router;

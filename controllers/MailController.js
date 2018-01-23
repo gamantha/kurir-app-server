@@ -10,6 +10,12 @@ export default class MailController {
 
   async checkEmail(req, res) {
     const { email } = req.query;
+    let setup = this.service.mailgunSetup;
+    let mailgunSetup = setup({
+      apiKey: process.env.mailgunPrivateApiKey,
+      publicApiKey: process.env.mailgunPublicValidationKey,
+      domain: process.env.mailgunDomain,
+    });
     try {
       let response = await axios.get(
         `https://api.mailgun.net/v3/address/validate?address=${email}&api_key=${
@@ -20,6 +26,30 @@ export default class MailController {
       if (validationResult) {
         try {
           await this.service.update({ isEmailValidated: true }, { email });
+        } catch (error) {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage(error)
+              .setSuccess(false)
+              .build()
+          );
+        }
+        const welcomeMsg = {
+          from: 'Kurir.id <noreply@kurir.id>',
+          to: email,
+          subject: 'Welcome to Kurir.id',
+          html:
+            '<h1>You\'ve successfully verified your email! Thank your for being awesome and being part of Kurir.id</h1>',
+        };
+        try {
+          mailgunSetup.messages().send(welcomeMsg);
+          res.status(200).json(
+            new ResponseBuilder()
+              .setData({
+                msg: 'successfully sent welcome msg to email',
+              })
+              .build()
+          );
         } catch (error) {
           res.status(400).json(
             new ResponseBuilder()
@@ -53,7 +83,7 @@ export default class MailController {
     }
   }
 
-  async sentRegisValidationLink(req, res) {
+  async sendRegisValidationLink(req, res) {
     const { email } = req.body;
     try {
       await this.service.findOne({ email });
@@ -68,15 +98,14 @@ export default class MailController {
         config.domain.base_url
       }/api/mail/check-email-is-valid?email=${email}`;
 
-      const mailOptions = {
+      const verificationLinkMsg = {
         from: 'Kurir.id <noreply@kurir.id>',
         to: email,
-        subject: 'Welcome to Kurir.id',
-        text: 'Please verify your account by clicking on this link',
-        html: `<u>${verificationLink}</u>`,
+        subject: 'Email Verification for Newly Onboarding User',
+        html: `Please verify your account by clicking on this link <u>${verificationLink}</u>`,
       };
       try {
-        mailgunSetup.messages().send(mailOptions);
+        mailgunSetup.messages().send(verificationLinkMsg);
         res
           .status(200)
           .json(
@@ -101,4 +130,6 @@ export default class MailController {
       );
     }
   }
+
+  async sendForgotPassVerifCode(req, res) {}
 }
