@@ -1,16 +1,5 @@
-import jwt from 'jsonwebtoken';
+import helper from './';
 import ResponseBuilder from './ResponseBuilder';
-
-/**
- * Parse authorization header
- * @param {String} token
- */
-const parseToken = (token) => {
-  if (token.includes('bearer ')) {
-    return token.slice('bearer '.length);
-  }
-  throw Error('invalid token');
-};
 
 export default (req, res, next) => {
   const { authorization } = req.headers;
@@ -26,8 +15,8 @@ export default (req, res, next) => {
   }
   // validate token
   try {
-    const token = parseToken(authorization);
-    const result = jwt.verify(token, process.env.SECRET);
+    const token = helper.parseToken(authorization);
+    const result = helper.verifyJwt(token, process.env.SECRET);
     /**
      * Pass token payload to next function
      * it'll be accessible through res.locals.user
