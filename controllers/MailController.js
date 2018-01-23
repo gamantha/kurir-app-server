@@ -43,7 +43,7 @@ export default class MailController {
           to: email,
           subject: 'Welcome to Kurir.id',
           html:
-            '<h1>You\'ve successfully verified your account! Thank your for being awesome and being part of Kurir.id</h1>',
+            '<h1>Your email has been verified! Thank your for being awesome and being part of Kurir.id</h1>',
         };
 
         try {
