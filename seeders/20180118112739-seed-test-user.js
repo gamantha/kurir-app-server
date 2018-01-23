@@ -8,6 +8,7 @@ module.exports = {
     const hash = bcrypt.hashSync(user.password, saltRounds);
     return queryInterface.bulkInsert('Users', [{
       email: user.email,
+      username: user.username,
       password: hash,
       createdAt: new Date(),
       updatedAt: new Date(),
