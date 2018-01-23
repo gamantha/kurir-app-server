@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import helper from '../helpers';
 import BaseService from './BaseService';
 import models from '../models';
 
@@ -17,8 +17,8 @@ export default class TokenService extends BaseService {
    */
   async saveToken(token, userAgent) {
     try {
-      const refreshToken = Math.random().toString(36).substring(3);
-      const user = jwt.verify(token, process.env.SECRET);
+      const refreshToken = helper.refreshToken();
+      const user = helper.verifyJwt(token);
       const payload = {
         accessToken: token,
         refreshToken,
@@ -29,18 +29,83 @@ export default class TokenService extends BaseService {
         const exist = await this.model.findOne({
           where: {
             userId: user.id,
-            userAgent: userAgent
+            userAgent: userAgent,
           },
+          include: [{
+            model: models.User,
+            attributes: { exclude: ['password'] },
+            required: true,
+          }]
         });
         if (exist) {
-          return exist;
+          // if exist update existing token
+          try {
+            await this.model.update({
+              accessToken: token, refreshToken
+            }, { where: { id: exist.id } });
+            exist.accessToken = token;
+            exist.refreshToken = refreshToken;
+            return exist;
+          } catch (error) {
+            throw Error(error.message);
+          }
         }
         try {
-          const user = await this.model.create(payload);
-          return user;
+          // TODO: simplify this query call
+          const token = await this.model.create(payload);
+          const response = await this.model.findOne({
+            where: { id: token.id },
+            include: [{
+              model: models.User,
+              attributes: { exclude: ['password'] },
+              required: true,
+            }]
+          });
+          return response;
         } catch (error) {
           throw Error(error.message);
         }
+      } catch (error) {
+        throw Error(error.message);
+      }
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
+
+  /**
+   * refresh the token.
+   * @param {String} bearer 
+   * @param {String} refreshToken 
+   * @param {String} userAgent 
+   */
+  async refreshToken(bearer, refreshToken, userAgent) {
+    try {
+      const token = await this.model.findOne({
+        where: { refreshToken, userAgent, accessToken: helper.parseToken(bearer) },
+        include: [{
+          model: models.User,
+          attributes: { exclude: ['password'] },
+          required: true,
+        }],
+      });
+      if (!token) {
+        throw Error('refresh token not found');
+      }
+      // generate token here
+      const payload = {
+        email: token.User.email,
+        id: token.User.id
+      };
+      const accessToken = helper.createJWT(payload);
+      const newRefreshToken = helper.refreshToken();
+      try {
+        await this.model.update({
+          accessToken, refreshToken: newRefreshToken,
+        }, { where: { id: token.id } });
+        token.accessToken = accessToken;
+        token.refreshToken = newRefreshToken;
+        return token;
       } catch (error) {
         throw Error(error.message);
       }
