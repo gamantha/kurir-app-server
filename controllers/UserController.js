@@ -74,7 +74,6 @@ export default class UserController {
           const userData = Object.assign({
             email: user.email,
             id: user.id,
-            ok: true,
           });
           const token = helpers.createJWT(userData);
           try {
@@ -110,5 +109,30 @@ export default class UserController {
       .setMessage('invalid payload')
       .setSuccess(false).build());
     return;
+  }
+
+  async refreshToken(req, res) {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      res.status(400).json(new ResponseBuilder()
+        .setMessage('invalid payload')
+        .setSuccess(false).build());
+      return;
+    }
+    try {
+      const response = await this.tokenService.refreshToken(req.headers.authorization, refreshToken, req.headers['user-agent']);
+      res.status(200).json(new ResponseBuilder()
+        .setData(response)
+        .setMessage('Access token successfully refreshed.')
+        .build()
+      );
+      return;
+    } catch (error) {
+      res.status(400).json(new ResponseBuilder()
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
+      return;
+    }
   }
 }
