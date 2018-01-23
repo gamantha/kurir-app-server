@@ -12,6 +12,10 @@ router.post('/create', (req, res) => {
   userController.create(req, res);
 });
 
+router.post('/check-forgot-password-verif-code', (req, res) => {
+  userController.checkForgotPassVeriCode(req, res);
+});
+
 router.post(
   '/login',
   passport.authenticate('local', { session: false }),

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import bcrypt from 'bcrypt';
 import { MailService } from '../services';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 const config = require('../config/config.json');
@@ -47,13 +48,13 @@ export default class MailController {
 
         try {
           mailgunSetup.messages().send(welcomeMsg);
-          res.status(200).json(
-            new ResponseBuilder()
-              .setData({
-                msg: 'successfully sent welcome msg to email',
-              })
-              .build()
-          );
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage('successfully sent welcome msg to email')
+                .build()
+            );
         } catch (error) {
           res.status(400).json(
             new ResponseBuilder()
@@ -117,7 +118,7 @@ export default class MailController {
           .status(200)
           .json(
             new ResponseBuilder()
-              .setData({ msg: 'successfully sent verification link to email' })
+              .setMessage('successfully sent verification link to email')
               .build()
           );
       } catch (error) {
@@ -166,14 +167,15 @@ export default class MailController {
         await this.service.update({ forgotPassVeriCode: verifCode }, { email });
         try {
           mailgunSetup.messages().send(verifCodeMsg);
-          res.status(200).json(
-            new ResponseBuilder()
-              .setData({
-                msg:
-                  'successfully sent verification code forgot password to email',
-              })
-              .build()
-          );
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage(
+                  'successfully sent verification code forgot password to email'
+                )
+                .build()
+            );
         } catch (error) {
           res.status(400).json(
             new ResponseBuilder()
@@ -200,37 +202,55 @@ export default class MailController {
     }
   }
 
-  async checkForgotPassVeriCode(req, res) {
-    const { email, veriCode } = req.body;
+  async changePassword(req, res) {
+    const { email, password } = req.body;
+    const saltRounds = 10;
+    const hash = bcrypt.hashSync(password, saltRounds);
+    const setup = this.service.mailgunSetup;
+    const mailgunSetup = setup({
+      apiKey: process.env.mailgunPrivateApiKey,
+      publicApiKey: process.env.mailgunPublicValidationKey,
+      domain: process.env.mailgunDomain,
+    });
+
+    let changePasswordMsg = this.service.mailgunMsg;
+
+    changePasswordMsg = {
+      from: 'Kurir.id <noreply@kurir.id>',
+      to: email,
+      subject: 'Change password information',
+      html: `<div>This email inform you that you have successfully change your password.
+       Here are your new password: <b>${password}</b>
+       Please keep it in safe place. </div>`,
+    };
 
     try {
-      const response = await this.service.findOne({ email });
-      const userPayload = response.forgotPassVeriCode;
-
-      if (userPayload === veriCode) {
+      await this.service.findOne({ email });
+      try {
+        await this.service.update({ password: hash }, { email });
         try {
-          await this.service.update({ forgotPassVeriCode: null }, { email });
+          mailgunSetup.messages().send(changePasswordMsg);
           res
             .status(200)
             .json(
               new ResponseBuilder()
                 .setMessage(
-                  'Verification code match. User now can safely reset password.'
+                  'successfully sent information to email that user has changed password.'
                 )
                 .build()
             );
         } catch (error) {
           res.status(400).json(
             new ResponseBuilder()
-              .setMessage(error.message)
+              .setMessage(error)
               .setSuccess(false)
               .build()
           );
         }
-      } else {
+      } catch (error) {
         res.status(400).json(
           new ResponseBuilder()
-            .setMessage('Verification code didn\'t match')
+            .setMessage(error.message)
             .setSuccess(false)
             .build()
         );

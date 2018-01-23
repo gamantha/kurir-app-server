@@ -101,4 +101,49 @@ export default class UserController {
       });
     }
   }
+
+  async checkForgotPassVeriCode(req, res) {
+    const { email, veriCode } = req.body;
+
+    try {
+      const response = await this.service.findOne({ email });
+      const userPayload = response.forgotPassVeriCode;
+
+      if (userPayload === veriCode) {
+        try {
+          await this.service.update({ forgotPassVeriCode: null }, { email });
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage(
+                  'Verification code match. User now can safely reset password.'
+                )
+                .build()
+            );
+        } catch (error) {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage(error.message)
+              .setSuccess(false)
+              .build()
+          );
+        }
+      } else {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('Verification code didn\'t match')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
 }
