@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
+import Sequelize from 'sequelize';
 import helpers from '../helpers';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import { UserService, SenderService } from '../services/index';
+import { UserService, SenderService, TokenService } from '../services/index';
 
 export default class UserController {
   /**
@@ -10,6 +11,7 @@ export default class UserController {
   constructor() {
     this.service = new UserService();
     this.senderService = new SenderService();
+    this.tokenService = new TokenService();
   }
 
   async get(req, res) {
@@ -58,39 +60,94 @@ export default class UserController {
     }
   }
 
-  async login(email, password, next) {
-    const user = await this.service.findOne();
-    if (!user) {
-      next(null, {
-        meta: {
-          message: 'email salah/tidak tersedia',
-          success: false,
-        },
-        data: {},
+  async login(req, res) {
+    const { username, password } = req.body;
+
+    if (username && password) {
+      const Op = Sequelize.Op;
+      // find with username or email
+      try {
+        const user = await this.service.findOne({
+          [Op.or]: [{ email: username }, { username }]
+        });
+        if (bcrypt.compareSync(password, user.password)) {
+          const userData = Object.assign({
+            email: user.email,
+            id: user.id,
+          });
+          const token = helpers.createJWT(userData);
+          try {
+            const accessToken = await this.tokenService.saveToken(token, req.headers['user-agent']);
+            res.status(200).json(new ResponseBuilder()
+              .setData(accessToken)
+              .setMessage('Logged in successfully')
+              .build());
+            return;
+          } catch (error) {
+            res.status(400).json(new ResponseBuilder()
+              .setMessage(error.message)
+              .setSuccess(false)
+              .build());
+            return;
+          }
+        } else {
+          res.status(200).json(new ResponseBuilder()
+            .setMessage('Invalid password')
+            .setSuccess(false)
+            .build());
+          return;
+        }
+      } catch (error) {
+        res.status(400).json(new ResponseBuilder()
+          .setMessage('email/username invalid or unavailable')
+          .setSuccess(false)
+          .build());
+        return;
+      }
+    }
+    res.status(400).json(new ResponseBuilder()
+      .setMessage('invalid payload')
+      .setSuccess(false).build());
+    return;
+  }
+
+  async refreshToken(req, res) {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      res.status(400).json(new ResponseBuilder()
+        .setMessage('invalid payload')
+        .setSuccess(false).build());
+      return;
+    }
+    try {
+      const response = await this.tokenService.refreshToken(req.headers.authorization, refreshToken, req.headers['user-agent']);
+      res.status(200).json(new ResponseBuilder()
+        .setData(response)
+        .setMessage('Access token successfully refreshed.')
+        .build()
+      );
+      return;
+    } catch (error) {
+      res.status(400).json(new ResponseBuilder()
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
+      return;
+    }
+  }
+
+  async logout(req, res) {
+    try {
+      const token = helpers.parseToken(req.headers['authorization']);
+      await this.tokenService.destroy({
+        accessToken: token
       });
-    } else if (bcrypt.compareSync(password, user.password)) {
-      const userData = Object.assign({
-        email: user.email,
-        id: user.id,
-        ok: true,
-      });
-      next(null, {
-        data: {
-          token: helpers.createJWT(userData),
-        },
-        meta: {
-          message: 'Logged in successfully',
-          success: true,
-        },
-      });
-    } else {
-      next(null, {
-        data: {},
-        meta: {
-          message: 'invalid password',
-          success: false,
-        },
-      });
+      res.status(200).json(new ResponseBuilder().setData({}).build());
+    } catch (error) {
+      res.status(404).json(new ResponseBuilder()
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
     }
   }
 }

@@ -34,9 +34,9 @@ describe('Receivers', () => {
     // login and receive token
     chai.request(app)
       .post('/api/user/login')
-      .send({ email: user.email, password: user.password })
+      .send({ username: user.email, password: user.password })
       .end((err, res) => {
-        token = res.body.data.token;
+        token = res.body.data.accessToken;
         done();
       });
   });
