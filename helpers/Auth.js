@@ -16,7 +16,7 @@ export default (req, res, next) => {
   // validate token
   try {
     const token = helper.parseToken(authorization);
-    const result = helper.verifyJwt(token, process.env.SECRET);
+    const result = helper.verifyJwt(token);
     /**
      * Pass token payload to next function
      * it'll be accessible through res.locals.user
