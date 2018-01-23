@@ -1,5 +1,6 @@
 import express from 'express';
 import { userController } from '../controllers';
+import Auth from '../helpers/Auth';
 
 const router = express.Router();
 
@@ -15,8 +16,12 @@ router.post('/login', (req, res) => {
   userController.login(req, res);
 });
 
-router.post('/refreshtoken', (req, res) => {
+router.post('/refreshtoken', Auth, (req, res) => {
   userController.refreshToken(req, res);
+});
+
+router.post('/logout', Auth, (req, res) => {
+  userController.logout(req, res);
 });
 
 module.exports = router;
