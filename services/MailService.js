@@ -16,7 +16,7 @@ export default class MailBuilder extends BaseService {
       from: null,
       to: null,
       subject: null,
-      text: null,
+      html: null,
     };
     this.data = {};
   }

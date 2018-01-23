@@ -10,14 +10,14 @@ export default class MailController {
 
   async checkEmail(req, res) {
     const { email } = req.query;
-    let setup = this.service.mailgunSetup;
-    let mailgunSetup = setup({
+    const setup = this.service.mailgunSetup;
+    const mailgunSetup = setup({
       apiKey: process.env.mailgunPrivateApiKey,
       publicApiKey: process.env.mailgunPublicValidationKey,
       domain: process.env.mailgunDomain,
     });
     try {
-      let response = await axios.get(
+      const response = await axios.get(
         `https://api.mailgun.net/v3/address/validate?address=${email}&api_key=${
           process.env.mailgunPublicValidationKey
         }`
@@ -34,13 +34,17 @@ export default class MailController {
               .build()
           );
         }
-        const welcomeMsg = {
+
+        let welcomeMsg = this.service.mailgunMsg;
+
+        welcomeMsg = {
           from: 'Kurir.id <noreply@kurir.id>',
           to: email,
           subject: 'Welcome to Kurir.id',
           html:
-            '<h1>You\'ve successfully verified your email! Thank your for being awesome and being part of Kurir.id</h1>',
+            '<h1>You\'ve successfully verified your account! Thank your for being awesome and being part of Kurir.id</h1>',
         };
+
         try {
           mailgunSetup.messages().send(welcomeMsg);
           res.status(200).json(
@@ -85,25 +89,28 @@ export default class MailController {
 
   async sendRegisValidationLink(req, res) {
     const { email } = req.body;
+    const setup = this.service.mailgunSetup;
+    const mailgunSetup = setup({
+      apiKey: process.env.mailgunPrivateApiKey,
+      publicApiKey: process.env.mailgunPublicValidationKey,
+      domain: process.env.mailgunDomain,
+    });
+
+    const verificationLink = `${
+      config.domain.base_url
+    }/api/mail/check-email-is-valid?email=${email}`;
+
+    let verificationLinkMsg = this.service.mailgunMsg;
+
+    verificationLinkMsg = {
+      from: 'Kurir.id <noreply@kurir.id>',
+      to: email,
+      subject: 'Email Verification for Newly Onboarding User',
+      html: `Please verify your account by clicking on this link <u>${verificationLink}</u>`,
+    };
+
     try {
       await this.service.findOne({ email });
-      let setup = this.service.mailgunSetup;
-      let mailgunSetup = setup({
-        apiKey: process.env.mailgunPrivateApiKey,
-        publicApiKey: process.env.mailgunPublicValidationKey,
-        domain: process.env.mailgunDomain,
-      });
-
-      const verificationLink = `${
-        config.domain.base_url
-      }/api/mail/check-email-is-valid?email=${email}`;
-
-      const verificationLinkMsg = {
-        from: 'Kurir.id <noreply@kurir.id>',
-        to: email,
-        subject: 'Email Verification for Newly Onboarding User',
-        html: `Please verify your account by clicking on this link <u>${verificationLink}</u>`,
-      };
       try {
         mailgunSetup.messages().send(verificationLinkMsg);
         res
@@ -131,5 +138,44 @@ export default class MailController {
     }
   }
 
-  async sendForgotPassVerifCode(req, res) {}
+  async sendForgotPassVerifCode(req, res) {
+    const { email } = req.body;
+    const setup = this.service.mailgunSetup;
+    const mailgunSetup = setup({
+      apiKey: process.env.mailgunPrivateApiKey,
+      publicApiKey: process.env.mailgunPublicValidationKey,
+      domain: process.env.mailgunDomain,
+    });
+    const token = this.service.verifCodeGenerator.generator({
+      source: 'math',
+      chars: 'numeric',
+    });
+    const verifCode = token.generate(6);
+    let verifCodeMsg = this.service.mailgunMsg;
+
+    verifCodeMsg = {
+      from: 'Kurir.id <noreply@kurir.id>',
+      to: email,
+      subject: 'Your verification code for Kurir.id forgot password',
+      html: `<b>This is your verification code number. Do not share it with anyone.</b> ${verifCode}`,
+    };
+
+    try {
+      mailgunSetup.messages().send(verifCodeMsg);
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData({
+            msg: 'successfully sent verification code forgot password to email',
+          })
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
 }
