@@ -3,7 +3,7 @@ import randtoken from 'rand-token';
 import models from '../models';
 import mailgun from 'mailgun-js';
 
-export default class MailBuilder extends BaseService {
+export default class MailService extends BaseService {
   constructor() {
     super(models.User);
     this.meta = {

@@ -2,6 +2,7 @@ import axios from 'axios';
 import bcrypt from 'bcrypt';
 import { MailService } from '../services';
 import ResponseBuilder from '../helpers/ResponseBuilder';
+import { mailgunValidateAddress } from '../helpers/constants';
 const config = require('../config/config.json');
 
 export default class MailController {
@@ -17,12 +18,9 @@ export default class MailController {
       publicApiKey: process.env.mailgunPublicValidationKey,
       domain: process.env.mailgunDomain,
     });
+    const validate = mailgunValidateAddress(email);
     try {
-      const response = await axios.get(
-        `https://api.mailgun.net/v3/address/validate?address=${email}&api_key=${
-          process.env.mailgunPublicValidationKey
-        }`
-      );
+      const response = await axios.get(validate);
       const validationResult = response.data.is_valid;
       if (validationResult) {
         try {
@@ -70,14 +68,14 @@ export default class MailController {
               .setMessage('Email berhasil divalidasi dengan sempurna')
               .build()
           );
+      } else {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(response.data.reason)
+            .setSuccess(false)
+            .build()
+        );
       }
-
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage(response.data.reason)
-          .setSuccess(false)
-          .build()
-      );
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
