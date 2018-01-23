@@ -119,6 +119,28 @@ describe('Login', () => {
           res.body.meta.success.should.be.eql(true);
           done();
         });
-    })
+    });
+    it('should logout successfully', (done) => {
+      chai.request(app)
+        .post('/api/user/logout')
+        .set('Authorization', `bearer ${accessToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.include.keys(baseResponseStructure);
+          res.body.meta.success.should.be.eql(true);
+          done();
+        });
+    });
+    it('should return 401 unauthorized', (done) => {
+      chai.request(app)
+        .post('/api/user/logout')
+        .set('Authorization', `bearer ${accessToken}`)
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.include.keys(baseResponseStructure);
+          res.body.meta.success.should.be.eql(false);
+          done();
+        });
+    });
   });
 });
