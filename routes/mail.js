@@ -19,4 +19,8 @@ router.post('/send-forgot-password-verif-code', (req, res) => {
   mailController.sendForgotPassVerifCode(req, res);
 });
 
+router.post('/check-forgot-password-verif-code', (req, res) => {
+  mailController.checkForgotPassVeriCode(req, res);
+});
+
 module.exports = router;
