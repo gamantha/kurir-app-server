@@ -135,4 +135,19 @@ export default class UserController {
       return;
     }
   }
+
+  async logout(req, res) {
+    try {
+      const token = helpers.parseToken(req.headers['authorization']);
+      await this.tokenService.destroy({
+        accessToken: token
+      });
+      res.status(200).json(new ResponseBuilder().setData({}).build());
+    } catch (error) {
+      res.status(404).json(new ResponseBuilder()
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
+    }
+  }
 }
