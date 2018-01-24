@@ -38,8 +38,9 @@ export default class BaseService {
       const response = await this.model.findOne({ where: payload });
       if (response) {
         return response;
+      } else {
+        return null;
       }
-      throw Error('data not found');
     } catch (error) {
       throw Error(error.message);
     }
