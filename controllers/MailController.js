@@ -1,5 +1,6 @@
 import axios from 'axios';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { MailService } from '../services';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 import { mailgunValidateAddress } from '../helpers/constants';
@@ -11,20 +12,24 @@ export default class MailController {
   }
 
   async checkEmail(req, res) {
-    const { email } = req.query;
+    const { token } = req.query;
+    const tokenDecrypt = jwt.verify(token, process.env.SECRET);
     const setup = this.service.mailgunSetup;
     const mailgunSetup = setup({
       apiKey: process.env.mailgunPrivateApiKey,
       publicApiKey: process.env.mailgunPublicValidationKey,
       domain: process.env.mailgunDomain,
     });
-    const validate = mailgunValidateAddress(email);
+    const validate = mailgunValidateAddress(tokenDecrypt.email);
     try {
       const response = await axios.get(validate);
       const validationResult = response.data.is_valid;
       if (validationResult) {
         try {
-          await this.service.update({ isEmailValidated: true }, { email });
+          await this.service.update(
+            { isEmailValidated: true },
+            { email: tokenDecrypt.email }
+          );
         } catch (error) {
           res.status(400).json(
             new ResponseBuilder()
@@ -38,7 +43,7 @@ export default class MailController {
 
         welcomeMsg = {
           from: 'Kurir.id <noreply@kurir.id>',
-          to: email,
+          to: tokenDecrypt.email,
           subject: 'Welcome to Kurir.id',
           html:
             '<h1>Your email has been verified! Thank your for being awesome and being part of Kurir.id</h1>',
@@ -95,9 +100,15 @@ export default class MailController {
       domain: process.env.mailgunDomain,
     });
 
+    const emailToken = jwt.sign({ email }, process.env.SECRET, {
+      expiresIn: '1h',
+      issuer: 'kurir-id-backend',
+      subject: 'email-validation',
+    });
+
     const verificationLink = `${
       config.domain.base_url
-    }/api/mail/check-email-is-valid?email=${email}`;
+    }/api/mail/check-email-is-valid?token=${emailToken}`;
 
     let verificationLinkMsg = this.service.mailgunMsg;
 

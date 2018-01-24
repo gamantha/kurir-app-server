@@ -5,7 +5,7 @@ import ResponseBuilder from './ResponseBuilder';
  * Parse authorization header
  * @param {String} token
  */
-const parseToken = (token) => {
+const parseToken = token => {
   if (token.includes('bearer ')) {
     return token.slice('bearer '.length);
   }
@@ -37,10 +37,12 @@ export default (req, res, next) => {
       id: result.id,
     };
   } catch (error) {
-    res.status(401).json(response
-      .setMessage(error.message)
-      .setSuccess(false)
-      .build());
+    res.status(401).json(
+      response
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build()
+    );
     return;
   }
   next();
