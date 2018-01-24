@@ -1,5 +1,6 @@
 import UserController from './UserController';
 import ReceiverController from './ReceiverController';
+import MailController from './MailController';
 import GoogleController from './GoogleController';
 
 /**
@@ -8,3 +9,4 @@ import GoogleController from './GoogleController';
 export const userController = new UserController();
 export const googleController = new GoogleController();
 export const receiverController = new ReceiverController();
+export const mailController = new MailController();

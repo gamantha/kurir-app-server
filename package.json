@@ -12,6 +12,7 @@
   "author": "bm",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.17.1",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
@@ -19,6 +20,7 @@
     "express": "^4.16.2",
     "google-auth-library": "^1.0.0",
     "jsonwebtoken": "^8.1.0",
+    "mailgun-js": "^0.14.1",
     "morgan": "^1.9.0",
     "nodemailer": "^4.4.1",
     "nodemon": "^1.14.11",

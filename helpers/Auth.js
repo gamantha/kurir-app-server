@@ -27,9 +27,9 @@ export default (req, res, next) => {
     };
   } catch (error) {
     res.status(401).json(response
-      .setMessage(error.message)
-      .setSuccess(false)
-      .build());
+        .setMessage(error.message)
+        .setSuccess(false)
+        .build());
     return;
   }
   next();
