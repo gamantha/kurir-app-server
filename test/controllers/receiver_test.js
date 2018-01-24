@@ -2,6 +2,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../app';
 import models from '../../models';
+import { BASE_RESPONSE_STRUCTURE } from '../constants';
+import { RECEIVER_RESPONSE_STRUCTURE } from './constants';
 
 chai.use(chaiHttp);
 
@@ -14,13 +16,6 @@ describe('Receivers', () => {
    */
   let token = '';
   let postedId = null;
-  const baseResponseStructure = [
-    'meta', 'data', 'links', 'include',
-  ];
-  const receiverStructure = [
-    'id', 'name', 'address', 'phone',
-    'city', 'updatedAt', 'createdAt',
-  ];
 
   /**
    * Setup
@@ -57,9 +52,9 @@ describe('Receivers', () => {
         })
         .end((err, res) => {
           res.should.have.status(201);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
-          res.body.data.should.include.keys(receiverStructure);
+          res.body.data.should.include.keys(RECEIVER_RESPONSE_STRUCTURE);
           postedId = res.body.data.id;
           done();
         });
@@ -78,8 +73,8 @@ describe('Receivers', () => {
           res.should.have.status(200);
           res.body.should.be.a('object');
           /** structural response check */
-          res.body.should.include.keys(baseResponseStructure);
-          res.body.data[0].should.include.keys(receiverStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.data[0].should.include.keys(RECEIVER_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
           done();
         });
@@ -104,9 +99,9 @@ describe('Receivers', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.be.a('object');
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.data.should.be.a('object');
-          res.body.data.should.include.keys(receiverStructure);
+          res.body.data.should.include.keys(RECEIVER_RESPONSE_STRUCTURE);
           res.body.meta.success.should.eql(true);
           done();
         });
@@ -117,7 +112,7 @@ describe('Receivers', () => {
         .set('Authorization', `bearer ${token}`)
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.eql(false);
           done();
         });
@@ -140,9 +135,9 @@ describe('Receivers', () => {
         })
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
-          res.body.data.should.include.keys(receiverStructure);
+          res.body.data.should.include.keys(RECEIVER_RESPONSE_STRUCTURE);
           done();
         });
     });
@@ -158,7 +153,7 @@ describe('Receivers', () => {
         })
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
           done();
         });
@@ -172,7 +167,7 @@ describe('Receivers', () => {
         .set('Authorization', `bearer ${token}`)
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
           done();
         });
@@ -183,7 +178,7 @@ describe('Receivers', () => {
         .set('Authorization', `bearer ${token}`)
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
           done();
         });

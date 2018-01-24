@@ -2,6 +2,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../app';
 import models from '../../models';
+import { TOKEN_RESPONSE_STRUCTURE } from './constants';
+import { BASE_RESPONSE_STRUCTURE } from '../constants';
 
 chai.use(chaiHttp);
 
@@ -12,13 +14,6 @@ describe('Login', () => {
 
   let accessToken = '';
   let refreshToken = '';
-  const baseResponseStructure = [
-    'meta', 'data', 'links', 'include',
-  ];
-  const tokenStructure = [
-    'id', 'accessToken', 'refreshToken', 'userId',
-    'userAgent', 'updatedAt', 'createdAt', 'User'
-  ];
 
   before((done) => {
     models.Token.destroy({
@@ -38,7 +33,7 @@ describe('Login', () => {
         })
         .end((err, res) => {
           res.should.have.status(400);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
           done();
         });
@@ -52,7 +47,7 @@ describe('Login', () => {
         })
         .end((err, res) => {
           res.should.have.status(400);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
           done();
         });
@@ -66,8 +61,8 @@ describe('Login', () => {
         })
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.include.keys(baseResponseStructure);
-          res.body.data.should.include.keys(tokenStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.data.should.include.keys(TOKEN_RESPONSE_STRUCTURE);
           accessToken = res.body.data.accessToken;
           refreshToken = res.body.data.refreshToken;
           res.body.meta.success.should.be.eql(true);
@@ -86,7 +81,7 @@ describe('Login', () => {
         })
         .end((err, res) => {
           res.should.have.status(400);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
           done();
         });
@@ -100,7 +95,7 @@ describe('Login', () => {
         })
         .end((err, res) => {
           res.should.have.status(401);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
           done();
         });
@@ -114,8 +109,8 @@ describe('Login', () => {
         })
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.include.keys(baseResponseStructure);
-          res.body.data.should.include.keys(tokenStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.data.should.include.keys(TOKEN_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
           done();
         });
@@ -126,7 +121,7 @@ describe('Login', () => {
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
           done();
         });
@@ -137,7 +132,7 @@ describe('Login', () => {
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.include.keys(baseResponseStructure);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
           done();
         });
