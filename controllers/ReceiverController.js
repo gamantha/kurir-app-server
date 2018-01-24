@@ -54,7 +54,16 @@ export default class ReceiverController {
     const { id } = req.params;
     try {
       const response = await this.service.findOne({ id });
-      res.status(200).json(new ResponseBuilder().setData(response).build());
+      if (response !== null) {
+        res.status(200).json(new ResponseBuilder().setData(response).build());
+      } else {
+        res.status(404).json(
+          new ResponseBuilder()
+            .setMessage('data not found')
+            .setSuccess(false)
+            .build()
+        );
+      }
     } catch (error) {
       res.status(404).json(new ResponseBuilder()
         .setMessage(error.message)
