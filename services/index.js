@@ -14,5 +14,5 @@ export {
   ReceiverService,
   TokenService,
   GoogleService,
+  MailService,
 };
-

@@ -14,6 +14,7 @@ router.post('/create', (req, res) => {
 
 router.post('/check-forgot-password-verif-code', (req, res) => {
   userController.checkForgotPassVeriCode(req, res);
+});
 
 router.post('/login', (req, res) => {
   userController.login(req, res);

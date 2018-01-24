@@ -1,7 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
 
 export default class GoogleService {
-
   constructor() {
     this.clientId = process.env.GOOGLE_AUTH_CLIENT_ID;
     this.client = new OAuth2Client(this.clientId, '', '');

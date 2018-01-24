@@ -26,10 +26,12 @@ export default (req, res, next) => {
       id: result.id,
     };
   } catch (error) {
-    res.status(401).json(response
+    res.status(401).json(
+      response
         .setMessage(error.message)
         .setSuccess(false)
-        .build());
+        .build()
+    );
     return;
   }
   next();

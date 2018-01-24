@@ -6,14 +6,14 @@ const options = {
   expiresIn: 60 * 60,
   issuer: 'courier.id-backend',
   jwtid: 'courier.user',
-  subject: 'courier-access-token'
+  subject: 'courier-access-token',
 };
 
 /**
  * Sign new jwt token from passed data.
  * @param {Object} data
  */
-methods.createJWT = (data) => {
+methods.createJWT = data => {
   try {
     const token = jwt.sign(data, process.env.SECRET, options);
     return token;
@@ -24,9 +24,9 @@ methods.createJWT = (data) => {
 
 /**
  * parse JWT with specified options.
- * @param {String} token 
+ * @param {String} token
  */
-methods.verifyJwt = (token) => {
+methods.verifyJwt = token => {
   try {
     const payload = jwt.verify(token, process.env.SECRET, options);
     return payload;
@@ -39,7 +39,7 @@ methods.verifyJwt = (token) => {
  * Parse authorization header
  * @param {String} token
  */
-methods.parseToken = (token) => {
+methods.parseToken = token => {
   if (token.includes('bearer ')) {
     return token.slice('bearer '.length);
   }
@@ -47,7 +47,9 @@ methods.parseToken = (token) => {
 };
 
 methods.refreshToken = () => {
-  return Math.random().toString(36).substring(3);
+  return Math.random()
+    .toString(36)
+    .substring(3);
 };
 
 module.exports = methods;
