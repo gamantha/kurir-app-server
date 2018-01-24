@@ -11,6 +11,7 @@ import user from './routes/user';
 import item from './routes/item';
 import receiver from './routes/receiver';
 import mail from './routes/mail';
+import google from './routes/google';
 
 const app = express();
 // const { SMTPServer } = require('smtp-server');
@@ -50,6 +51,7 @@ app.use('/api/item', item);
 app.use('/api/user', user);
 app.use('/api/receiver', receiver);
 app.use('/api/mail', mail);
+app.use('/api/google', google);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
