@@ -18,6 +18,10 @@ export const STUBBED_GOOGLE_VERIFYID = {
     locale: 'en'
 };
 
+export const STUBBED_FACEBOOK_VERIFYID = {
+    email: user.email
+};
+
 export const TOKEN_RESPONSE_STRUCTURE = [
     'id', 'accessToken', 'refreshToken', 'userId',
     'userAgent', 'updatedAt', 'createdAt', 'User'
