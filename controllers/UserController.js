@@ -172,11 +172,11 @@ export default class UserController {
           res
             .status(200)
             .json(
-              new ResponseBuilder()
-                .setMessage(
-                  'Verification code match. User now can safely reset password.'
-                )
-                .build()
+            new ResponseBuilder()
+              .setMessage(
+              'Verification code match. User now can safely reset password.'
+              )
+              .build()
             );
         } catch (error) {
           res.status(400).json(
@@ -198,6 +198,25 @@ export default class UserController {
       res.status(400).json(
         new ResponseBuilder()
           .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async deactivate(req, res) {
+    try {
+      await this.service.update({ deletedAt: new Date() }, { email: res.locals.user.email });
+      res.status(200).json(
+        new ResponseBuilder()
+          .setMessage('User deactivated')
+          .setSuccess(true)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('error occured')
           .setSuccess(false)
           .build()
       );
