@@ -51,7 +51,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api/item', item);
 app.use('/api/user', user);
 app.use('/api/receiver', receiver);
-app.use('/api/mail', mail);
+app.use('/api/mails', mail);
 app.use('/api/google', google);
 app.use('/api/facebook', facebook);
 
