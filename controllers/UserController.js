@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import { UserService, SenderService, TokenService } from '../services/index';
+import { UserService, SenderService, TokenService, MailService } from '../services/index';
 
 export default class UserController {
   /**
@@ -12,6 +12,7 @@ export default class UserController {
     this.service = new UserService();
     this.senderService = new SenderService();
     this.tokenService = new TokenService();
+    this.mailService = new MailService();
   }
 
   async get(req, res) {
@@ -202,5 +203,19 @@ export default class UserController {
           .build()
       );
     }
+  }
+
+  async changePassword(req, res) {
+    const { email, password } = req.body;
+
+    const result = await this.mailService.changePassword(email, password);
+
+    const response = result
+      ? [200, `Password changed successfully! an email is sent to ${email}.`]
+      : [422, `uh oh! there is an error when updating ${email} password`];
+
+    res
+      .status(response[0])
+      .json(new ResponseBuilder().setMessage(response[1]).build());
   }
 }
