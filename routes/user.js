@@ -16,6 +16,10 @@ router.post('/check-forgot-password-verif-code', (req, res) => {
   userController.checkForgotPassVeriCode(req, res);
 });
 
+router.post('/change-password', (req, res) => {
+  userController.changePassword(req, res);
+});
+
 router.post('/login', (req, res) => {
   userController.login(req, res);
 });

@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import { UserService, SenderService, TokenService } from '../services/index';
+import { UserService, SenderService, TokenService, MailService } from '../services/index';
 
 export default class UserController {
   /**
@@ -12,6 +12,7 @@ export default class UserController {
     this.service = new UserService();
     this.senderService = new SenderService();
     this.tokenService = new TokenService();
+    this.mailService = new MailService();
   }
 
   async get(req, res) {
@@ -190,6 +191,69 @@ export default class UserController {
         res.status(400).json(
           new ResponseBuilder()
             .setMessage('Verification code didn\'t match')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async changePassword(req, res) {
+    const { email, password } = req.body;
+    const saltRounds = 10;
+    const hash = bcrypt.hashSync(password, saltRounds);
+    const setup = this.mailService.mailgunSetup;
+    const mailgunSetup = setup({
+      apiKey: process.env.mailgunPrivateApiKey,
+      publicApiKey: process.env.mailgunPublicValidationKey,
+      domain: process.env.mailgunDomain,
+    });
+
+    let changePasswordMsg = this.mailService.mailgunMsg;
+
+    changePasswordMsg = {
+      from: 'Kurir.id <noreply@kurir.id>',
+      to: email,
+      subject: 'Change password information',
+      html: `<div>This email inform you that you have successfully change your password.
+       Here are your new password: <b>${password}</b>
+       Please keep it in safe place. </div>`,
+    };
+
+    try {
+      await this.service.findOne({ email });
+      try {
+        await this.service.update({ password: hash }, { email });
+        try {
+          mailgunSetup.messages().send(changePasswordMsg);
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage(
+                  'You successfully changed your password.'
+                )
+                .build()
+            );
+        } catch (error) {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage(error)
+              .setSuccess(false)
+              .build()
+          );
+        }
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
             .setSuccess(false)
             .build()
         );
