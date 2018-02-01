@@ -171,11 +171,8 @@ export default class UserController {
           await this.service.update({ forgotPassVeriCode: null }, { email });
           res
             .status(200)
-            .json(
-            new ResponseBuilder()
-              .setMessage(
-              'Verification code match. User now can safely reset password.'
-              )
+            .json(new ResponseBuilder()
+              .setMessage('Verification code match. User now can safely reset password.')
               .build()
             );
         } catch (error) {
