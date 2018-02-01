@@ -28,4 +28,8 @@ router.post('/logout', Auth, (req, res) => {
   userController.logout(req, res);
 });
 
+router.post('/change-password', (req, res) => {
+  userController.changePassword(req, res);
+});
+
 module.exports = router;
