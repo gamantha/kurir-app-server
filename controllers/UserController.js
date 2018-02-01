@@ -215,7 +215,6 @@ export default class UserController {
       .status(response[0])
       .json(new ResponseBuilder().setMessage(response[1]).build());
   }
-}
 
   async deactivate(req, res) {
     try {
