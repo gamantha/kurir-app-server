@@ -15,8 +15,4 @@ router.post('/send-forgot-password-verif-code', (req, res) => {
   mailController.sendForgotPassVerifCode(req, res);
 });
 
-router.post('/change-password', (req, res) => {
-  mailController.changePassword(req, res);
-});
-
 module.exports = router;
