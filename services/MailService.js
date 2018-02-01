@@ -206,7 +206,7 @@ export default class MailService extends BaseService {
         const passwordUpdatedMessage = this.setMailgunTemplate(
           email,
           'change-password',
-          updatedPassword
+          password
         );
         await this.sendMailgunEmail(passwordUpdatedMessage);
         return true;
