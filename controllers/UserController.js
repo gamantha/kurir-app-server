@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import { UserService, SenderService, TokenService } from '../services/index';
+import { UserService, SenderService, TokenService, MailService } from '../services/index';
 
 export default class UserController {
   /**
@@ -12,6 +12,7 @@ export default class UserController {
     this.service = new UserService();
     this.senderService = new SenderService();
     this.tokenService = new TokenService();
+    this.mailService = new MailService();
   }
 
   async get(req, res) {
@@ -208,14 +209,14 @@ export default class UserController {
     const { email, password } = req.body;
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
-    const setup = this.service.mailgunSetup;
+    const setup = this.mailService.mailgunSetup;
     const mailgunSetup = setup({
       apiKey: process.env.mailgunPrivateApiKey,
       publicApiKey: process.env.mailgunPublicValidationKey,
       domain: process.env.mailgunDomain,
     });
 
-    let changePasswordMsg = this.service.mailgunMsg;
+    let changePasswordMsg = this.mailService.mailgunMsg;
 
     changePasswordMsg = {
       from: 'Kurir.id <noreply@kurir.id>',
