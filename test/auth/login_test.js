@@ -138,4 +138,29 @@ describe('Login', () => {
         });
     });
   });
+
+  describe('deactivate account', () => {
+    it('should return 200', (done) => {
+      chai.request(app)
+        .delete('/api/user/deactivate')
+        .set('Authorization', `bearer ${accessToken}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(true);
+          done();
+        });
+    });
+    it('should return 401 unauthorized', (done) => {
+      chai.request(app)
+        .delete('/api/user/deactivate')
+        .set('Authorization', 'bearer randomtoken')
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(false);
+          done();
+        });
+    });
+  });
 });
