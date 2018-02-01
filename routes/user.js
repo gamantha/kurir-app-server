@@ -28,8 +28,12 @@ router.post('/logout', Auth, (req, res) => {
   userController.logout(req, res);
 });
 
-router.post('/change-password', (req, res) => {
+router.post('/change-password', Auth, (req, res) => {
   userController.changePassword(req, res);
+});
+
+router.delete('/deactivate', Auth, (req, res) => {
+  userController.deactivate(req, res);
 });
 
 module.exports = router;
