@@ -2,7 +2,12 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import { UserService, SenderService, TokenService, MailService } from '../services/index';
+import {
+  UserService,
+  SenderService,
+  TokenService,
+  MailService,
+} from '../services/index';
 
 export default class UserController {
   /**
@@ -77,7 +82,7 @@ export default class UserController {
       // find with username or email
       try {
         const user = await this.service.findOne({
-          [Op.or]: [{ email: username }, { username }]
+          [Op.or]: [{ email: username }, { username }],
         });
         if (bcrypt.compareSync(password, user.password)) {
           const userData = Object.assign({
@@ -86,61 +91,85 @@ export default class UserController {
           });
           const token = helpers.createJWT(userData);
           try {
-            const accessToken = await this.tokenService.saveToken(token, req.headers['user-agent']);
-            res.status(200).json(new ResponseBuilder()
-              .setData(accessToken)
-              .setMessage('Logged in successfully')
-              .build());
+            const accessToken = await this.tokenService.saveToken(
+              token,
+              req.headers['user-agent']
+            );
+            res.status(200).json(
+              new ResponseBuilder()
+                .setData(accessToken)
+                .setMessage('Logged in successfully')
+                .build()
+            );
             return;
           } catch (error) {
-            res.status(400).json(new ResponseBuilder()
-              .setMessage(error.message)
-              .setSuccess(false)
-              .build());
+            res.status(400).json(
+              new ResponseBuilder()
+                .setMessage(error.message)
+                .setSuccess(false)
+                .build()
+            );
             return;
           }
         } else {
-          res.status(200).json(new ResponseBuilder()
-            .setMessage('Invalid password')
-            .setSuccess(false)
-            .build());
+          res.status(200).json(
+            new ResponseBuilder()
+              .setMessage('Invalid password')
+              .setSuccess(false)
+              .build()
+          );
           return;
         }
       } catch (error) {
-        res.status(400).json(new ResponseBuilder()
-          .setMessage('email/username invalid or unavailable')
-          .setSuccess(false)
-          .build());
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('email/username invalid or unavailable')
+            .setSuccess(false)
+            .build()
+        );
         return;
       }
     }
-    res.status(400).json(new ResponseBuilder()
-      .setMessage('invalid payload')
-      .setSuccess(false).build());
+    res.status(400).json(
+      new ResponseBuilder()
+        .setMessage('invalid payload')
+        .setSuccess(false)
+        .build()
+    );
     return;
   }
 
   async refreshToken(req, res) {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-      res.status(400).json(new ResponseBuilder()
-        .setMessage('invalid payload')
-        .setSuccess(false).build());
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
       return;
     }
     try {
-      const response = await this.tokenService.refreshToken(req.headers.authorization, refreshToken, req.headers['user-agent']);
-      res.status(200).json(new ResponseBuilder()
-        .setData(response)
-        .setMessage('Access token successfully refreshed.')
-        .build()
+      const response = await this.tokenService.refreshToken(
+        req.headers.authorization,
+        refreshToken,
+        req.headers['user-agent']
+      );
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData(response)
+          .setMessage('Access token successfully refreshed.')
+          .build()
       );
       return;
     } catch (error) {
-      res.status(400).json(new ResponseBuilder()
-        .setMessage(error.message)
-        .setSuccess(false)
-        .build());
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
       return;
     }
   }
@@ -149,14 +178,16 @@ export default class UserController {
     try {
       const token = helpers.parseToken(req.headers['authorization']);
       await this.tokenService.destroy({
-        accessToken: token
+        accessToken: token,
       });
       res.status(200).json(new ResponseBuilder().setData({}).build());
     } catch (error) {
-      res.status(404).json(new ResponseBuilder()
-        .setMessage(error.message)
-        .setSuccess(false)
-        .build());
+      res.status(404).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
     }
   }
 
@@ -172,9 +203,12 @@ export default class UserController {
           await this.service.update({ forgotPassVeriCode: null }, { email });
           res
             .status(200)
-            .json(new ResponseBuilder()
-              .setMessage('Verification code match. User now can safely reset password.')
-              .build()
+            .json(
+              new ResponseBuilder()
+                .setMessage(
+                  'Verification code match. User now can safely reset password.'
+                )
+                .build()
             );
         } catch (error) {
           res.status(400).json(
@@ -218,7 +252,10 @@ export default class UserController {
 
   async deactivate(req, res) {
     try {
-      await this.service.update({ deletedAt: new Date() }, { email: res.locals.user.email });
+      await this.service.update(
+        { deletedAt: new Date() },
+        { email: res.locals.user.email }
+      );
       res.status(200).json(
         new ResponseBuilder()
           .setMessage('User deactivated')
