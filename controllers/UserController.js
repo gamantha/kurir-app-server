@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import { UserService, SenderService, TokenService } from '../services/index';
+import { UserService, SenderService, TokenService, MailService } from '../services/index';
 
 export default class UserController {
   /**
@@ -12,6 +12,7 @@ export default class UserController {
     this.service = new UserService();
     this.senderService = new SenderService();
     this.tokenService = new TokenService();
+    this.mailService = new MailService();
   }
 
   async get(req, res) {
@@ -68,6 +69,82 @@ export default class UserController {
     }
   }
 
+  async confirmReactivation(req, res) {
+    const { token } = req.query;
+    if (typeof token === 'undefined') {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+    } else {
+      try {
+        const result = await this.service.confirmReactivation(token);
+        if (result === true) {
+          res.status(200).json(
+            new ResponseBuilder()
+              .setMessage('Your account has been successfully reactivated')
+              .build()
+          );
+        } else {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage('Fail to reactivate your email')
+              .setSuccess(false)
+              .build()
+          );
+          return;
+        }
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('token invalid')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    }
+  }
+
+  async reactivate(req, res) {
+    const { email } = req.body;
+    if (typeof email !== 'undefined') {
+      try {
+        const result = await this.mailService.sendReactivateAccountLink(email);
+        if (result == false) {
+          res.status(404).json(
+            new ResponseBuilder()
+              .setMessage('invalid email')
+              .setSuccess(false)
+              .build()
+          );
+          return;
+        }
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('Reactivation email sent, please check your email.')
+            .build()
+        );
+        return;
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('Fail to send reactivation email.')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } else {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('Invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
   async login(req, res) {
     const { username, password } = req.body;
 
@@ -76,7 +153,8 @@ export default class UserController {
       // find with username or email
       try {
         const user = await this.service.findOne({
-          [Op.or]: [{ email: username }, { username }]
+          [Op.or]: [{ email: username }, { username }],
+          deletedAt: null
         });
         if (bcrypt.compareSync(password, user.password)) {
           const userData = Object.assign({
