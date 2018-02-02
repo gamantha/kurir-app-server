@@ -19,12 +19,16 @@ export default class MailService extends BaseService {
   /**
    * Set credentials for mailgun service.
    */
-  setAuth() {
-    return mailgun({
-      apiKey: process.env.mailgunPrivateApiKey,
-      publicApiKey: process.env.mailgunPublicValidationKey,
-      domain: process.env.mailgunDomain
-    });
+  async setAuth() {
+    try {
+      return await mailgun({
+        apiKey: process.env.mailgunPrivateApiKey,
+        publicApiKey: process.env.mailgunPublicValidationKey,
+        domain: process.env.mailgunDomain
+      });
+    } catch (error) {
+      throw Error(error);
+    }
   }
 
   /**
@@ -35,10 +39,13 @@ export default class MailService extends BaseService {
    * @return {Mixed}
    *
    */
-  sendMailgunEmail(message) {
-    return this.setAuth()
-      .messages()
-      .send(message);
+  async sendMailgunEmail(message) {
+    try {
+      const mail = await this.setAuth();
+      mail.messages().send(message);
+    } catch (error) {
+      throw Error(error);
+    }
   }
 
   /**
@@ -84,6 +91,9 @@ export default class MailService extends BaseService {
        Here are your new password: <b>${payload}</b>
        Please keep it in safe place. </div>`;
       subject = 'Change password information';
+    }
+    if (template == 'reactivate-account') {
+      html = `Please reactivate your account by clicking on this link <u>${payload}</u>`;
     }
 
     return {
@@ -141,8 +151,7 @@ export default class MailService extends BaseService {
 
     if (userEmail) {
       const verificationLink = `${
-        config.domain.base_url
-      }/api/mails/tokens/${tokenifyEmail}`;
+        config.domain.base_url}/api/mails/tokens/${tokenifyEmail}`;
 
       const verificationMessage = this.setMailgunTemplate(
         email,
@@ -156,6 +165,45 @@ export default class MailService extends BaseService {
 
     return false;
   }
+
+  /**
+   * Send an email verification to registered user.
+   *
+   * @param  {String}  email
+   * @return {Boolean}
+   */
+  async sendReactivateAccountLink(email) {
+    const token = jwt.sign({ email }, process.env.SECRET, {
+      expiresIn: '1h',
+      issuer: 'courier.id-backend',
+      jwtid: 'courier.user',
+      subject: 'reactivate-account'
+    });
+    try {
+      const userEmail = await this.findOne({ email });
+      if (userEmail) {
+        const verificationLink = `${
+          config.domain.base_url}/api/mails/tokens/${token}`;
+
+        const verificationMessage = this.setMailgunTemplate(
+          email,
+          'reactivate-account',
+          verificationLink
+        );
+        try {
+          await this.sendMailgunEmail(verificationMessage);
+          return true;
+        } catch (error) {
+          throw Error(error);
+        }
+      } else {
+        return false;
+      }
+    } catch (error) {
+      throw Error(error);
+    }
+  }
+
 
   /**
    * Send verification code to the email when user forgot the password
