@@ -43,6 +43,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     password: DataTypes.STRING,
     forgotPassVeriCode: DataTypes.STRING,
+    upgradeRoleStatus: DataTypes.STRING, // @param {String} waiting, verified
     role: DataTypes.STRING, // @param {String} user, user+kurir
     isEmailValidated: DataTypes.BOOLEAN,
   });
