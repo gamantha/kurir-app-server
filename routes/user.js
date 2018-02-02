@@ -32,4 +32,12 @@ router.delete('/deactivate', Auth, (req, res) => {
   userController.deactivate(req, res);
 });
 
+router.post('/reactivate', (req, res) => {
+  userController.reactivate(req, res);
+});
+
+router.get('/confirmreactivation', (req, res) => {
+  userController.confirmReactivation(req, res);
+});
+
 module.exports = router;
