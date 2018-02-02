@@ -4,7 +4,7 @@ import Auth from '../helpers/Auth';
 
 const router = express.Router();
 
-router.post('/create', (req, res) => {
+router.post('/create', Auth, (req, res) => {
   adminController.create(req, res);
 });
 
