@@ -47,18 +47,4 @@ export default class MailController {
       .status(response[0])
       .json(new ResponseBuilder().setMessage(response[1]).build());
   }
-
-  async changePassword(req, res) {
-    const { email, password } = req.body;
-
-    const result = await this.service.changePassword(email, password);
-
-    const response = result
-      ? [200, `Password changed successfully! an email is sent to ${email}.`]
-      : [422, `uh oh! there is an error when updating ${email} password`];
-
-    res
-      .status(response[0])
-      .json(new ResponseBuilder().setMessage(response[1]).build());
-  }
 }

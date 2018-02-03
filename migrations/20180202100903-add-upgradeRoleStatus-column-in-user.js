@@ -3,8 +3,8 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return [
-      queryInterface.addColumn('Users', 'deletedAt', {
-        type: Sequelize.DATE,
+      queryInterface.addColumn('Users', 'upgradeRoleStatus', {
+        type: Sequelize.STRING,
         allowNull: true,
         defaultValue: null,
       }),
@@ -12,6 +12,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return [queryInterface.removeColumn('Users', 'deletedAt')];
+    return [queryInterface.removeColumn('Users', 'upgradeRoleStatus')];
   },
 };
