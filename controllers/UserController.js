@@ -2,12 +2,7 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import {
-  UserService,
-  SenderService,
-  TokenService,
-  MailService,
-} from '../services/index';
+import { UserService, SenderService, TokenService, MailService } from '../services/index';
 
 export default class UserController {
   /**
@@ -36,6 +31,16 @@ export default class UserController {
 
   async create(req, res) {
     const { email, password, username } = req.body;
+    if (typeof email === 'undefined' || typeof password === 'undefined' ||
+      typeof username === 'undefined') {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload provided')
+          .setSuccess(false)
+          .build()
+      );
+      return;
+    }
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
     const payload = {
@@ -74,6 +79,82 @@ export default class UserController {
     }
   }
 
+  async confirmReactivation(req, res) {
+    const { token } = req.query;
+    if (typeof token === 'undefined') {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+    } else {
+      try {
+        const result = await this.service.confirmReactivation(token);
+        if (result === true) {
+          res.status(200).json(
+            new ResponseBuilder()
+              .setMessage('Your account has been successfully reactivated')
+              .build()
+          );
+        } else {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage('Fail to reactivate your email')
+              .setSuccess(false)
+              .build()
+          );
+          return;
+        }
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('token invalid')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    }
+  }
+
+  async reactivate(req, res) {
+    const { email } = req.body;
+    if (typeof email !== 'undefined') {
+      try {
+        const result = await this.mailService.sendReactivateAccountLink(email);
+        if (result == false) {
+          res.status(404).json(
+            new ResponseBuilder()
+              .setMessage('invalid email')
+              .setSuccess(false)
+              .build()
+          );
+          return;
+        }
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('Reactivation email sent, please check your email.')
+            .build()
+        );
+        return;
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('Fail to send reactivation email.')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } else {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('Invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
   async login(req, res) {
     const { username, password } = req.body;
 
@@ -83,7 +164,17 @@ export default class UserController {
       try {
         const user = await this.service.findOne({
           [Op.or]: [{ email: username }, { username }],
+          deletedAt: null
         });
+        if (user === null) {
+          res.status(404).json(
+            new ResponseBuilder()
+              .setMessage('username or email not found')
+              .setSuccess(false)
+              .build()
+          );
+          return;
+        }
         if (bcrypt.compareSync(password, user.password)) {
           const userData = Object.assign({
             email: user.email,
@@ -121,12 +212,10 @@ export default class UserController {
           return;
         }
       } catch (error) {
-        res.status(400).json(
-          new ResponseBuilder()
-            .setMessage('email/username invalid or unavailable')
-            .setSuccess(false)
-            .build()
-        );
+        res.status(404).json(new ResponseBuilder()
+          .setMessage('username or email not found')
+          .setSuccess(false)
+          .build());
         return;
       }
     }
@@ -203,12 +292,9 @@ export default class UserController {
           await this.service.update({ forgotPassVeriCode: null }, { email });
           res
             .status(200)
-            .json(
-              new ResponseBuilder()
-                .setMessage(
-                  'Verification code match. User now can safely reset password.'
-                )
-                .build()
+            .json(new ResponseBuilder()
+              .setMessage('Verification code match. User now can safely reset password.')
+              .build()
             );
         } catch (error) {
           res.status(400).json(

@@ -1,9 +1,11 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import sinon from 'sinon';
 import app from '../../app';
 import models from '../../models';
 import { TOKEN_RESPONSE_STRUCTURE } from './constants';
 import { BASE_RESPONSE_STRUCTURE } from '../constants';
+import { UserService, MailService } from '../../services/index';
 
 chai.use(chaiHttp);
 
@@ -24,7 +26,7 @@ describe('Login', () => {
   });
 
   describe('Login attempt', () => {
-    it('should return 400 username/email unavailable', (done) => {
+    it('should return 400 username/email not found', (done) => {
       chai.request(app)
         .post('/api/user/login')
         .send({
@@ -32,7 +34,7 @@ describe('Login', () => {
           password: 'randomfalsepassword',
         })
         .end((err, res) => {
-          res.should.have.status(400);
+          res.should.have.status(404);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
           done();
@@ -163,4 +165,113 @@ describe('Login', () => {
         });
     });
   });
+
+  describe('reactivate account', () => {
+    it('should return 422 invalid payload', (done) => {
+      chai.request(app)
+        .post('/api/user/reactivate')
+        .end((err, res) => {
+          res.should.have.status(422);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(false);
+          done();
+        });
+    });
+    it('should return 404 email not found', (done) => {
+      chai.request(app)
+        .post('/api/user/reactivate')
+        .send({
+          email: "random@mail.com"
+        })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(false);
+          done();
+        });
+    });
+    it('should return 200 reactivation email sent', (done) => {
+      const stub = sinon.stub(MailService.prototype, 'sendReactivateAccountLink').callsFake((email) => {
+        return true;
+      });
+      chai.request(app)
+        .post('/api/user/reactivate')
+        .send({
+          email: user.email
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(true);
+          done();
+        });
+    });
+    it('should return 404  invalid email', (done) => {
+      MailService.prototype.sendReactivateAccountLink.restore();
+      const stub = sinon.stub(MailService.prototype, 'sendReactivateAccountLink').callsFake((email) => {
+        return false;
+      });
+      chai.request(app)
+        .post('/api/user/reactivate')
+        .send({
+          email: user.email
+        })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(false);
+          done();
+        });
+    });
+  });
+
+  describe('confirm reactivation link', () => {
+    it('should return 422 invalid payload', (done) => {
+      chai.request(app)
+        .get('/api/user/confirmreactivation?random=random')
+        .end((err, res) => {
+          res.should.have.status(422);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(false);
+          done();
+        });
+    });
+    it('should return 200 account successfully reactivated', (done) => {
+      const stub = sinon.stub(UserService.prototype, 'confirmReactivation').callsFake((token) => {
+        return true
+      });
+      chai.request(app)
+        .get('/api/user/confirmreactivation?token=correcttoken')
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(true);
+          done();
+        });
+    });
+    it('should return 400 invalid token', (done) => {
+      UserService.prototype.confirmReactivation.restore();
+
+      const stub = sinon.stub(UserService.prototype, 'confirmReactivation').callsFake((token) => {
+        return false
+      });
+      chai.request(app)
+        .get('/api/user/confirmreactivation?token=invalidtoken')
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(false);
+          done();
+        });
+    });
+  });
+
+  after((done) => {
+    models.User.update(
+      { deletedAt: null },
+      { where: { email: user.email } }
+    ).then(() => {
+      done();
+    })
+  })
 });
