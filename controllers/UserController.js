@@ -31,6 +31,16 @@ export default class UserController {
 
   async create(req, res) {
     const { email, password, username } = req.body;
+    if (typeof email === 'undefined' || typeof password === 'undefined' ||
+      typeof username === 'undefined') {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload provided')
+          .setSuccess(false)
+          .build()
+      );
+      return;
+    }
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
     const payload = {
@@ -156,6 +166,15 @@ export default class UserController {
           [Op.or]: [{ email: username }, { username }],
           deletedAt: null
         });
+        if (user === null) {
+          res.status(404).json(
+            new ResponseBuilder()
+              .setMessage('username or email not found')
+              .setSuccess(false)
+              .build()
+          );
+          return;
+        }
         if (bcrypt.compareSync(password, user.password)) {
           const userData = Object.assign({
             email: user.email,
@@ -184,8 +203,8 @@ export default class UserController {
           return;
         }
       } catch (error) {
-        res.status(400).json(new ResponseBuilder()
-          .setMessage('email/username invalid or unavailable')
+        res.status(404).json(new ResponseBuilder()
+          .setMessage('username or email not found')
           .setSuccess(false)
           .build());
         return;
