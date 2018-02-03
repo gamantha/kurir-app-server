@@ -19,16 +19,12 @@ export default class MailService extends BaseService {
   /**
    * Set credentials for mailgun service.
    */
-  async setAuth() {
-    try {
-      return await mailgun({
-        apiKey: process.env.mailgunPrivateApiKey,
-        publicApiKey: process.env.mailgunPublicValidationKey,
-        domain: process.env.mailgunDomain
-      });
-    } catch (error) {
-      throw Error(error);
-    }
+  setAuth() {
+    return mailgun({
+      apiKey: process.env.mailgunPrivateApiKey,
+      publicApiKey: process.env.mailgunPublicValidationKey,
+      domain: process.env.mailgunDomain
+    });
   }
 
   /**
@@ -40,9 +36,9 @@ export default class MailService extends BaseService {
    *
    */
   async sendMailgunEmail(message) {
+    const mail = this.setAuth();
     try {
-      const mail = await this.setAuth();
-      mail.messages().send(message);
+      return await mail.messages().send(message);
     } catch (error) {
       throw Error(error);
     }
