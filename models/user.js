@@ -1,4 +1,4 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
   const User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
@@ -43,18 +43,19 @@ module.exports = function (sequelize, DataTypes) {
     },
     password: DataTypes.STRING,
     forgotPassVeriCode: DataTypes.STRING,
-    role: DataTypes.STRING,
+    upgradeRoleStatus: DataTypes.STRING, // @param {String} waiting, verified
+    role: DataTypes.STRING, // @param {String} user, user+kurir
     isEmailValidated: DataTypes.BOOLEAN,
   });
-  User.associate = function (models) {
+  User.associate = function(models) {
     User.hasMany(models.Sender, { foreignKey: 'userId' });
     User.hasMany(models.Token, { foreignKey: 'userId' });
     User.hasOne(models.Courier, { foreignKey: 'userId' });
   };
-  User.prototype.toJSON = function () {
+  User.prototype.toJSON = function() {
     let values = Object.assign({}, this.get());
     delete values.password;
     return values;
-  }
+  };
   return User;
 };

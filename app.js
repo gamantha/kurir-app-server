@@ -13,6 +13,7 @@ import receiver from './routes/receiver';
 import mail from './routes/mail';
 import google from './routes/google';
 import facebook from './routes/facebook';
+import admin from './routes/admin';
 
 const app = express();
 // const { SMTPServer } = require('smtp-server');
@@ -20,10 +21,12 @@ require('dotenv').config();
 
 app.use(cors());
 
-passport.use(new LocalStrategy(
-  { usernameField: 'email', passwordField: 'password' },
-  userController.login.bind(userController),
-));
+passport.use(
+  new LocalStrategy(
+    { usernameField: 'email', passwordField: 'password' },
+    userController.login.bind(userController)
+  )
+);
 
 // port setup
 app.set('port', process.env.PORT || 3000);
@@ -54,6 +57,7 @@ app.use('/api/receiver', receiver);
 app.use('/api/mails', mail);
 app.use('/api/google', google);
 app.use('/api/facebook', facebook);
+app.use('/api/admin', admin);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
