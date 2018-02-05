@@ -26,7 +26,6 @@ module.exports = {
       },
       role: {
         type: Sequelize.STRING,
-        defaultValue: 'sender',
       },
       isEmailValidated: {
         type: Sequelize.BOOLEAN,
