@@ -1,4 +1,4 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
   const Item = sequelize.define('Item', {
     orderId: DataTypes.INTEGER,
     courierId: DataTypes.INTEGER,
@@ -49,13 +49,12 @@ module.exports = function (sequelize, DataTypes) {
       defaultValue: false,
     },
   });
-  Item.associate = function (models) {
+  Item.associate = function(models) {
     Item.belongsTo(models.Sender, { foreignKey: 'senderId' });
     Item.belongsTo(models.Receiver, { foreignKey: 'receiverId' });
     Item.belongsTo(models.Courier, { foreignKey: 'courierId' });
     Item.belongsTo(models.Category, { foreignKey: 'categoryId' });
     Item.hasMany(models.Droppoint, { foreignKey: 'itemId' });
-    Item.hasOne(models.Category, { foreignKey: 'itemId' });
     Item.hasOne(models.Pickup, { foreignKey: 'itemId' });
   };
   return Item;
