@@ -1,8 +1,15 @@
 import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
+// import auth from '../helpers/Auth';
 import ResponseBuilder from '../helpers/ResponseBuilder';
-import { UserService, SenderService, TokenService, MailService } from '../services/index';
+import {
+  UserService,
+  SenderService,
+  TokenService,
+  MailService,
+  DroppointService,
+} from '../services/index';
 
 export default class UserController {
   /**
@@ -13,6 +20,7 @@ export default class UserController {
     this.senderService = new SenderService();
     this.tokenService = new TokenService();
     this.mailService = new MailService();
+    this.droppointService = new DroppointService();
   }
 
   async get(req, res) {
@@ -30,21 +38,133 @@ export default class UserController {
   }
 
   async create(req, res) {
-    const { email, password, username } = req.body;
+    const { email, password, username, role } = req.body;
+    const { authorization } = req.headers;
+    if (!password || password === '') {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('password cannot be blank or not provided')
+          .setSuccess(false)
+          .build()
+      );
+    }
     const saltRounds = 10;
     const hash = bcrypt.hashSync(password, saltRounds);
     const payload = {
       email,
       password: hash,
       username,
+      role,
     };
+    let response = null;
+    let uniqueEmail = null;
+    let uniqueUsername = null;
+    let validation = false;
     try {
-      const response = await this.service.register(payload, password, email);
-      const senderPayload = {
-        userId: response.id,
-      };
+      uniqueEmail = await this.service.findOne({ email });
+      uniqueUsername = await this.service.findOne({ username });
+      if (uniqueEmail === null && uniqueUsername === null) {
+        validation = true;
+      } else if (uniqueEmail) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('Oops. Looks we already have this email registered.')
+            .setSuccess(false)
+            .build()
+        );
+      } else if (uniqueUsername) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('Oops. Username already exist. Please choose another.')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+
+    if (role !== 'sysadmin' && role !== 'siteadmin' && role !== 'sender') {
+      res.status(417).json(
+        new ResponseBuilder()
+          .setMessage('role must one of sysadmin,siteadmin or sender')
+          .setSuccess(false)
+          .build()
+      );
+    } else if (role === 'sysadmin' && validation) {
       try {
-        await this.senderService.create(senderPayload);
+        response = await this.service.create(payload);
+        res.status(201).json(
+          new ResponseBuilder()
+            .setData(response)
+            .setMessage('successfully created new system admin')
+            .build()
+        );
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } else if (role === 'siteadmin' && validation) {
+      // hanya sysadmin yg bisa create siteadmin
+      if (!authorization || authorization === '') {
+        // Auth token not provided
+        res.status(403).json(
+          new ResponseBuilder()
+            .setMessage('Authorization header not provided or empty.')
+            .setSuccess(false)
+            .build()
+        );
+      }
+      const token = helpers.parseToken(authorization);
+      const parsed = helpers.verifyJwt(token);
+      if (parsed.role === 'sysadmin') {
+        try {
+          response = await this.service.create(payload);
+          const siteadminPayload = {
+            userId: response.id,
+          };
+          // tambah payload lain yg dibutuhkan model droppoint
+          await this.droppointService.create({
+            userId: siteadminPayload.userId,
+          });
+          res.status(201).json(
+            new ResponseBuilder()
+              .setData(response)
+              .setMessage('successfully created new site admin')
+              .build()
+          );
+        } catch (error) {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage(error.message)
+              .setSuccess(false)
+              .build()
+          );
+        }
+      } else {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('only sysadmin can create site admin')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } else {
+      try {
+        response = await this.service.create(payload);
+        const senderPayload = {
+          userId: response.id,
+        };
+        await this.senderService.create({ userId: senderPayload.userId });
         res.status(201).json(
           new ResponseBuilder()
             .setData(response)
@@ -59,13 +179,6 @@ export default class UserController {
             .build()
         );
       }
-    } catch (error) {
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage(error.message)
-          .setSuccess(false)
-          .build()
-      );
     }
   }
 
@@ -77,70 +190,95 @@ export default class UserController {
       // find with username or email
       try {
         const user = await this.service.findOne({
-          [Op.or]: [{ email: username }, { username }]
+          [Op.or]: [{ email: username }, { username }],
         });
         if (bcrypt.compareSync(password, user.password)) {
           const userData = Object.assign({
             email: user.email,
             id: user.id,
+            role: user.role,
           });
           const token = helpers.createJWT(userData);
           try {
-            const accessToken = await this.tokenService.saveToken(token, req.headers['user-agent']);
-            res.status(200).json(new ResponseBuilder()
-              .setData(accessToken)
-              .setMessage('Logged in successfully')
-              .build());
+            const accessToken = await this.tokenService.saveToken(
+              token,
+              req.headers['user-agent']
+            );
+            res.status(200).json(
+              new ResponseBuilder()
+                .setData(accessToken)
+                .setMessage('Logged in successfully')
+                .build()
+            );
             return;
           } catch (error) {
-            res.status(400).json(new ResponseBuilder()
-              .setMessage(error.message)
-              .setSuccess(false)
-              .build());
+            res.status(400).json(
+              new ResponseBuilder()
+                .setMessage(error.message)
+                .setSuccess(false)
+                .build()
+            );
             return;
           }
         } else {
-          res.status(200).json(new ResponseBuilder()
-            .setMessage('Invalid password')
-            .setSuccess(false)
-            .build());
+          res.status(200).json(
+            new ResponseBuilder()
+              .setMessage('Invalid password')
+              .setSuccess(false)
+              .build()
+          );
           return;
         }
       } catch (error) {
-        res.status(400).json(new ResponseBuilder()
-          .setMessage('email/username invalid or unavailable')
-          .setSuccess(false)
-          .build());
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('email/username invalid or unavailable')
+            .setSuccess(false)
+            .build()
+        );
         return;
       }
     }
-    res.status(400).json(new ResponseBuilder()
-      .setMessage('invalid payload')
-      .setSuccess(false).build());
+    res.status(400).json(
+      new ResponseBuilder()
+        .setMessage('invalid payload')
+        .setSuccess(false)
+        .build()
+    );
     return;
   }
 
   async refreshToken(req, res) {
     const { refreshToken } = req.body;
     if (!refreshToken) {
-      res.status(400).json(new ResponseBuilder()
-        .setMessage('invalid payload')
-        .setSuccess(false).build());
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
       return;
     }
     try {
-      const response = await this.tokenService.refreshToken(req.headers.authorization, refreshToken, req.headers['user-agent']);
-      res.status(200).json(new ResponseBuilder()
-        .setData(response)
-        .setMessage('Access token successfully refreshed.')
-        .build()
+      const response = await this.tokenService.refreshToken(
+        req.headers.authorization,
+        refreshToken,
+        req.headers['user-agent']
+      );
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData(response)
+          .setMessage('Access token successfully refreshed.')
+          .build()
       );
       return;
     } catch (error) {
-      res.status(400).json(new ResponseBuilder()
-        .setMessage(error.message)
-        .setSuccess(false)
-        .build());
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
       return;
     }
   }
@@ -149,14 +287,16 @@ export default class UserController {
     try {
       const token = helpers.parseToken(req.headers['authorization']);
       await this.tokenService.destroy({
-        accessToken: token
+        accessToken: token,
       });
       res.status(200).json(new ResponseBuilder().setData({}).build());
     } catch (error) {
-      res.status(404).json(new ResponseBuilder()
-        .setMessage(error.message)
-        .setSuccess(false)
-        .build());
+      res.status(404).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
     }
   }
 
@@ -172,9 +312,12 @@ export default class UserController {
           await this.service.update({ forgotPassVeriCode: null }, { email });
           res
             .status(200)
-            .json(new ResponseBuilder()
-              .setMessage('Verification code match. User now can safely reset password.')
-              .build()
+            .json(
+              new ResponseBuilder()
+                .setMessage(
+                  'Verification code match. User now can safely reset password.'
+                )
+                .build()
             );
         } catch (error) {
           res.status(400).json(
@@ -215,10 +358,13 @@ export default class UserController {
       .status(response[0])
       .json(new ResponseBuilder().setMessage(response[1]).build());
   }
-  
+
   async deactivate(req, res) {
     try {
-      await this.service.update({ deletedAt: new Date() }, { email: res.locals.user.email });
+      await this.service.update(
+        { deletedAt: new Date() },
+        { email: res.locals.user.email }
+      );
       res.status(200).json(
         new ResponseBuilder()
           .setMessage('User deactivated')
