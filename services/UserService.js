@@ -7,5 +7,6 @@ export default class UserService extends BaseService {
    */
   constructor() {
     super(models.User);
+    this.proposeModel = models.CourierProposal;
   }
 }
