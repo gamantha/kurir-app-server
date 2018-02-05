@@ -195,11 +195,13 @@ export default class UserController {
       try {
         const result = await this.service.confirmReactivation(token);
         if (result === true) {
-          res.status(200).json(
-            new ResponseBuilder()
-              .setMessage('Your account has been successfully reactivated')
-              .build()
-          );
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage('Your account has been successfully reactivated')
+                .build()
+            );
         } else {
           res.status(400).json(
             new ResponseBuilder()
@@ -234,11 +236,13 @@ export default class UserController {
           );
           return;
         }
-        res.status(200).json(
-          new ResponseBuilder()
-            .setMessage('Reactivation email sent, please check your email.')
-            .build()
-        );
+        res
+          .status(200)
+          .json(
+            new ResponseBuilder()
+              .setMessage('Reactivation email sent, please check your email.')
+              .build()
+          );
         return;
       } catch (error) {
         res.status(400).json(
@@ -315,10 +319,12 @@ export default class UserController {
           return;
         }
       } catch (error) {
-        res.status(404).json(new ResponseBuilder()
-          .setMessage('username or email not found')
-          .setSuccess(false)
-          .build());
+        res.status(404).json(
+          new ResponseBuilder()
+            .setMessage('username or email not found')
+            .setSuccess(false)
+            .build()
+        );
         return;
       }
     }

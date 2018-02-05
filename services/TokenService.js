@@ -31,18 +31,24 @@ export default class TokenService extends BaseService {
             userId: user.id,
             userAgent: userAgent,
           },
-          include: [{
-            model: models.User,
-            attributes: { exclude: ['password'] },
-            required: true,
-          }]
+          include: [
+            {
+              model: models.User,
+              attributes: { exclude: ['password'] },
+              required: true,
+            },
+          ],
         });
         if (exist) {
           // if exist update existing token
           try {
-            await this.model.update({
-              accessToken: token, refreshToken
-            }, { where: { id: exist.id } });
+            await this.model.update(
+              {
+                accessToken: token,
+                refreshToken,
+              },
+              { where: { id: exist.id } }
+            );
             exist.accessToken = token;
             exist.refreshToken = refreshToken;
             return exist;
@@ -55,11 +61,13 @@ export default class TokenService extends BaseService {
           const token = await this.model.create(payload);
           const response = await this.model.findOne({
             where: { id: token.id },
-            include: [{
-              model: models.User,
-              attributes: { exclude: ['password'] },
-              required: true,
-            }]
+            include: [
+              {
+                model: models.User,
+                attributes: { exclude: ['password'] },
+                required: true,
+              },
+            ],
           });
           return response;
         } catch (error) {
@@ -75,19 +83,25 @@ export default class TokenService extends BaseService {
 
   /**
    * refresh the token.
-   * @param {String} bearer 
-   * @param {String} refreshToken 
-   * @param {String} userAgent 
+   * @param {String} bearer
+   * @param {String} refreshToken
+   * @param {String} userAgent
    */
   async refreshToken(bearer, refreshToken, userAgent) {
     try {
       const token = await this.model.findOne({
-        where: { refreshToken, userAgent, accessToken: helper.parseToken(bearer) },
-        include: [{
-          model: models.User,
-          attributes: { exclude: ['password'] },
-          required: true,
-        }],
+        where: {
+          refreshToken,
+          userAgent,
+          accessToken: helper.parseToken(bearer),
+        },
+        include: [
+          {
+            model: models.User,
+            attributes: { exclude: ['password'] },
+            required: true,
+          },
+        ],
       });
       if (!token) {
         throw Error('refresh token not found');
@@ -95,14 +109,18 @@ export default class TokenService extends BaseService {
       // generate token here
       const payload = {
         email: token.User.email,
-        id: token.User.id
+        id: token.User.id,
       };
       const accessToken = helper.createJWT(payload);
       const newRefreshToken = helper.refreshToken();
       try {
-        await this.model.update({
-          accessToken, refreshToken: newRefreshToken,
-        }, { where: { id: token.id } });
+        await this.model.update(
+          {
+            accessToken,
+            refreshToken: newRefreshToken,
+          },
+          { where: { id: token.id } }
+        );
         token.accessToken = accessToken;
         token.refreshToken = newRefreshToken;
         return token;
