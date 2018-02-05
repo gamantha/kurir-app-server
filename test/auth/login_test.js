@@ -13,11 +13,10 @@ const { user } = require('../../config/config.test.json');
 const should = chai.should();
 
 describe('Login', () => {
-
   let accessToken = '';
   let refreshToken = '';
 
-  before((done) => {
+  before(done => {
     models.Token.destroy({
       where: {},
       truncate: true,
@@ -26,8 +25,9 @@ describe('Login', () => {
   });
 
   describe('Login attempt', () => {
-    it('should return 400 username/email not found', (done) => {
-      chai.request(app)
+    it('should return 400 username/email not found', done => {
+      chai
+        .request(app)
         .post('/api/user/login')
         .send({
           username: 'randomunexistingusername',
@@ -40,8 +40,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 400 invalid payload', (done) => {
-      chai.request(app)
+    it('should return 400 invalid payload', done => {
+      chai
+        .request(app)
         .post('/api/user/login')
         .send({
           randomkey: 'randomunexistingusername',
@@ -54,8 +55,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 200 logged in successfully', (done) => {
-      chai.request(app)
+    it('should return 200 logged in successfully', done => {
+      chai
+        .request(app)
         .post('/api/user/login')
         .send({
           username: user.email,
@@ -74,12 +76,13 @@ describe('Login', () => {
   });
 
   describe('Refresh token attempt', () => {
-    it('should return 400 refresh token not found', (done) => {
-      chai.request(app)
+    it('should return 400 refresh token not found', done => {
+      chai
+        .request(app)
         .post('/api/user/refreshtoken')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
-          refreshToken: 'randomrefreshtoken'
+          refreshToken: 'randomrefreshtoken',
         })
         .end((err, res) => {
           res.should.have.status(400);
@@ -88,12 +91,13 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 401 unauthenticated', (done) => {
-      chai.request(app)
+    it('should return 401 unauthenticated', done => {
+      chai
+        .request(app)
         .post('/api/user/refreshtoken')
         .set('Authorization', 'bearer randomebearertoken')
         .send({
-          refreshToken
+          refreshToken,
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -102,23 +106,26 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 200 token refreshed', (done) => {
-      chai.request(app)
+    it('should return 200 token refreshed', done => {
+      chai
+        .request(app)
         .post('/api/user/refreshtoken')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
-          refreshToken
+          refreshToken,
         })
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.data.should.include.keys(TOKEN_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          accessToken = res.body.data.accessToken;
           done();
         });
     });
-    it('should logout successfully', (done) => {
-      chai.request(app)
+    it('should logout successfully', done => {
+      chai
+        .request(app)
         .post('/api/user/logout')
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
@@ -128,8 +135,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 401 unauthorized', (done) => {
-      chai.request(app)
+    it('should return 401 unauthorized', done => {
+      chai
+        .request(app)
         .post('/api/user/logout')
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
@@ -142,8 +150,9 @@ describe('Login', () => {
   });
 
   describe('deactivate account', () => {
-    it('should return 200', (done) => {
-      chai.request(app)
+    it('should return 200', done => {
+      chai
+        .request(app)
         .delete('/api/user/deactivate')
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
@@ -153,8 +162,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 401 unauthorized', (done) => {
-      chai.request(app)
+    it('should return 401 unauthorized', done => {
+      chai
+        .request(app)
         .delete('/api/user/deactivate')
         .set('Authorization', 'bearer randomtoken')
         .end((err, res) => {
@@ -167,8 +177,9 @@ describe('Login', () => {
   });
 
   describe('reactivate account', () => {
-    it('should return 422 invalid payload', (done) => {
-      chai.request(app)
+    it('should return 422 invalid payload', done => {
+      chai
+        .request(app)
         .post('/api/user/reactivate')
         .end((err, res) => {
           res.should.have.status(422);
@@ -177,11 +188,12 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 404 email not found', (done) => {
-      chai.request(app)
+    it('should return 404 email not found', done => {
+      chai
+        .request(app)
         .post('/api/user/reactivate')
         .send({
-          email: "random@mail.com"
+          email: 'random@mail.com',
         })
         .end((err, res) => {
           res.should.have.status(404);
@@ -190,14 +202,17 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 200 reactivation email sent', (done) => {
-      const stub = sinon.stub(MailService.prototype, 'sendReactivateAccountLink').callsFake((email) => {
-        return true;
-      });
-      chai.request(app)
+    it('should return 200 reactivation email sent', done => {
+      const stub = sinon
+        .stub(MailService.prototype, 'sendReactivateAccountLink')
+        .callsFake(email => {
+          return true;
+        });
+      chai
+        .request(app)
         .post('/api/user/reactivate')
         .send({
-          email: user.email
+          email: user.email,
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -206,15 +221,18 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 404  invalid email', (done) => {
+    it('should return 404  invalid email', done => {
       MailService.prototype.sendReactivateAccountLink.restore();
-      const stub = sinon.stub(MailService.prototype, 'sendReactivateAccountLink').callsFake((email) => {
-        return false;
-      });
-      chai.request(app)
+      const stub = sinon
+        .stub(MailService.prototype, 'sendReactivateAccountLink')
+        .callsFake(email => {
+          return false;
+        });
+      chai
+        .request(app)
         .post('/api/user/reactivate')
         .send({
-          email: user.email
+          email: user.email,
         })
         .end((err, res) => {
           res.should.have.status(404);
@@ -226,8 +244,9 @@ describe('Login', () => {
   });
 
   describe('confirm reactivation link', () => {
-    it('should return 422 invalid payload', (done) => {
-      chai.request(app)
+    it('should return 422 invalid payload', done => {
+      chai
+        .request(app)
         .get('/api/user/confirmreactivation?random=random')
         .end((err, res) => {
           res.should.have.status(422);
@@ -236,11 +255,14 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 200 account successfully reactivated', (done) => {
-      const stub = sinon.stub(UserService.prototype, 'confirmReactivation').callsFake((token) => {
-        return true
-      });
-      chai.request(app)
+    it('should return 200 account successfully reactivated', done => {
+      const stub = sinon
+        .stub(UserService.prototype, 'confirmReactivation')
+        .callsFake(token => {
+          return true;
+        });
+      chai
+        .request(app)
         .get('/api/user/confirmreactivation?token=correcttoken')
         .end((err, res) => {
           res.should.have.status(200);
@@ -249,13 +271,16 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 400 invalid token', (done) => {
+    it('should return 400 invalid token', done => {
       UserService.prototype.confirmReactivation.restore();
 
-      const stub = sinon.stub(UserService.prototype, 'confirmReactivation').callsFake((token) => {
-        return false
-      });
-      chai.request(app)
+      const stub = sinon
+        .stub(UserService.prototype, 'confirmReactivation')
+        .callsFake(token => {
+          return false;
+        });
+      chai
+        .request(app)
         .get('/api/user/confirmreactivation?token=invalidtoken')
         .end((err, res) => {
           res.should.have.status(400);
@@ -266,12 +291,12 @@ describe('Login', () => {
     });
   });
 
-  after((done) => {
+  after(done => {
     models.User.update(
       { deletedAt: null },
       { where: { email: user.email } }
     ).then(() => {
       done();
-    })
-  })
+    });
+  });
 });

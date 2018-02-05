@@ -3,8 +3,8 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return [
-      queryInterface.changeColumn('Admins', 'role', {
-        type: Sequelize.STRING,
+      queryInterface.addColumn('Droppoints', 'userId', {
+        type: Sequelize.INTEGER,
         allowNull: true,
         defaultValue: null,
       }),
@@ -12,6 +12,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return [];
+    return [queryInterface.removeColumn('Droppoints', 'userId')];
   },
 };

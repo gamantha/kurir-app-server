@@ -36,6 +36,10 @@ router.delete('/deactivate', Auth, (req, res) => {
   userController.deactivate(req, res);
 });
 
+router.post('/propose', Auth, (req, res) => {
+  userController.proposeToCourier(req, res);
+});
+
 router.post('/reactivate', (req, res) => {
   userController.reactivate(req, res);
 });

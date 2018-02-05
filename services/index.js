@@ -5,7 +5,7 @@ import MailService from './MailService';
 import TokenService from './TokenService';
 import GoogleService from './GoogleService';
 import FacebookService from './FacebookService';
-import AdminService from './AdminService';
+import DroppointService from './DroppointService';
 
 /**
  * Services export
@@ -18,5 +18,5 @@ export {
   GoogleService,
   FacebookService,
   MailService,
-  AdminService,
+  DroppointService,
 };

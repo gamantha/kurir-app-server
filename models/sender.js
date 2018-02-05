@@ -1,4 +1,4 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
   const Sender = sequelize.define('Sender', {
     userId: DataTypes.INTEGER,
     city: DataTypes.STRING,
@@ -6,7 +6,7 @@ module.exports = function (sequelize, DataTypes) {
     address: DataTypes.STRING,
     phone: DataTypes.STRING,
   });
-  Sender.associate = function (models) {
+  Sender.associate = function(models) {
     Sender.belongsTo(models.User, { foreignKey: 'itemId' });
     Sender.hasMany(models.Reputation, { foreignKey: 'senderId' });
     Sender.hasOne(models.Pickup, { foreignKey: 'senderId' });
