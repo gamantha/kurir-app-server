@@ -380,4 +380,41 @@ export default class UserController {
       );
     }
   }
+
+  async proposeToCourier(req, res) {
+    // link from aws s3
+    // const { idLink, photoLink }
+    try {
+      const checkUser = await this.service.proposeModel.findOne({
+        userId: res.locals.user.id,
+      });
+      if (checkUser === null) {
+        const response = await this.service.proposeModel.create({
+          status: 'waiting',
+          userId: res.locals.user.id,
+          proposeDate: new Date(),
+        });
+        res.status(201).json(
+          new ResponseBuilder()
+            .setData(response)
+            .setSuccess(true)
+            .build()
+        );
+      } else {
+        res.status(401).json(
+          new ResponseBuilder()
+            .setMessage('We are reviewing your process. Thank you.')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
 }
