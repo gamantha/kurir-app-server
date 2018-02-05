@@ -119,6 +119,7 @@ describe('Login', () => {
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.data.should.include.keys(TOKEN_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          accessToken = res.body.data.accessToken;
           done();
         });
     });
