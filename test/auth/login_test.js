@@ -11,11 +11,10 @@ const { user } = require('../../config/config.test.json');
 const should = chai.should();
 
 describe('Login', () => {
-
   let accessToken = '';
   let refreshToken = '';
 
-  before((done) => {
+  before(done => {
     models.Token.destroy({
       where: {},
       truncate: true,
@@ -24,8 +23,9 @@ describe('Login', () => {
   });
 
   describe('Login attempt', () => {
-    it('should return 400 username/email unavailable', (done) => {
-      chai.request(app)
+    it('should return 400 username/email unavailable', done => {
+      chai
+        .request(app)
         .post('/api/user/login')
         .send({
           username: 'randomunexistingusername',
@@ -38,8 +38,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 400 invalid payload', (done) => {
-      chai.request(app)
+    it('should return 400 invalid payload', done => {
+      chai
+        .request(app)
         .post('/api/user/login')
         .send({
           randomkey: 'randomunexistingusername',
@@ -52,8 +53,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 200 logged in successfully', (done) => {
-      chai.request(app)
+    it('should return 200 logged in successfully', done => {
+      chai
+        .request(app)
         .post('/api/user/login')
         .send({
           username: user.email,
@@ -72,12 +74,13 @@ describe('Login', () => {
   });
 
   describe('Refresh token attempt', () => {
-    it('should return 400 refresh token not found', (done) => {
-      chai.request(app)
+    it('should return 400 refresh token not found', done => {
+      chai
+        .request(app)
         .post('/api/user/refreshtoken')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
-          refreshToken: 'randomrefreshtoken'
+          refreshToken: 'randomrefreshtoken',
         })
         .end((err, res) => {
           res.should.have.status(400);
@@ -86,12 +89,13 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 401 unauthenticated', (done) => {
-      chai.request(app)
+    it('should return 401 unauthenticated', done => {
+      chai
+        .request(app)
         .post('/api/user/refreshtoken')
         .set('Authorization', 'bearer randomebearertoken')
         .send({
-          refreshToken
+          refreshToken,
         })
         .end((err, res) => {
           res.should.have.status(401);
@@ -100,12 +104,13 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 200 token refreshed', (done) => {
-      chai.request(app)
+    it('should return 200 token refreshed', done => {
+      chai
+        .request(app)
         .post('/api/user/refreshtoken')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
-          refreshToken
+          refreshToken,
         })
         .end((err, res) => {
           res.should.have.status(200);
@@ -115,8 +120,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should logout successfully', (done) => {
-      chai.request(app)
+    it('should logout successfully', done => {
+      chai
+        .request(app)
         .post('/api/user/logout')
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
@@ -126,8 +132,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 401 unauthorized', (done) => {
-      chai.request(app)
+    it('should return 401 unauthorized', done => {
+      chai
+        .request(app)
         .post('/api/user/logout')
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
@@ -140,8 +147,9 @@ describe('Login', () => {
   });
 
   describe('deactivate account', () => {
-    it('should return 200', (done) => {
-      chai.request(app)
+    it('should return 200', done => {
+      chai
+        .request(app)
         .delete('/api/user/deactivate')
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
@@ -151,8 +159,9 @@ describe('Login', () => {
           done();
         });
     });
-    it('should return 401 unauthorized', (done) => {
-      chai.request(app)
+    it('should return 401 unauthorized', done => {
+      chai
+        .request(app)
         .delete('/api/user/deactivate')
         .set('Authorization', 'bearer randomtoken')
         .end((err, res) => {
