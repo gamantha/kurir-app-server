@@ -1,35 +1,32 @@
+'use strict';
+
 module.exports = {
-  up(queryInterface, Sequelize) {
-    return queryInterface.createTable('Users', {
+  up: (queryInterface, Sequelize) => {
+    return queryInterface.dropTable('Admins');
+  },
+
+  down: (queryInterface, Sequelize) => {
+    return queryInterface.createTable('Admins', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      username: {
-        allowNull: false,
-        type: Sequelize.STRING,
-        unique: true,
+      droppointId: {
+        type: Sequelize.INTEGER,
       },
-      email: {
-        allowNull: false,
+      name: {
         type: Sequelize.STRING,
-        unique: true,
-        isEmail: true,
+      },
+      username: {
+        type: Sequelize.STRING,
       },
       password: {
         type: Sequelize.STRING,
       },
-      forgotPassVeriCode: {
-        type: Sequelize.STRING,
-      },
-      role: {
-        type: Sequelize.STRING,
-      },
-      isEmailValidated: {
+      isDroppoint: {
         type: Sequelize.BOOLEAN,
-        defaultValue: false,
       },
       createdAt: {
         allowNull: false,
@@ -40,8 +37,5 @@ module.exports = {
         type: Sequelize.DATE,
       },
     });
-  },
-  down(queryInterface, Sequelize) {
-    return queryInterface.dropTable('Users');
   },
 };
