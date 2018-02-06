@@ -469,7 +469,6 @@ export default class UserController {
   }
 
   async proposeToCourier(req, res) {
-    // TODO: send email to user to inform proposal progress
     // link from aws s3
     // const { idLink, photoLink }
 
@@ -482,6 +481,7 @@ export default class UserController {
         },
       });
       // first proposal from user
+      // TODO: send email to user in this first attempt
       if (checkUser.status === null) {
         const response = await this.service.proposeModel.create({
           status: 'waiting',
@@ -497,6 +497,7 @@ export default class UserController {
         );
         // user that rejected send another request
       } else if (checkUser.status === 'rejected') {
+        // TODO: send email to user
         await this.service.proposeModel.update(
           { status: 'waiting' },
           { where: { userId: res.locals.user.id } }
@@ -544,6 +545,7 @@ export default class UserController {
     ) {
       try {
         if (status === 'verified') {
+          // TODO: send email to user to inform
           await this.service.proposeModel.update(
             {
               status,
@@ -559,6 +561,7 @@ export default class UserController {
           );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         } else if (status === 'rejected') {
+          // TODO: send email to user to inform
           await this.service.proposeModel.update(
             { status, rejectDate: new Date(), acceptDate: null, rejectReason },
             {
@@ -569,6 +572,7 @@ export default class UserController {
           );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         } else {
+          // TODO: send email to user to inform
           // status:waiting
           await this.service.proposeModel.update(
             { status, rejectDate: null, acceptDate: null, rejectReason: null },
