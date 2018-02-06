@@ -559,6 +559,12 @@ export default class UserController {
               },
             }
           );
+          await this.service.update(
+            {
+              role: 'sender+kurir',
+            },
+            { id: userId }
+          );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         } else if (status === 'rejected') {
           // TODO: send email to user to inform
@@ -569,6 +575,12 @@ export default class UserController {
                 userId: parseInt(userId),
               },
             }
+          );
+          await this.service.update(
+            {
+              role: 'sender',
+            },
+            { id: userId }
           );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         } else {
@@ -581,6 +593,12 @@ export default class UserController {
                 userId: parseInt(userId),
               },
             }
+          );
+          await this.service.update(
+            {
+              role: 'sender',
+            },
+            { id: userId }
           );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         }
