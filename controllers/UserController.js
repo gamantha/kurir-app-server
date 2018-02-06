@@ -533,4 +533,39 @@ export default class UserController {
       );
     }
   }
+
+  // sysadmin method, change to all available status
+  async updateSenderProposal(req, res) {
+    const { status, userId } = req.body;
+    if (status === 'verified' || status === 'rejected' || status === 'waiting')
+      try {
+        const response = await this.service.proposeModel.update(
+          { status },
+          {
+            where: {
+              userId: parseInt(userId),
+            },
+          }
+        );
+        res.status(200).json(
+          new ResponseBuilder()
+            .setData(response)
+            .setSuccess(true)
+            .build()
+        );
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+      }
+    res.status(400).json(
+      new ResponseBuilder()
+        .setMessage('invalid request body on status')
+        .setSuccess(false)
+        .build()
+    );
+  }
 }

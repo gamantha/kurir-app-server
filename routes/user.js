@@ -40,6 +40,10 @@ router.post('/propose', Auth, (req, res) => {
   userController.proposeToCourier(req, res);
 });
 
+router.put('/update-propose', (req, res) => {
+  userController.updateSenderProposal(req, res);
+});
+
 router.post('/reactivate', (req, res) => {
   userController.reactivate(req, res);
 });
