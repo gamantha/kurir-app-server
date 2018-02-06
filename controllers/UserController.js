@@ -534,25 +534,47 @@ export default class UserController {
     }
   }
 
-  // sysadmin method, change to all available status
+  // sysadmin method
   async updateSenderProposal(req, res) {
-    const { status, userId } = req.body;
+    const { status, userId, rejectReason } = req.body;
     if (status === 'verified' || status === 'rejected' || status === 'waiting')
       try {
-        const response = await this.service.proposeModel.update(
-          { status },
+        if (status === 'verified') {
+          await this.service.proposeModel.update(
+            {
+              status,
+              acceptDate: new Date(),
+              rejectDate: null,
+              rejectReason: null,
+            },
+            {
+              where: {
+                userId: parseInt(userId),
+              },
+            }
+          );
+          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+        } else if (status === 'rejected') {
+          await this.service.proposeModel.update(
+            { status, rejectDate: new Date(), acceptDate: null, rejectReason },
+            {
+              where: {
+                userId: parseInt(userId),
+              },
+            }
+          );
+          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+        }
+        // status:waiting
+        await this.service.proposeModel.update(
+          { status, rejectDate: null, acceptDate: null, rejectReason: null },
           {
             where: {
               userId: parseInt(userId),
             },
           }
         );
-        res.status(200).json(
-          new ResponseBuilder()
-            .setData(response)
-            .setSuccess(true)
-            .build()
-        );
+        res.status(200).json(new ResponseBuilder().setSuccess(true).build());
       } catch (error) {
         res.status(400).json(
           new ResponseBuilder()
