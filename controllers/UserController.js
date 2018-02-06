@@ -133,9 +133,7 @@ export default class UserController {
             userId: response.id,
           };
           // tambah payload lain yg dibutuhkan model droppoint
-          await this.droppointService.create({
-            userId: siteadminPayload.userId,
-          });
+          await this.droppointService.create(siteadminPayload);
           res.status(201).json(
             new ResponseBuilder()
               .setData(response)
@@ -164,7 +162,7 @@ export default class UserController {
         const senderPayload = {
           userId: response.id,
         };
-        await this.senderService.create({ userId: senderPayload.userId });
+        await this.senderService.create(senderPayload);
         res.status(201).json(
           new ResponseBuilder()
             .setData(response)
