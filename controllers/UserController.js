@@ -469,13 +469,20 @@ export default class UserController {
   }
 
   async proposeToCourier(req, res) {
+    // TODO: send email to user to inform proposal progress
     // link from aws s3
     // const { idLink, photoLink }
+
     try {
+      // make sure sender not double request
       const checkUser = await this.service.proposeModel.findOne({
-        userId: res.locals.user.id,
+        // where must provided, otherwise won't work
+        where: {
+          userId: res.locals.user.id,
+        },
       });
-      if (checkUser === null) {
+      // first proposal from user
+      if (checkUser.status === null) {
         const response = await this.service.proposeModel.create({
           status: 'waiting',
           userId: res.locals.user.id,
@@ -484,13 +491,35 @@ export default class UserController {
         res.status(201).json(
           new ResponseBuilder()
             .setData(response)
+            .setMessage('We are reviewing your process. Thank you.')
             .setSuccess(true)
+            .build()
+        );
+        // user that rejected send another request
+      } else if (checkUser.status === 'rejected') {
+        await this.service.proposeModel.update(
+          { status: 'waiting' },
+          { where: { userId: res.locals.user.id } }
+        );
+        res.status(200).json(
+          new ResponseBuilder()
+            .setSuccess(true)
+            .setMessage('We are reviewing your process. Thank you.')
+            .build()
+        );
+      } else if (checkUser.status === 'verified') {
+        res.status(401).json(
+          new ResponseBuilder()
+            .setMessage('You already a courier')
+            .setSuccess(false)
             .build()
         );
       } else {
         res.status(401).json(
           new ResponseBuilder()
-            .setMessage('We are reviewing your process. Thank you.')
+            .setMessage(
+              'You already submit upgrade proposal. Please wait for our team to reach you.'
+            )
             .setSuccess(false)
             .build()
         );
