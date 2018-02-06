@@ -537,7 +537,11 @@ export default class UserController {
   // sysadmin method
   async updateSenderProposal(req, res) {
     const { status, userId, rejectReason } = req.body;
-    if (status === 'verified' || status === 'rejected' || status === 'waiting')
+    if (
+      status === 'verified' ||
+      status === 'rejected' ||
+      status === 'waiting'
+    ) {
       try {
         if (status === 'verified') {
           await this.service.proposeModel.update(
@@ -564,17 +568,18 @@ export default class UserController {
             }
           );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+        } else {
+          // status:waiting
+          await this.service.proposeModel.update(
+            { status, rejectDate: null, acceptDate: null, rejectReason: null },
+            {
+              where: {
+                userId: parseInt(userId),
+              },
+            }
+          );
+          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         }
-        // status:waiting
-        await this.service.proposeModel.update(
-          { status, rejectDate: null, acceptDate: null, rejectReason: null },
-          {
-            where: {
-              userId: parseInt(userId),
-            },
-          }
-        );
-        res.status(200).json(new ResponseBuilder().setSuccess(true).build());
       } catch (error) {
         res.status(400).json(
           new ResponseBuilder()
@@ -583,11 +588,13 @@ export default class UserController {
             .build()
         );
       }
-    res.status(400).json(
-      new ResponseBuilder()
-        .setMessage('invalid request body on status')
-        .setSuccess(false)
-        .build()
-    );
+    } else {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('invalid request body on status')
+          .setSuccess(false)
+          .build()
+      );
+    }
   }
 }
