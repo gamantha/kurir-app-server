@@ -9,6 +9,7 @@ import {
   TokenService,
   MailService,
   DroppointService,
+  S3Service,
 } from '../services/index';
 
 export default class UserController {
@@ -21,6 +22,7 @@ export default class UserController {
     this.tokenService = new TokenService();
     this.mailService = new MailService();
     this.droppointService = new DroppointService();
+    this.S3Service = new S3Service();
   }
 
   async get(req, res) {
@@ -614,6 +616,50 @@ export default class UserController {
       res.status(400).json(
         new ResponseBuilder()
           .setMessage('invalid request body on status')
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async uploadImg(req, res) {
+    try {
+      // TODO: this path must be dynamic to accomodate mobile
+      const base64 = await this.S3Service.convertToBase64(
+        'assets/ktp-test.jpg'
+      );
+      const buf = new Buffer(
+        base64.replace(/^data:image\/\w+;base64,/, ''),
+        'base64'
+      );
+      const imgPayload = {
+        Bucket: `kurir-backend/${this.S3Service.idBucket}/test`,
+        Key: 'ktp-test.jpg',
+        Body: buf,
+        ACL: 'public-read',
+      };
+      try {
+        await this.S3Service.client.upload(imgPayload, (err, data) => {
+          return data;
+        });
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('successfully upload image to S3')
+            .setSuccess(true)
+            .build()
+        );
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
           .setSuccess(false)
           .build()
       );
