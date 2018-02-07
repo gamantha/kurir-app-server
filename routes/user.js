@@ -48,6 +48,10 @@ router.post('/reactivate', (req, res) => {
   userController.reactivate(req, res);
 });
 
+router.post('/upload-img', (req, res) => {
+  userController.uploadImg(req, res);
+});
+
 router.get('/confirmreactivation', (req, res) => {
   userController.confirmReactivation(req, res);
 });
