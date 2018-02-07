@@ -12,7 +12,10 @@
   "author": "bm",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.189.0",
     "axios": "^0.17.1",
+    "base-64": "^0.1.0",
+    "base64-img": "^1.0.3",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
@@ -23,15 +26,13 @@
     "jsonwebtoken": "^8.1.0",
     "mailgun-js": "^0.14.1",
     "morgan": "^1.9.0",
-    "nodemailer": "^4.4.1",
     "nodemon": "^1.14.11",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.4.0",
     "rand-token": "^0.4.0",
     "sequelize": "^4.22.6",
-    "sequelize-cli": "^3.2.0",
-    "smtp-server": "^3.4.1"
+    "sequelize-cli": "^3.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

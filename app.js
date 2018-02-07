@@ -15,7 +15,6 @@ import google from './routes/google';
 import facebook from './routes/facebook';
 
 const app = express();
-// const { SMTPServer } = require('smtp-server');
 require('dotenv').config();
 
 app.use(cors());
@@ -35,20 +34,6 @@ app.use(logger('dev'));
 // bodyparser setup
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-// smtp server setup
-// const options = {
-//   secure: true,
-//   name: 'localhost',
-//   banner: 'hello kurir',
-// };
-// const mailServer = new SMTPServer(options);
-// mailServer.listen(4000, null, () => {
-//   console.log('berhasil konek ke email server');
-// });
-// mailServer.on('error', (err) => {
-//   console.log('Error %s', err.message);
-// });
 
 app.use('/api/item', item);
 app.use('/api/user', user);
