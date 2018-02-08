@@ -12,7 +12,7 @@ export default class UserService extends BaseService {
   }
 
   /**
-   * Confirm the token validity. 
+   * Confirm the token validity.
    * @param {String} token
    */
   async confirmReactivation(token) {
