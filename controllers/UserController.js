@@ -198,9 +198,9 @@ export default class UserController {
           res
             .status(200)
             .json(
-              new ResponseBuilder()
-                .setMessage('Your account has been successfully reactivated')
-                .build()
+            new ResponseBuilder()
+              .setMessage('Your account has been successfully reactivated')
+              .build()
             );
         } else {
           res.status(400).json(
@@ -239,9 +239,9 @@ export default class UserController {
         res
           .status(200)
           .json(
-            new ResponseBuilder()
-              .setMessage('Reactivation email sent, please check your email.')
-              .build()
+          new ResponseBuilder()
+            .setMessage('Reactivation email sent, please check your email.')
+            .build()
           );
         return;
       } catch (error) {
@@ -402,11 +402,11 @@ export default class UserController {
           res
             .status(200)
             .json(
-              new ResponseBuilder()
-                .setMessage(
-                  'Verification code match. User now can safely reset password.'
-                )
-                .build()
+            new ResponseBuilder()
+              .setMessage(
+              'Verification code match. User now can safely reset password.'
+              )
+              .build()
             );
         } catch (error) {
           res.status(400).json(
@@ -435,17 +435,42 @@ export default class UserController {
   }
 
   async changePassword(req, res) {
-    const { email, password } = req.body;
-
-    const result = await this.mailService.changePassword(email, password);
-
-    const response = result
-      ? [200, `Password changed successfully! an email is sent to ${email}.`]
-      : [422, `uh oh! there is an error when updating ${email} password`];
-
-    res
-      .status(response[0])
-      .json(new ResponseBuilder().setMessage(response[1]).build());
+    const { old_password, password } = req.body;
+    const { email } = res.locals.user;
+    if (typeof old_password === 'undefined' ||
+      typeof password === 'undefined') {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+      return;
+    }
+    try {
+      const result = await this.service.changePassword(email, old_password, password);
+      if (result) {
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('password successfully changed')
+            .build()
+        );
+        return;
+      }
+      res.status(401).json(
+        new ResponseBuilder()
+          .setMessage('Wrong old password')
+          .setSuccess(false)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('failed to change password')
+          .setSuccess(false)
+          .build()
+      );
+    }
   }
 
   async deactivate(req, res) {
