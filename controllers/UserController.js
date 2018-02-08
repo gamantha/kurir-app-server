@@ -505,15 +505,15 @@ export default class UserController {
       const checkUser = await this.service.proposeModel.findOne({
         // where must provided, otherwise won't work
         where: {
-          userId: res.locals.user.id,
+          UserId: res.locals.user.id,
         },
       });
       // first proposal from user
       // TODO: send email to user in this first attempt
-      if (checkUser.status === null) {
+      if (checkUser === null) {
         const response = await this.service.proposeModel.create({
           status: 'waiting',
-          userId: res.locals.user.id,
+          UserId: res.locals.user.id,
           proposeDate: new Date(),
         });
         res.status(201).json(
@@ -532,7 +532,7 @@ export default class UserController {
           },
           {
             where: {
-              userId: res.locals.user.id,
+              UserId: res.locals.user.id,
             },
           }
         );
@@ -589,7 +589,7 @@ export default class UserController {
             },
             {
               where: {
-                userId: parseInt(userId),
+                UserId: parseInt(userId),
               },
             }
           );
@@ -613,7 +613,7 @@ export default class UserController {
             },
             {
               where: {
-                userId: parseInt(userId),
+                UserId: parseInt(userId),
               },
             }
           );
