@@ -714,7 +714,7 @@ export default class UserController {
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage('invalid token')
+          .setMessage('invalid_token')
           .setSuccess(false)
           .build()
       );
