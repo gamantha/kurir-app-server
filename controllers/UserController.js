@@ -196,9 +196,7 @@ export default class UserController {
         const result = await this.service.confirmReactivation(token);
         if (result === true) {
           res
-            .status(200)
-            .json(
-            new ResponseBuilder()
+            .status(200).json(new ResponseBuilder()
               .setMessage('Your account has been successfully reactivated')
               .build()
             );
@@ -237,9 +235,7 @@ export default class UserController {
           return;
         }
         res
-          .status(200)
-          .json(
-          new ResponseBuilder()
+          .status(200).json(new ResponseBuilder()
             .setMessage('Reactivation email sent, please check your email.')
             .build()
           );
