@@ -34,4 +34,76 @@ export default class UserService extends BaseService {
       throw Error(error);
     }
   }
+
+  async proposalRejected(status, rejectReason, userId) {
+    await this.proposeModel.update(
+      {
+        status,
+        rejectDate: new Date(),
+        acceptDate: null,
+        rejectReason,
+      },
+      {
+        where: {
+          UserId: parseInt(userId),
+        },
+      }
+    );
+    await this.update(
+      {
+        role: 'sender',
+      },
+      {
+        id: userId,
+      }
+    );
+  }
+
+  async proposalAccepted(status, rejectReason, userId) {
+    await this.proposeModel.update(
+      {
+        status,
+        acceptDate: new Date(),
+        rejectDate: null,
+        rejectReason: null,
+      },
+      {
+        where: {
+          UserId: parseInt(userId),
+        },
+      }
+    );
+    await this.update(
+      {
+        role: 'sender+kurir',
+      },
+      {
+        id: userId,
+      }
+    );
+  }
+
+  async proposalWaiting(status, rejectReason, userId) {
+    await this.proposeModel.update(
+      {
+        status,
+        rejectDate: null,
+        acceptDate: null,
+        rejectReason: null,
+      },
+      {
+        where: {
+          UserId: parseInt(userId),
+        },
+      }
+    );
+    await this.update(
+      {
+        role: 'sender',
+      },
+      {
+        id: userId,
+      }
+    );
+  }
 }
