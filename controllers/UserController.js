@@ -741,10 +741,13 @@ export default class UserController {
         include: [
           {
             model: models.User,
+            attributes: {
+              exclude: ['password', 'forgotPassVeriCode'],
+            },
           },
         ],
       });
-      // const user = await result.getUsers();
+      // const user = await result.getUser();
       res.status(200).json(
         new ResponseBuilder()
           .setData(result)
