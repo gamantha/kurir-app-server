@@ -31,7 +31,7 @@ methods.verifyJwt = token => {
     const payload = jwt.verify(token, process.env.SECRET, options);
     return payload;
   } catch (error) {
-    throw Error('invalid token provided');
+    throw Error(error);
   }
 };
 

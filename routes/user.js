@@ -4,7 +4,7 @@ import Auth from '../helpers/Auth';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', Auth, (req, res) => {
   userController.get(req, res);
 });
 
@@ -54,6 +54,14 @@ router.post('/upload-img', (req, res) => {
 
 router.get('/confirmreactivation', (req, res) => {
   userController.confirmReactivation(req, res);
+});
+
+router.post('/check-token', (req, res) => {
+  userController.checkToken(req, res);
+});
+
+router.get('/proposal', Auth, (req, res) => {
+  userController.getSenderProposals(req, res);
 });
 
 module.exports = router;

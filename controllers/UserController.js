@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 // import auth from '../helpers/Auth';
+import models from '../models';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 import {
   UserService,
@@ -25,6 +26,7 @@ export default class UserController {
     this.S3Service = new S3Service();
   }
 
+  // TODO: dont get user that has role sysadmin
   async get(req, res) {
     try {
       const response = await this.service.findAll();
@@ -63,8 +65,12 @@ export default class UserController {
     let uniqueUsername = null;
     let validation = false;
     try {
-      uniqueEmail = await this.service.findOne({ email });
-      uniqueUsername = await this.service.findOne({ username });
+      uniqueEmail = await this.service.findOne({
+        email,
+      });
+      uniqueUsername = await this.service.findOne({
+        username,
+      });
       if (uniqueEmail === null && uniqueUsername === null) {
         validation = true;
       } else if (uniqueEmail) {
@@ -270,7 +276,14 @@ export default class UserController {
       // find with username or email
       try {
         const user = await this.service.findOne({
-          [Op.or]: [{ email: username }, { username }],
+          [Op.or]: [
+            {
+              email: username,
+            },
+            {
+              username,
+            },
+          ],
         });
         if (user === null) {
           res.status(404).json(
@@ -393,12 +406,21 @@ export default class UserController {
     const { email, veriCode } = req.body;
 
     try {
-      const response = await this.service.findOne({ email });
+      const response = await this.service.findOne({
+        email,
+      });
       const userPayload = response.forgotPassVeriCode;
 
       if (userPayload === veriCode) {
         try {
-          await this.service.update({ forgotPassVeriCode: null }, { email });
+          await this.service.update(
+            {
+              forgotPassVeriCode: null,
+            },
+            {
+              email,
+            }
+          );
           res
             .status(200)
             .json(
@@ -451,8 +473,12 @@ export default class UserController {
   async deactivate(req, res) {
     try {
       await this.service.update(
-        { deletedAt: new Date() },
-        { email: res.locals.user.email }
+        {
+          deletedAt: new Date(),
+        },
+        {
+          email: res.locals.user.email,
+        }
       );
       res.status(200).json(
         new ResponseBuilder()
@@ -501,8 +527,14 @@ export default class UserController {
       } else if (checkUser.status === 'rejected') {
         // TODO: send email to user
         await this.service.proposeModel.update(
-          { status: 'waiting' },
-          { where: { userId: res.locals.user.id } }
+          {
+            status: 'waiting',
+          },
+          {
+            where: {
+              userId: res.locals.user.id,
+            },
+          }
         );
         res.status(200).json(
           new ResponseBuilder()
@@ -565,13 +597,20 @@ export default class UserController {
             {
               role: 'sender+kurir',
             },
-            { id: userId }
+            {
+              id: userId,
+            }
           );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         } else if (status === 'rejected') {
           // TODO: send email to user to inform
           await this.service.proposeModel.update(
-            { status, rejectDate: new Date(), acceptDate: null, rejectReason },
+            {
+              status,
+              rejectDate: new Date(),
+              acceptDate: null,
+              rejectReason,
+            },
             {
               where: {
                 userId: parseInt(userId),
@@ -582,14 +621,21 @@ export default class UserController {
             {
               role: 'sender',
             },
-            { id: userId }
+            {
+              id: userId,
+            }
           );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         } else {
           // TODO: send email to user to inform
           // status:waiting
           await this.service.proposeModel.update(
-            { status, rejectDate: null, acceptDate: null, rejectReason: null },
+            {
+              status,
+              rejectDate: null,
+              acceptDate: null,
+              rejectReason: null,
+            },
             {
               where: {
                 userId: parseInt(userId),
@@ -600,7 +646,9 @@ export default class UserController {
             {
               role: 'sender',
             },
-            { id: userId }
+            {
+              id: userId,
+            }
           );
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         }
@@ -663,6 +711,48 @@ export default class UserController {
           .setSuccess(false)
           .build()
       );
+    }
+  }
+
+  async checkToken(req, res) {
+    const { token } = req.body;
+    try {
+      const result = await helpers.verifyJwt(token);
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData(result)
+          .setMessage('token still valid')
+          .setSuccess(true)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('token is expired/not valid')
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async getSenderProposals(req, res) {
+    try {
+      const result = await this.service.proposeModel.findAll({
+        include: [
+          {
+            model: models.User,
+          },
+        ],
+      });
+      // const user = await result.getUsers();
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData(result)
+          .setSuccess(true)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(new ResponseBuilder().setSuccess(false).build());
     }
   }
 }
