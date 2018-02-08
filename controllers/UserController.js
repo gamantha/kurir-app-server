@@ -497,9 +497,6 @@ export default class UserController {
   }
 
   async proposeToCourier(req, res) {
-    // link from aws s3
-    // const { idLink, photoLink }
-
     try {
       // make sure sender not double request
       const checkUser = await this.service.proposeModel.findOne({
@@ -519,7 +516,9 @@ export default class UserController {
         res.status(201).json(
           new ResponseBuilder()
             .setData(response)
-            .setMessage('We are reviewing your process. Thank you.')
+            .setMessage(
+              'We\'ll be reviewing your proposal and respond very soon. Thank you'
+            )
             .setSuccess(true)
             .build()
         );
@@ -539,7 +538,9 @@ export default class UserController {
         res.status(200).json(
           new ResponseBuilder()
             .setSuccess(true)
-            .setMessage('We are reviewing your process. Thank you.')
+            .setMessage(
+              'We\'ll be reviewing your proposal and respond very soon. Thank you'
+            )
             .build()
         );
       } else if (checkUser.status === 'verified') {
@@ -550,7 +551,7 @@ export default class UserController {
             .build()
         );
       } else {
-        res.status(401).json(
+        res.status(200).json(
           new ResponseBuilder()
             .setMessage(
               'You already submit upgrade proposal. Please wait for our team to reach you.'
@@ -580,76 +581,16 @@ export default class UserController {
       try {
         if (status === 'verified') {
           // TODO: send email to user to inform
-          await this.service.proposeModel.update(
-            {
-              status,
-              acceptDate: new Date(),
-              rejectDate: null,
-              rejectReason: null,
-            },
-            {
-              where: {
-                UserId: parseInt(userId),
-              },
-            }
-          );
-          await this.service.update(
-            {
-              role: 'sender+kurir',
-            },
-            {
-              id: userId,
-            }
-          );
+          await this.service.proposalAccepted(status, rejectReason, userId);
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         } else if (status === 'rejected') {
           // TODO: send email to user to inform
-          await this.service.proposeModel.update(
-            {
-              status,
-              rejectDate: new Date(),
-              acceptDate: null,
-              rejectReason,
-            },
-            {
-              where: {
-                UserId: parseInt(userId),
-              },
-            }
-          );
-          await this.service.update(
-            {
-              role: 'sender',
-            },
-            {
-              id: userId,
-            }
-          );
+          this.service.proposalRejected(status, rejectReason, userId);
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         } else {
           // TODO: send email to user to inform
           // status:waiting
-          await this.service.proposeModel.update(
-            {
-              status,
-              rejectDate: null,
-              acceptDate: null,
-              rejectReason: null,
-            },
-            {
-              where: {
-                userId: parseInt(userId),
-              },
-            }
-          );
-          await this.service.update(
-            {
-              role: 'sender',
-            },
-            {
-              id: userId,
-            }
-          );
+          await this.service.proposalWaiting(status, rejectReason, userId);
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
         }
       } catch (error) {
@@ -671,31 +612,83 @@ export default class UserController {
   }
 
   async uploadImg(req, res) {
-    try {
-      // TODO: this path must be dynamic to accomodate mobile
-      const base64 = await this.S3Service.convertToBase64(
-        'assets/ktp-test.jpg'
+    // convert image to base64 from mobile client
+    /**
+     * send image to S3
+     * @param {string} base64
+     * @param {string} type of upload (ID,Photo)
+     * @param {string} extension jpg, png, etc.
+     */
+    // base64 format: data:image/${extension};base64,${base64}
+    const { base64, type, extension } = req.body;
+    if (type !== 'ID' && type !== 'Photo') {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('type only ID or Photo')
+          .setSuccess(false)
+          .build()
       );
-      const buf = new Buffer(
-        base64.replace(/^data:image\/\w+;base64,/, ''),
-        'base64'
-      );
-      const imgPayload = {
-        Bucket: `kurir-backend/${this.S3Service.idBucket}/test`,
-        Key: 'ktp-test.jpg',
-        Body: buf,
-        ACL: 'public-read',
-      };
+    } else {
       try {
-        await this.S3Service.client.upload(imgPayload, (err, data) => {
-          return data;
-        });
-        res.status(200).json(
-          new ResponseBuilder()
-            .setMessage('successfully upload image to S3')
-            .setSuccess(true)
-            .build()
+        // const base64 = await this.S3Service.convertToBase64(
+        //   'assets/ktp-test.jpg'
+        // );
+        const buf = new Buffer(
+          base64.replace(/^data:image\/\w+;base64,/, ''),
+          'base64'
         );
+
+        const encodeEmail = encodeURIComponent(res.locals.user.email);
+        const link = `https://s3-ap-southeast-1.amazonaws.com/kurir-backend/${encodeEmail}/${encodeEmail}-${type}.${extension}`;
+
+        const imgPayload = {
+          Bucket: `kurir-backend/${res.locals.user.email}`,
+          Key: `${res.locals.user.email}-${type}.${extension}`,
+          Body: buf,
+          ACL: 'public-read',
+        };
+
+        try {
+          await this.S3Service.client.upload(imgPayload, (err, data) => {
+            return data;
+          });
+          if (type === 'ID') {
+            await this.service.proposeModel.update(
+              {
+                idLink: link,
+              },
+              {
+                where: {
+                  UserId: res.locals.user.id,
+                },
+              }
+            );
+          } else if (type === 'Photo') {
+            await this.service.proposeModel.update(
+              {
+                photoLink: link,
+              },
+              {
+                where: {
+                  UserId: res.locals.user.id,
+                },
+              }
+            );
+          }
+          res.status(200).json(
+            new ResponseBuilder()
+              .setMessage('successfully upload image to S3')
+              .setSuccess(true)
+              .build()
+          );
+        } catch (error) {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage(error.message)
+              .setSuccess(false)
+              .build()
+          );
+        }
       } catch (error) {
         res.status(400).json(
           new ResponseBuilder()
@@ -704,13 +697,6 @@ export default class UserController {
             .build()
         );
       }
-    } catch (error) {
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage(error.message)
-          .setSuccess(false)
-          .build()
-      );
     }
   }
 
@@ -728,7 +714,7 @@ export default class UserController {
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage('token is expired/not valid')
+          .setMessage('invalid token')
           .setSuccess(false)
           .build()
       );
