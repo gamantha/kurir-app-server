@@ -1,6 +1,5 @@
 import AWS from 'aws-sdk';
 import base64Img from 'base64-img';
-import base64 from 'base-64';
 
 export default class S3Service {
   constructor() {
@@ -12,8 +11,6 @@ export default class S3Service {
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
     });
-    this.idBucket = 'id-user';
-    this.photoBucket = 'photo-user';
   }
 
   async convertToBase64(path) {
@@ -22,15 +19,6 @@ export default class S3Service {
       return result;
     } catch (error) {
       throw Error(error.message);
-    }
-  }
-
-  async convertToRawBytes(source) {
-    try {
-      const rawBytes = base64.encode(source);
-      return rawBytes;
-    } catch (error) {
-      throw Error(error);
     }
   }
 }
