@@ -6,43 +6,43 @@ module.exports = {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
-      userId: {
-        type: Sequelize.INTEGER
+      UserId: {
+        type: Sequelize.INTEGER,
       },
       status: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       proposeDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       rejectDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       acceptDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       rejectReason: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       idLink: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       photoLink: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   down: (queryInterface, Sequelize) => {
     return queryInterface.dropTable('CourierProposals');
-  }
+  },
 };
