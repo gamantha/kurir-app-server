@@ -49,7 +49,7 @@ router.post('/reactivate', (req, res) => {
   userController.reactivate(req, res);
 });
 
-router.post('/upload-img', (req, res) => {
+router.post('/upload-img', Auth, (req, res) => {
   userController.uploadImg(req, res);
 });
 
