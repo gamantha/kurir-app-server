@@ -196,9 +196,9 @@ export default class UserController {
           res
             .status(200)
             .json(
-              new ResponseBuilder()
-                .setMessage('Your account has been successfully reactivated')
-                .build()
+            new ResponseBuilder()
+              .setMessage('Your account has been successfully reactivated')
+              .build()
             );
         } else {
           res.status(400).json(
@@ -237,9 +237,9 @@ export default class UserController {
         res
           .status(200)
           .json(
-            new ResponseBuilder()
-              .setMessage('Reactivation email sent, please check your email.')
-              .build()
+          new ResponseBuilder()
+            .setMessage('Reactivation email sent, please check your email.')
+            .build()
           );
         return;
       } catch (error) {
@@ -400,11 +400,11 @@ export default class UserController {
           res
             .status(200)
             .json(
-              new ResponseBuilder()
-                .setMessage(
-                  'Verification code match. User now can safely reset password.'
-                )
-                .build()
+            new ResponseBuilder()
+              .setMessage(
+              'Verification code match. User now can safely reset password.'
+              )
+              .build()
             );
         } catch (error) {
           res.status(400).json(
@@ -462,158 +462,6 @@ export default class UserController {
       res.status(400).json(
         new ResponseBuilder()
           .setMessage('error occured')
-          .setSuccess(false)
-          .build()
-      );
-    }
-  }
-
-  async proposeToCourier(req, res) {
-    // link from aws s3
-    // const { idLink, photoLink }
-
-    try {
-      // make sure sender not double request
-      const checkUser = await this.service.proposeModel.findOne({
-        // where must provided, otherwise won't work
-        where: {
-          userId: res.locals.user.id,
-        },
-      });
-      // first proposal from user
-      // TODO: send email to user in this first attempt
-      if (checkUser.status === null) {
-        const response = await this.service.proposeModel.create({
-          status: 'waiting',
-          userId: res.locals.user.id,
-          proposeDate: new Date(),
-        });
-        res.status(201).json(
-          new ResponseBuilder()
-            .setData(response)
-            .setMessage('We are reviewing your process. Thank you.')
-            .setSuccess(true)
-            .build()
-        );
-        // user that rejected send another request
-      } else if (checkUser.status === 'rejected') {
-        // TODO: send email to user
-        await this.service.proposeModel.update(
-          { status: 'waiting' },
-          { where: { userId: res.locals.user.id } }
-        );
-        res.status(200).json(
-          new ResponseBuilder()
-            .setSuccess(true)
-            .setMessage('We are reviewing your process. Thank you.')
-            .build()
-        );
-      } else if (checkUser.status === 'verified') {
-        res.status(401).json(
-          new ResponseBuilder()
-            .setMessage('You already a courier')
-            .setSuccess(false)
-            .build()
-        );
-      } else {
-        res.status(401).json(
-          new ResponseBuilder()
-            .setMessage(
-              'You already submit upgrade proposal. Please wait for our team to reach you.'
-            )
-            .setSuccess(false)
-            .build()
-        );
-      }
-    } catch (error) {
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage(error.message)
-          .setSuccess(false)
-          .build()
-      );
-    }
-  }
-
-  // sysadmin method
-  async updateSenderProposal(req, res) {
-    const { status, userId, rejectReason } = req.body;
-    if (
-      status === 'verified' ||
-      status === 'rejected' ||
-      status === 'waiting'
-    ) {
-      try {
-        if (status === 'verified') {
-          // TODO: send email to user to inform
-          await this.service.proposeModel.update(
-            {
-              status,
-              acceptDate: new Date(),
-              rejectDate: null,
-              rejectReason: null,
-            },
-            {
-              where: {
-                userId: parseInt(userId),
-              },
-            }
-          );
-          await this.service.update(
-            {
-              role: 'sender+kurir',
-            },
-            { id: userId }
-          );
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
-        } else if (status === 'rejected') {
-          // TODO: send email to user to inform
-          await this.service.proposeModel.update(
-            { status, rejectDate: new Date(), acceptDate: null, rejectReason },
-            {
-              where: {
-                userId: parseInt(userId),
-              },
-            }
-          );
-          await this.service.update(
-            {
-              role: 'sender',
-            },
-            { id: userId }
-          );
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
-        } else {
-          // TODO: send email to user to inform
-          // status:waiting
-          await this.service.proposeModel.update(
-            { status, rejectDate: null, acceptDate: null, rejectReason: null },
-            {
-              where: {
-                userId: parseInt(userId),
-              },
-            }
-          );
-          await this.service.update(
-            {
-              role: 'sender',
-            },
-            { id: userId }
-          );
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
-        }
-      } catch (error) {
-        res.status(400).json(
-          new ResponseBuilder()
-            .setMessage(error.message)
-            .setSuccess(false)
-            .build()
-        );
-      }
-    } else {
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage('invalid request body on status')
           .setSuccess(false)
           .build()
       );
