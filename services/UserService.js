@@ -36,7 +36,7 @@ export default class UserService extends BaseService {
   }
 
   async proposalRejected(status, rejectReason, userId) {
-    await this.proposeModel.update(
+    const updated = await this.proposeModel.update(
       {
         status,
         rejectDate: new Date(),
@@ -47,6 +47,8 @@ export default class UserService extends BaseService {
         where: {
           UserId: parseInt(userId),
         },
+        returning: true,
+        plain: true,
       }
     );
     await this.update(
@@ -57,10 +59,11 @@ export default class UserService extends BaseService {
         id: userId,
       }
     );
+    return updated;
   }
 
   async proposalAccepted(status, rejectReason, userId) {
-    await this.proposeModel.update(
+    const updated = await this.proposeModel.update(
       {
         status,
         acceptDate: new Date(),
@@ -71,6 +74,8 @@ export default class UserService extends BaseService {
         where: {
           UserId: parseInt(userId),
         },
+        returning: true,
+        plain: true,
       }
     );
     await this.update(
@@ -81,10 +86,11 @@ export default class UserService extends BaseService {
         id: userId,
       }
     );
+    return updated;
   }
 
   async proposalWaiting(status, rejectReason, userId) {
-    await this.proposeModel.update(
+    const updated = await this.proposeModel.update(
       {
         status,
         rejectDate: null,
@@ -95,6 +101,8 @@ export default class UserService extends BaseService {
         where: {
           UserId: parseInt(userId),
         },
+        returning: true,
+        plain: true,
       }
     );
     await this.update(
@@ -105,5 +113,6 @@ export default class UserService extends BaseService {
         id: userId,
       }
     );
+    return updated;
   }
 }

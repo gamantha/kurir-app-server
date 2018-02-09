@@ -61,7 +61,7 @@ router.post('/check-token', (req, res) => {
   userController.checkToken(req, res);
 });
 
-router.get('/proposal', Auth, (req, res) => {
+router.get('/proposal', SysAdmin, (req, res) => {
   userController.getSenderProposals(req, res);
 });
 
