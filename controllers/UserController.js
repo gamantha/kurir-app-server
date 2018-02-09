@@ -581,17 +581,44 @@ export default class UserController {
       try {
         if (status === 'verified') {
           // TODO: send email to user to inform
-          await this.service.proposalAccepted(status, rejectReason, userId);
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+          const updated = await this.service.proposalAccepted(
+            status,
+            rejectReason,
+            userId
+          );
+          res.status(200).json(
+            new ResponseBuilder()
+              .setData({ userId: parseInt(userId), updated: updated })
+              .setSuccess(true)
+              .build()
+          );
         } else if (status === 'rejected') {
           // TODO: send email to user to inform
-          this.service.proposalRejected(status, rejectReason, userId);
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+          const updated = await this.service.proposalRejected(
+            status,
+            rejectReason,
+            userId
+          );
+          res.status(200).json(
+            new ResponseBuilder()
+              .setData({ userId: parseInt(userId), updated: updated })
+              .setSuccess(true)
+              .build()
+          );
         } else {
           // TODO: send email to user to inform
           // status:waiting
-          await this.service.proposalWaiting(status, rejectReason, userId);
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+          const updated = await this.service.proposalWaiting(
+            status,
+            rejectReason,
+            userId
+          );
+          res.status(200).json(
+            new ResponseBuilder()
+              .setData({ userId: parseInt(userId), updated: updated })
+              .setSuccess(true)
+              .build()
+          );
         }
       } catch (error) {
         res.status(400).json(
