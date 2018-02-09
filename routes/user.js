@@ -1,7 +1,6 @@
 import express from 'express';
 import { userController } from '../controllers';
 import Auth from '../helpers/Auth';
-import SysAdmin from '../helpers/SysAdmin';
 
 const router = express.Router();
 
@@ -35,14 +34,6 @@ router.post('/change-password', Auth, (req, res) => {
 
 router.delete('/deactivate', Auth, (req, res) => {
   userController.deactivate(req, res);
-});
-
-router.post('/propose', Auth, (req, res) => {
-  userController.proposeToCourier(req, res);
-});
-
-router.put('/update-propose', SysAdmin, (req, res) => {
-  userController.updateSenderProposal(req, res);
 });
 
 router.post('/reactivate', (req, res) => {
