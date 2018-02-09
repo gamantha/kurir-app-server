@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import BaseService from './BaseService';
 import models from '../models';
 
@@ -32,6 +33,28 @@ export default class UserService extends BaseService {
       }
     } catch (error) {
       throw Error(error);
+    }
+  }
+
+  /**
+   * Change user password here.
+   * @param {String} email 
+   * @param {String} oldPassword 
+   * @param {String} newPassword 
+   */
+  async changePassword(email, oldPassword, newPassword) {
+    const user = await this.findOne({ email });
+    if (bcrypt.compareSync(oldPassword, user.password)) {
+      const saltRounds = 10;
+      const hash = bcrypt.hashSync(newPassword, saltRounds);
+      try {
+        await this.update({ password: hash }, { email });
+        return true;
+      } catch (error) {
+        throw Error(error.message);
+      }
+    } else {
+      return false;
     }
   }
 }
