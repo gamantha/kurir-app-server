@@ -195,8 +195,7 @@ export default class UserController {
         if (result === true) {
           res
             .status(200)
-            .json(
-            new ResponseBuilder()
+            .json(new ResponseBuilder()
               .setMessage('Your account has been successfully reactivated')
               .build()
             );
@@ -236,8 +235,7 @@ export default class UserController {
         }
         res
           .status(200)
-          .json(
-          new ResponseBuilder()
+          .json(new ResponseBuilder()
             .setMessage('Reactivation email sent, please check your email.')
             .build()
           );
@@ -399,11 +397,8 @@ export default class UserController {
           await this.service.update({ forgotPassVeriCode: null }, { email });
           res
             .status(200)
-            .json(
-            new ResponseBuilder()
-              .setMessage(
-              'Verification code match. User now can safely reset password.'
-              )
+            .json(new ResponseBuilder()
+              .setMessage('Verification code match.User now can safely reset password.')
               .build()
             );
         } catch (error) {
