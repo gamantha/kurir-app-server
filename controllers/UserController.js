@@ -133,9 +133,7 @@ export default class UserController {
             userId: response.id,
           };
           // tambah payload lain yg dibutuhkan model droppoint
-          await this.droppointService.create({
-            userId: siteadminPayload.userId,
-          });
+          await this.droppointService.create(siteadminPayload);
           res.status(201).json(
             new ResponseBuilder()
               .setData(response)
@@ -164,7 +162,7 @@ export default class UserController {
         const senderPayload = {
           userId: response.id,
         };
-        await this.senderService.create({ userId: senderPayload.userId });
+        await this.senderService.create(senderPayload);
         res.status(201).json(
           new ResponseBuilder()
             .setData(response)
@@ -196,7 +194,8 @@ export default class UserController {
         const result = await this.service.confirmReactivation(token);
         if (result === true) {
           res
-            .status(200).json(new ResponseBuilder()
+            .status(200)
+            .json(new ResponseBuilder()
               .setMessage('Your account has been successfully reactivated')
               .build()
             );
@@ -235,7 +234,8 @@ export default class UserController {
           return;
         }
         res
-          .status(200).json(new ResponseBuilder()
+          .status(200)
+          .json(new ResponseBuilder()
             .setMessage('Reactivation email sent, please check your email.')
             .build()
           );
@@ -440,43 +440,6 @@ export default class UserController {
       res.status(400).json(
         new ResponseBuilder()
           .setMessage('error occured')
-          .setSuccess(false)
-          .build()
-      );
-    }
-  }
-
-  async proposeToCourier(req, res) {
-    // link from aws s3
-    // const { idLink, photoLink }
-    try {
-      const checkUser = await this.service.proposeModel.findOne({
-        userId: res.locals.user.id,
-      });
-      if (checkUser === null) {
-        const response = await this.service.proposeModel.create({
-          status: 'waiting',
-          userId: res.locals.user.id,
-          proposeDate: new Date(),
-        });
-        res.status(201).json(
-          new ResponseBuilder()
-            .setData(response)
-            .setSuccess(true)
-            .build()
-        );
-      } else {
-        res.status(401).json(
-          new ResponseBuilder()
-            .setMessage('We are reviewing your process. Thank you.')
-            .setSuccess(false)
-            .build()
-        );
-      }
-    } catch (error) {
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage(error.message)
           .setSuccess(false)
           .build()
       );

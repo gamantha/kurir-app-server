@@ -3,5 +3,10 @@
         "email": "test@development.com",
         "password": "testpassword",
         "username": "testingguy"
+    },
+    "sysadmin": {
+        "email": "sysadmin@development.com",
+        "password": "sysadminpassword",
+        "username": "sysadminguy"
     }
 }

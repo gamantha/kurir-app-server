@@ -2,7 +2,7 @@
 module.exports = (sequelize, DataTypes) => {
   var CourierProposal = sequelize.define('CourierProposal', {
     userId: DataTypes.INTEGER,
-    status: DataTypes.STRING, // @param {String} waiting, verified
+    status: DataTypes.STRING, // @param {String} waiting, verified, rejected
     proposeDate: DataTypes.DATE,
     rejectDate: DataTypes.DATE,
     acceptDate: DataTypes.DATE,

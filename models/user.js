@@ -43,7 +43,7 @@ module.exports = function(sequelize, DataTypes) {
     },
     password: DataTypes.STRING,
     forgotPassVeriCode: DataTypes.STRING,
-    role: DataTypes.STRING, // @param {String} sender, sysadmin, siteadmin
+    role: DataTypes.STRING, // @param {String} sender, sender+kurir, sysadmin, siteadmin
     isEmailValidated: DataTypes.BOOLEAN,
   });
   User.associate = function(models) {
