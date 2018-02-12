@@ -5,7 +5,7 @@ import SysAdmin from '../helpers/SysAdmin';
 
 const router = express.Router();
 
-router.get('/', Auth, (req, res) => {
+router.get('/', SysAdmin, (req, res) => {
   userController.get(req, res);
 });
 
