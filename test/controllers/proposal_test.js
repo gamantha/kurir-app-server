@@ -75,23 +75,23 @@ describe('Proposal Controller Test', () => {
    * Test admin proposal rejection and approvement
    */
   describe('/PUT update-proposal', () => {
-    it('should return 200 operation success', (done) => {
-      chai.request(app)
-        .put('/api/proposals/update-propose')
-        .set('Authorization', `bearer ${sysToken}`)
-        .send({
-          status: 'rejected',
-          userId,
-          rejectReason: 'reject just reject damn it',
-        })
-        .end((err, res) => {
-          res.should.have.status(200);
-          /** structural response check */
-          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
-          res.body.meta.success.should.be.eql(true);
-          done();
-        });
-    });
+    // it('should return 200 operation success', (done) => {
+    //   chai.request(app)
+    //     .put('/api/proposals/update-propose')
+    //     .set('Authorization', `bearer ${sysToken}`)
+    //     .send({
+    //       status: 'rejected',
+    //       userId,
+    //       rejectReason: 'reject just reject damn it',
+    //     })
+    //     .end((err, res) => {
+    //       res.should.have.status(200);
+    //       /** structural response check */
+    //       res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+    //       res.body.meta.success.should.be.eql(true);
+    //       done();
+    //     });
+    // });
     // Update to verified
     it('should return 200 operation success', (done) => {
       chai.request(app)
