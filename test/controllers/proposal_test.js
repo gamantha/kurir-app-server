@@ -44,8 +44,8 @@ describe('Proposal Controller Test', () => {
   });
 
   /**
-     * Test post proposal endpoint
-     */
+   * Test post proposal endpoint
+   */
   describe('/Post propose', () => {
     it('should return 201 proposed successfully', (done) => {
       chai.request(app)
@@ -85,8 +85,6 @@ describe('Proposal Controller Test', () => {
           rejectReason: 'reject just reject damn it',
         })
         .end((err, res) => {
-          console.log(res, '1')
-
           res.should.have.status(200);
           /** structural response check */
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
@@ -104,7 +102,6 @@ describe('Proposal Controller Test', () => {
           userId,
         })
         .end((err, res) => {
-          console.log(res, '2')
           res.should.have.status(200);
           res.body.meta.success.should.be.eql(true);
           res.body.data.should.be.eql({});

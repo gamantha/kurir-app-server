@@ -88,7 +88,7 @@ export default class ProposalController {
               rejectDate: null,
               rejectReason: null,
             },
-            { userId: parseInt(userId) });
+            { userId: userId });
           await this.userService.update(
             {
               role: 'sender+kurir',
@@ -99,7 +99,7 @@ export default class ProposalController {
           // TODO: send email to user to inform
           await this.service.update(
             { status, rejectDate: new Date(), acceptDate: null, rejectReason },
-            { userId: parseInt(userId) }
+            { userId: userId }
           );
           await this.userService.update({ role: 'sender' }, { id: userId });
           res.status(200).json(new ResponseBuilder().setSuccess(true).build());
