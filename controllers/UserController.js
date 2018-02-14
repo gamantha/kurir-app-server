@@ -2,7 +2,6 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 // import auth from '../helpers/Auth';
-import models from '../models';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 import {
   UserService,
