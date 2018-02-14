@@ -109,7 +109,6 @@ describe('Proposal Controller Test', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.meta.success.should.be.eql(true);
-          res.body.data.should.be.eql({});
           done();
         });
     });
