@@ -20,25 +20,27 @@ describe('Proposal Controller Test', () => {
   /**
    * Setup
    */
-  before((done) => {
+  before(done => {
     // clean up receiver table
     models.CourierProposal.destroy({
       where: {},
       truncate: true,
     });
     // login and receive token
-    chai.request(app)
+    chai
+      .request(app)
       .post('/api/user/login')
       .send({ username: user.email, password: user.password })
       .end((err, res) => {
         userToken = res.body.data.accessToken;
         userId = res.body.data.userId;
-        chai.request(app)
+        chai
+          .request(app)
           .post('/api/user/login')
           .send({ username: sysadmin.email, password: sysadmin.password })
           .end((err, res) => {
             sysToken = res.body.data.accessToken;
-            done()
+            done();
           });
       });
   });
@@ -47,9 +49,10 @@ describe('Proposal Controller Test', () => {
    * Test post proposal endpoint
    */
   describe('/Post propose', () => {
-    it('should return 201 proposed successfully', (done) => {
-      chai.request(app)
-        .post('/api/proposals/propose')
+    it('should return 201 proposed successfully', done => {
+      chai
+        .request(app)
+        .post('/api/proposal')
         .set('Authorization', `bearer ${userToken}`)
         .end((err, res) => {
           res.should.have.status(201);
@@ -58,9 +61,10 @@ describe('Proposal Controller Test', () => {
           done();
         });
     });
-    it('should return 200 already proposed', (done) => {
-      chai.request(app)
-        .post('/api/proposals/propose')
+    it('should return 200 already proposed', done => {
+      chai
+        .request(app)
+        .post('/api/proposal')
         .set('Authorization', `bearer ${userToken}`)
         .end((err, res) => {
           res.should.have.status(200);
@@ -77,7 +81,7 @@ describe('Proposal Controller Test', () => {
   describe('/PUT update-proposal', () => {
     // it('should return 200 operation success', (done) => {
     //   chai.request(app)
-    //     .put('/api/proposals/update-propose')
+    //     .put('/api/proposal')
     //     .set('Authorization', `bearer ${sysToken}`)
     //     .send({
     //       status: 'rejected',
@@ -93,9 +97,10 @@ describe('Proposal Controller Test', () => {
     //     });
     // });
     // Update to verified
-    it('should return 200 operation success', (done) => {
-      chai.request(app)
-        .put('/api/proposals/update-propose')
+    it('should return 200 operation success', done => {
+      chai
+        .request(app)
+        .put('/api/proposal')
         .set('Authorization', `bearer ${sysToken}`)
         .send({
           status: 'verified',
@@ -113,7 +118,7 @@ describe('Proposal Controller Test', () => {
   /**
    * Teardown
    */
-  after((done) => {
+  after(done => {
     done();
   });
 });
