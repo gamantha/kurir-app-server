@@ -1,6 +1,7 @@
 import express from 'express';
 import { userController } from '../controllers';
 import Auth from '../helpers/Auth';
+import SysAdmin from '../helpers/SysAdmin';
 
 const router = express.Router();
 
@@ -54,10 +55,6 @@ router.get('/confirmreactivation', (req, res) => {
 
 router.post('/check-token', (req, res) => {
   userController.checkToken(req, res);
-});
-
-router.get('/proposal', SysAdmin, (req, res) => {
-  userController.getSenderProposals(req, res);
 });
 
 module.exports = router;
