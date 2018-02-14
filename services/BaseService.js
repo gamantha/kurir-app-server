@@ -82,10 +82,15 @@ export default class BaseService {
    * Update specific rows by identifier
    * @param {Object} payload
    * @param {Object} identifier
+   * @param {Object} options
    */
-  async update(payload, identifier) {
+  async update(payload, identifier, options) {
     try {
-      const affected = await this.model.update(payload, { where: identifier });
+      const affected = await this.model.update(
+        payload,
+        { where: identifier },
+        options
+      );
       if (affected > 0) {
         try {
           const row = await this.model.findOne({ where: identifier });
