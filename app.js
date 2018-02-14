@@ -52,7 +52,7 @@ app.use('/api/receiver', receiver);
 app.use('/api/mails', mail);
 app.use('/api/google', google);
 app.use('/api/facebook', facebook);
-app.use('/api/proposals', proposal);
+app.use('/api/proposal', proposal);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
