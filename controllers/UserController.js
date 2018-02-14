@@ -385,6 +385,72 @@ export default class UserController {
     }
   }
 
+  async checkForgotPassVeriCode(req, res) {
+    const { email, veriCode } = req.body;
+
+    try {
+      const response = await this.service.findOne({
+        email,
+      });
+      if (response === null) {
+        res.status(404).json(new ResponseBuilder()
+          .setSuccess(false)
+          .setMessage('User not found')
+          .build()
+        );
+        return;
+      }
+
+      if (response.forgotPassVeriCode === veriCode) {
+        try {
+          await this.service.update({ forgotPassVeriCode: null }, { email });
+          res.status(200)
+            .json(new ResponseBuilder()
+              .setMessage('Verification code match. User now can safely reset password.')
+              .build());
+        } catch (error) {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage('There is a problem with our server please try again later')
+              .setSuccess(false)
+              .build()
+          );
+        }
+      } else {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('Verification code didn\'t match')
+            .setSuccess(false)
+            .build()
+        );
+      }
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('There is a problem with our server please try again later')
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async forgotPassword(req, res) {
+    const { email } = req.body;
+
+    const result = await this.mailService.sendVerificationCode(email);
+
+    if (result === true) {
+      res.status(200).json(new ResponseBuilder()
+        .setMessage(`verification code successfully sent to ${email}.`).build()
+      );
+    } else {
+      res.status(422).json(new ResponseBuilder()
+        .setSuccess(false)
+        .setMessage(`uh oh! there is an error when sending email to ${email}`).build()
+      );
+    }
+  }
+
   async changePassword(req, res) {
     const { old_password, password } = req.body;
     const { email } = res.locals.user;

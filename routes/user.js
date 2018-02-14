@@ -32,6 +32,10 @@ router.post('/change-password', Auth, (req, res) => {
   userController.changePassword(req, res);
 });
 
+router.post('/forgot-password', (req, res) => {
+  userController.forgotPassword(req, res);
+});
+
 router.delete('/deactivate', Auth, (req, res) => {
   userController.deactivate(req, res);
 });
