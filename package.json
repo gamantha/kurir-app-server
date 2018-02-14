@@ -7,14 +7,16 @@
     "test":
       "NODE_ENV=test mocha --compilers js:babel-core/register ./test/**/*_test.js --exit --timeout 5000",
     "babel-node": "babel-node",
-    "start": "nodemon --exec npm run babel-node -- ./app.js",
+    "start": "nodemon dist/app.js",
+    "prod:compile_server":
+      "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log",
     "build":
       "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log",
-    "server": "nodemon ./app.js --exec babel-node",
-    "heroku-postbuild": "npm install"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install"
   },
   "engines": {
-    "node": "8.9.4"
+    "node": "8.9.4",
+    "npm": "5.6.0"
   },
   "author": "bm",
   "license": "ISC",
