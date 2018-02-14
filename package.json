@@ -10,7 +10,7 @@
     "start": "nodemon dist/app.js --exec npm run babel-node",
     "build":
       "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log",
-    "serve": "node dist/app.js"
+    "serve": "npm run build && node dist/app.js"
   },
   "engines": {
     "node": "8.9.4",
