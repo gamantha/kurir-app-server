@@ -452,7 +452,16 @@ export default class UserController {
   }
 
   async changePassword(req, res) {
-    const { old_password, password } = req.body;
+    const { forgotpassword } = req.query;
+    let old_password = 'undefined';
+    let password = 'undefined';
+    if (!forgotpassword) {
+      old_password = req.body.old_password;
+      password = req.body.password;
+    } else {
+      password = req.body.password;
+      old_password = password;
+    }
     const { email } = res.locals.user;
     if (typeof old_password === 'undefined' ||
       typeof password === 'undefined') {
