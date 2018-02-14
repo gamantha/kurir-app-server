@@ -4,6 +4,8 @@ import bodyParser from 'body-parser';
 import logger from 'morgan';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
+// import Http from 'http';
+// import Io from 'socket.io';
 
 import { userController } from './controllers';
 // routes import
@@ -15,6 +17,8 @@ import google from './routes/google';
 import facebook from './routes/facebook';
 
 const app = express();
+// const http = Http.Server(app);
+// const io = Io(http);
 require('dotenv').config();
 
 app.use(cors());
@@ -71,6 +75,10 @@ app.use((err, req, res, next) => {
     },
   });
 });
+
+// io.on('connection', socket => {
+//   console.log('a socket io connected');
+// });
 
 app.listen(app.get('port'), () => {
   console.log(`app listening on ${app.get('port')}`);
