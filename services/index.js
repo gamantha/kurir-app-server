@@ -7,6 +7,7 @@ import GoogleService from './GoogleService';
 import FacebookService from './FacebookService';
 import DroppointService from './DroppointService';
 import S3Service from './S3Service';
+import CourierProposalService from './CourierProposalService';
 
 /**
  * Services export
@@ -21,4 +22,5 @@ export {
   MailService,
   DroppointService,
   S3Service,
+  CourierProposalService,
 };

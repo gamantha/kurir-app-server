@@ -64,14 +64,25 @@ export default class UserController {
     let uniqueEmail = null;
     let uniqueUsername = null;
     let validation = false;
+    const Op = Sequelize.Op;
     try {
-      uniqueEmail = await this.service.findOne({
-        email,
+      const user = await this.service.findOne({
+        [Op.or]: [
+          {
+            email: email,
+          },
+          {
+            username,
+          },
+        ],
       });
-      uniqueUsername = await this.service.findOne({
-        username,
-      });
-      if (uniqueEmail === null && uniqueUsername === null) {
+      // uniqueEmail = await this.service.findOne({
+      //   email,
+      // });
+      // uniqueUsername = await this.service.findOne({
+      //   username,
+      // });
+      if (user === null) {
         validation = true;
       } else if (uniqueEmail) {
         res.status(400).json(
@@ -203,10 +214,9 @@ export default class UserController {
         if (result === true) {
           res
             .status(200)
-            .json(
-              new ResponseBuilder()
-                .setMessage('Your account has been successfully reactivated')
-                .build()
+            .json(new ResponseBuilder()
+              .setMessage('Your account has been successfully reactivated')
+              .build()
             );
         } else {
           res.status(400).json(
@@ -244,10 +254,9 @@ export default class UserController {
         }
         res
           .status(200)
-          .json(
-            new ResponseBuilder()
-              .setMessage('Reactivation email sent, please check your email.')
-              .build()
+          .json(new ResponseBuilder()
+            .setMessage('Reactivation email sent, please check your email.')
+            .build()
           );
         return;
       } catch (error) {
@@ -409,31 +418,26 @@ export default class UserController {
       const response = await this.service.findOne({
         email,
       });
-      const userPayload = response.forgotPassVeriCode;
+      if (response === null) {
+        res.status(404).json(new ResponseBuilder()
+          .setSuccess(false)
+          .setMessage('User not found')
+          .build()
+        );
+        return;
+      }
 
-      if (userPayload === veriCode) {
+      if (response.forgotPassVeriCode === veriCode) {
         try {
-          await this.service.update(
-            {
-              forgotPassVeriCode: null,
-            },
-            {
-              email,
-            }
-          );
-          res
-            .status(200)
-            .json(
-              new ResponseBuilder()
-                .setMessage(
-                  'Verification code match. User now can safely reset password.'
-                )
-                .build()
-            );
+          await this.service.update({ forgotPassVeriCode: null }, { email });
+          res.status(200)
+            .json(new ResponseBuilder()
+              .setMessage('Verification code match. User now can safely reset password.')
+              .build());
         } catch (error) {
           res.status(400).json(
             new ResponseBuilder()
-              .setMessage(error.message)
+              .setMessage('There is a problem with our server please try again later')
               .setSuccess(false)
               .build()
           );
@@ -449,47 +453,63 @@ export default class UserController {
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage(error.message)
+          .setMessage('There is a problem with our server please try again later')
           .setSuccess(false)
           .build()
       );
     }
   }
 
-  async changePassword(req, res) {
-    const { email, password } = req.body;
+  async forgotPassword(req, res) {
+    const { email } = req.body;
 
-    const result = await this.mailService.changePassword(email, password);
+    const result = await this.mailService.sendVerificationCode(email);
 
-    const response = result
-      ? [200, `Password changed successfully! an email is sent to ${email}.`]
-      : [422, `uh oh! there is an error when updating ${email} password`];
-
-    res
-      .status(response[0])
-      .json(new ResponseBuilder().setMessage(response[1]).build());
+    if (result === true) {
+      res.status(200).json(new ResponseBuilder()
+        .setMessage(`verification code successfully sent to ${email}.`).build()
+      );
+    } else {
+      res.status(422).json(new ResponseBuilder()
+        .setSuccess(false)
+        .setMessage(`uh oh! there is an error when sending email to ${email}`).build()
+      );
+    }
   }
 
-  async deactivate(req, res) {
-    try {
-      await this.service.update(
-        {
-          deletedAt: new Date(),
-        },
-        {
-          email: res.locals.user.email,
-        }
-      );
-      res.status(200).json(
+  async changePassword(req, res) {
+    const { old_password, password } = req.body;
+    const { email } = res.locals.user;
+    if (typeof old_password === 'undefined' ||
+      typeof password === 'undefined') {
+      res.status(422).json(
         new ResponseBuilder()
-          .setMessage('User deactivated')
-          .setSuccess(true)
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+      return;
+    }
+    try {
+      const result = await this.service.changePassword(email, old_password, password);
+      if (result) {
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('password successfully changed')
+            .build()
+        );
+        return;
+      }
+      res.status(401).json(
+        new ResponseBuilder()
+          .setMessage('Wrong old password')
+          .setSuccess(false)
           .build()
       );
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage('error occured')
+          .setMessage('failed to change password')
           .setSuccess(false)
           .build()
       );
@@ -632,6 +652,28 @@ export default class UserController {
       res.status(400).json(
         new ResponseBuilder()
           .setMessage('invalid request body on status')
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+  
+  async deactivate(req, res) {
+    try {
+      await this.service.update(
+        { deletedAt: new Date() },
+        { email: res.locals.user.email }
+      );
+      res.status(200).json(
+        new ResponseBuilder()
+          .setMessage('User deactivated')
+          .setSuccess(true)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('error occured')
           .setSuccess(false)
           .build()
       );

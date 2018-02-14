@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const methods = {};
 
 const options = {
-  expiresIn: 60 * 60,
+  expiresIn: 3 * 60 * 60,
   issuer: 'courier.id-backend',
   jwtid: 'courier.user',
   subject: 'courier-access-token',

@@ -75,6 +75,41 @@ describe('Login', () => {
     });
   });
 
+  describe('Change password attempt', () => {
+    it('should return 401 wrong old password', done => {
+      chai
+        .request(app)
+        .post('/api/user/change-password')
+        .set('Authorization', `bearer ${accessToken}`)
+        .send({
+          old_password: 'randomoldpassword',
+          password: 'newpassword',
+        })
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(false);
+          done();
+        });
+    });
+    it('should return 200 password successfully changed', done => {
+      chai
+        .request(app)
+        .post('/api/user/change-password')
+        .set('Authorization', `bearer ${accessToken}`)
+        .send({
+          old_password: user.password,
+          password: user.password,
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(true);
+          done();
+        });
+    });
+  });
+
   describe('Refresh token attempt', () => {
     it('should return 400 refresh token not found', done => {
       chai
