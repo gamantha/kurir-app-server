@@ -64,25 +64,14 @@ export default class UserController {
     let uniqueEmail = null;
     let uniqueUsername = null;
     let validation = false;
-    const Op = Sequelize.Op;
     try {
-      const user = await this.service.findOne({
-        [Op.or]: [
-          {
-            email: email,
-          },
-          {
-            username,
-          },
-        ],
+      uniqueEmail = await this.service.findOne({
+        email,
       });
-      // uniqueEmail = await this.service.findOne({
-      //   email,
-      // });
-      // uniqueUsername = await this.service.findOne({
-      //   username,
-      // });
-      if (user === null) {
+      uniqueUsername = await this.service.findOne({
+        username,
+      });
+      if (uniqueEmail === null && uniqueUsername == null) {
         validation = true;
       } else if (uniqueEmail) {
         res.status(400).json(
@@ -214,9 +203,10 @@ export default class UserController {
         if (result === true) {
           res
             .status(200)
-            .json(new ResponseBuilder()
-              .setMessage('Your account has been successfully reactivated')
-              .build()
+            .json(
+              new ResponseBuilder()
+                .setMessage('Your account has been successfully reactivated')
+                .build()
             );
         } else {
           res.status(400).json(
@@ -254,9 +244,10 @@ export default class UserController {
         }
         res
           .status(200)
-          .json(new ResponseBuilder()
-            .setMessage('Reactivation email sent, please check your email.')
-            .build()
+          .json(
+            new ResponseBuilder()
+              .setMessage('Reactivation email sent, please check your email.')
+              .build()
           );
         return;
       } catch (error) {
@@ -419,10 +410,11 @@ export default class UserController {
         email,
       });
       if (response === null) {
-        res.status(404).json(new ResponseBuilder()
-          .setSuccess(false)
-          .setMessage('User not found')
-          .build()
+        res.status(404).json(
+          new ResponseBuilder()
+            .setSuccess(false)
+            .setMessage('User not found')
+            .build()
         );
         return;
       }
@@ -430,14 +422,21 @@ export default class UserController {
       if (response.forgotPassVeriCode === veriCode) {
         try {
           await this.service.update({ forgotPassVeriCode: null }, { email });
-          res.status(200)
-            .json(new ResponseBuilder()
-              .setMessage('Verification code match. User now can safely reset password.')
-              .build());
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage(
+                  'Verification code match. User now can safely reset password.'
+                )
+                .build()
+            );
         } catch (error) {
           res.status(400).json(
             new ResponseBuilder()
-              .setMessage('There is a problem with our server please try again later')
+              .setMessage(
+                'There is a problem with our server please try again later'
+              )
               .setSuccess(false)
               .build()
           );
@@ -453,7 +452,9 @@ export default class UserController {
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage('There is a problem with our server please try again later')
+          .setMessage(
+            'There is a problem with our server please try again later'
+          )
           .setSuccess(false)
           .build()
       );
@@ -466,13 +467,19 @@ export default class UserController {
     const result = await this.mailService.sendVerificationCode(email);
 
     if (result === true) {
-      res.status(200).json(new ResponseBuilder()
-        .setMessage(`verification code successfully sent to ${email}.`).build()
-      );
+      res
+        .status(200)
+        .json(
+          new ResponseBuilder()
+            .setMessage(`verification code successfully sent to ${email}.`)
+            .build()
+        );
     } else {
-      res.status(422).json(new ResponseBuilder()
-        .setSuccess(false)
-        .setMessage(`uh oh! there is an error when sending email to ${email}`).build()
+      res.status(422).json(
+        new ResponseBuilder()
+          .setSuccess(false)
+          .setMessage(`uh oh! there is an error when sending email to ${email}`)
+          .build()
       );
     }
   }
@@ -480,8 +487,10 @@ export default class UserController {
   async changePassword(req, res) {
     const { old_password, password } = req.body;
     const { email } = res.locals.user;
-    if (typeof old_password === 'undefined' ||
-      typeof password === 'undefined') {
+    if (
+      typeof old_password === 'undefined' ||
+      typeof password === 'undefined'
+    ) {
       res.status(422).json(
         new ResponseBuilder()
           .setMessage('invalid payload')
@@ -491,13 +500,19 @@ export default class UserController {
       return;
     }
     try {
-      const result = await this.service.changePassword(email, old_password, password);
+      const result = await this.service.changePassword(
+        email,
+        old_password,
+        password
+      );
       if (result) {
-        res.status(200).json(
-          new ResponseBuilder()
-            .setMessage('password successfully changed')
-            .build()
-        );
+        res
+          .status(200)
+          .json(
+            new ResponseBuilder()
+              .setMessage('password successfully changed')
+              .build()
+          );
         return;
       }
       res.status(401).json(
@@ -516,148 +531,6 @@ export default class UserController {
     }
   }
 
-  async proposeToCourier(req, res) {
-    try {
-      // make sure sender not double request
-      const checkUser = await this.service.proposeModel.findOne({
-        // where must provided, otherwise won't work
-        where: {
-          UserId: res.locals.user.id,
-        },
-      });
-      // first proposal from user
-      // TODO: send email to user in this first attempt
-      if (checkUser === null) {
-        const response = await this.service.proposeModel.create({
-          status: 'waiting',
-          UserId: res.locals.user.id,
-          proposeDate: new Date(),
-        });
-        res.status(201).json(
-          new ResponseBuilder()
-            .setData(response)
-            .setMessage(
-              'We\'ll be reviewing your proposal and respond very soon. Thank you'
-            )
-            .setSuccess(true)
-            .build()
-        );
-        // user that rejected send another request
-      } else if (checkUser.status === 'rejected') {
-        // TODO: send email to user
-        await this.service.proposeModel.update(
-          {
-            status: 'waiting',
-          },
-          {
-            where: {
-              UserId: res.locals.user.id,
-            },
-          }
-        );
-        res.status(200).json(
-          new ResponseBuilder()
-            .setSuccess(true)
-            .setMessage(
-              'We\'ll be reviewing your proposal and respond very soon. Thank you'
-            )
-            .build()
-        );
-      } else if (checkUser.status === 'verified') {
-        res.status(401).json(
-          new ResponseBuilder()
-            .setMessage('You already a courier')
-            .setSuccess(false)
-            .build()
-        );
-      } else {
-        res.status(200).json(
-          new ResponseBuilder()
-            .setMessage(
-              'You already submit upgrade proposal. Please wait for our team to reach you.'
-            )
-            .setSuccess(false)
-            .build()
-        );
-      }
-    } catch (error) {
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage(error.message)
-          .setSuccess(false)
-          .build()
-      );
-    }
-  }
-
-  // sysadmin method
-  async updateSenderProposal(req, res) {
-    const { status, userId, rejectReason } = req.body;
-    if (
-      status === 'verified' ||
-      status === 'rejected' ||
-      status === 'waiting'
-    ) {
-      try {
-        if (status === 'verified') {
-          // TODO: send email to user to inform
-          const updated = await this.service.proposalAccepted(
-            status,
-            rejectReason,
-            userId
-          );
-          res.status(200).json(
-            new ResponseBuilder()
-              .setData({ userId: parseInt(userId), updated: updated })
-              .setSuccess(true)
-              .build()
-          );
-        } else if (status === 'rejected') {
-          // TODO: send email to user to inform
-          const updated = await this.service.proposalRejected(
-            status,
-            rejectReason,
-            userId
-          );
-          res.status(200).json(
-            new ResponseBuilder()
-              .setData({ userId: parseInt(userId), updated: updated })
-              .setSuccess(true)
-              .build()
-          );
-        } else {
-          // TODO: send email to user to inform
-          // status:waiting
-          const updated = await this.service.proposalWaiting(
-            status,
-            rejectReason,
-            userId
-          );
-          res.status(200).json(
-            new ResponseBuilder()
-              .setData({ userId: parseInt(userId), updated: updated })
-              .setSuccess(true)
-              .build()
-          );
-        }
-      } catch (error) {
-        res.status(400).json(
-          new ResponseBuilder()
-            .setMessage(error.message)
-            .setSuccess(false)
-            .build()
-        );
-      }
-    } else {
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage('invalid request body on status')
-          .setSuccess(false)
-          .build()
-      );
-    }
-  }
-  
   async deactivate(req, res) {
     try {
       await this.service.update(
@@ -787,30 +660,6 @@ export default class UserController {
           .setSuccess(false)
           .build()
       );
-    }
-  }
-
-  async getSenderProposals(req, res) {
-    try {
-      const result = await this.service.proposeModel.findAll({
-        include: [
-          {
-            model: models.User,
-            attributes: {
-              exclude: ['password', 'forgotPassVeriCode'],
-            },
-          },
-        ],
-      });
-      // const user = await result.getUser();
-      res.status(200).json(
-        new ResponseBuilder()
-          .setData(result)
-          .setSuccess(true)
-          .build()
-      );
-    } catch (error) {
-      res.status(400).json(new ResponseBuilder().setSuccess(false).build());
     }
   }
 }
