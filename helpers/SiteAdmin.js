@@ -25,7 +25,10 @@ export default async (req, res, next) => {
        * Pass token payload to next function
        * it'll be accessible through res.locals.user
        * */
-      const token = await tokenService.findOne({ accessToken: token, userAgent: req.headers['user-agent'] });
+      const token = await tokenService.findOne({
+        accessToken: token,
+        userAgent: req.headers['user-agent'],
+      });
       if (token === null) {
         res.status(401).json(
           new ResponseBuilder()
@@ -36,7 +39,7 @@ export default async (req, res, next) => {
         return;
       }
       const user = await userService.findOne({ email: result.email });
-      if (user.role !== 'admin') {
+      if (user.role !== 'siteadmin') {
         res.status(401).json(
           new ResponseBuilder()
             .setMessage('You are not authorized to access this page.')
@@ -48,6 +51,7 @@ export default async (req, res, next) => {
       res.locals.user = {
         email: result.email,
         id: result.id,
+        role: result.role,
       };
     } catch (error) {
       throw Error(error);
