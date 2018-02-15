@@ -110,24 +110,33 @@ export default class MailService extends BaseService {
    * @return {Boolean}
    */
   async checkEmail(email) {
-    const validateEmailUri = buildEmailValidationUri(email);
-    const validEmail = await axios.get(validateEmailUri);
+    const userEmail = await this.findOne({ email });
+    if (!userEmail.dataValues.isEmailValidated) {
+      const validateEmailUri = buildEmailValidationUri(email);
+      const validEmail = await axios.get(validateEmailUri);
 
-    if (validEmail && validEmail.data && validEmail.data.is_valid) {
-      const updateValidEmail = await this.update(
-        { isEmailValidated: true },
-        { email: email }
-      );
+      if (validEmail && validEmail.data && validEmail.data.is_valid) {
+        const updateValidEmail = await this.update(
+          { isEmailValidated: true },
+          { email: email }
+        );
 
-      if (updateValidEmail) {
-        const welcomeMessage = this.setMailgunTemplate(email, 'welcome', null);
-        await this.sendMailgunEmail(welcomeMessage);
-        return true;
+        if (updateValidEmail) {
+          const welcomeMessage = this.setMailgunTemplate(
+            email,
+            'welcome',
+            null
+          );
+          await this.sendMailgunEmail(welcomeMessage);
+          return true;
+        }
+        return false;
       }
+
+      return false;
+    } else {
       return false;
     }
-
-    return false;
   }
 
   /**

@@ -14,7 +14,12 @@ export default class MailController {
 
     const response = result
       ? [200, `Email ${email} is valid, we are pleased you are being here!`]
-      : [422, `${email ? email : 'email'} is not valid!`];
+      : [
+        422,
+        `${
+          email ? email : 'email'
+        } is not valid or your email is already verified!`,
+      ];
 
     res
       .status(response[0])
