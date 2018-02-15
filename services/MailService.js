@@ -143,8 +143,7 @@ export default class MailService extends BaseService {
       subject: 'email-validation',
     });
     const userEmail = await this.findOne({ email });
-
-    if (userEmail) {
+    if (userEmail && !userEmail.dataValues.isEmailValidated) {
       const verificationLink = `${
         config.domain.base_url
       }/api/mail/tokens/${tokenifyEmail}`;
