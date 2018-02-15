@@ -11,7 +11,7 @@
     "build":
       "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./test,./seeders",
     "serve": "nodemon dist/app.js",
-    "clean": "rm -rf ./dist"
+    "clean": "rm -rf ./dist && npm run build"
   },
   "engines": {
     "node": "8.9.4",
