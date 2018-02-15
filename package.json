@@ -7,10 +7,11 @@
     "test":
       "NODE_ENV=test mocha --compilers js:babel-core/register ./test/**/*_test.js --exit --timeout 5000",
     "babel-node": "babel-node",
-    "start": "nodemon dist/app.js --exec npm run babel-node",
+    "start": "nodemon --exec npm run babel-node -- ./app.js",
     "build":
       "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log",
-    "serve": "npm run build && node dist/app.js"
+    "serve": "npm run build && node dist/app.js",
+    "clean": "rm -rf ./dist"
   },
   "engines": {
     "node": "8.9.4",
@@ -44,6 +45,8 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-inline-json-import": "^0.2.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
     "eslint": "^4.11.0",
