@@ -227,48 +227,62 @@ var MailService = function (_BaseService) {
     key: 'checkEmail',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(email) {
-        var validateEmailUri, validEmail, updateValidEmail, welcomeMessage;
+        var userEmail, validateEmailUri, validEmail, updateValidEmail, welcomeMessage;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                validateEmailUri = (0, _constants.buildEmailValidationUri)(email);
-                _context2.next = 3;
-                return _axios2.default.get(validateEmailUri);
+                _context2.next = 2;
+                return this.findOne({ email: email });
 
-              case 3:
-                validEmail = _context2.sent;
+              case 2:
+                userEmail = _context2.sent;
 
-                if (!(validEmail && validEmail.data && validEmail.data.is_valid)) {
-                  _context2.next = 14;
+                if (userEmail.dataValues.isEmailValidated) {
+                  _context2.next = 21;
                   break;
                 }
 
+                validateEmailUri = (0, _constants.buildEmailValidationUri)(email);
                 _context2.next = 7;
-                return this.update({ isEmailValidated: true }, { email: email });
+                return _axios2.default.get(validateEmailUri);
 
               case 7:
+                validEmail = _context2.sent;
+
+                if (!(validEmail && validEmail.data && validEmail.data.is_valid)) {
+                  _context2.next = 18;
+                  break;
+                }
+
+                _context2.next = 11;
+                return this.update({ isEmailValidated: true }, { email: email });
+
+              case 11:
                 updateValidEmail = _context2.sent;
 
                 if (!updateValidEmail) {
-                  _context2.next = 13;
+                  _context2.next = 17;
                   break;
                 }
 
                 welcomeMessage = this.setMailgunTemplate(email, 'welcome', null);
-                _context2.next = 12;
+                _context2.next = 16;
                 return this.sendMailgunEmail(welcomeMessage);
 
-              case 12:
+              case 16:
                 return _context2.abrupt('return', true);
 
-              case 13:
+              case 17:
                 return _context2.abrupt('return', false);
 
-              case 14:
+              case 18:
                 return _context2.abrupt('return', false);
 
-              case 15:
+              case 21:
+                return _context2.abrupt('return', false);
+
+              case 22:
               case 'end':
                 return _context2.stop();
             }
