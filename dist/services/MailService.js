@@ -310,7 +310,7 @@ var MailService = function (_BaseService) {
               case 3:
                 userEmail = _context3.sent;
 
-                if (!userEmail) {
+                if (!(userEmail && !userEmail.dataValues.isEmailValidated)) {
                   _context3.next = 10;
                   break;
                 }

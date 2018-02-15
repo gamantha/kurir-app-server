@@ -85,7 +85,7 @@ var MailController = function () {
 
               case 3:
                 result = _context2.sent;
-                response = result ? [200, 'Successfully sent verification link to ' + email] : [422, (email ? email : 'email') + ' is not valid or registered!'];
+                response = result ? [200, 'Successfully sent verification link to ' + email] : [422, (email ? email : 'email') + ' is not valid or you already verified your email!'];
 
 
                 res.status(response[0]).json(new _ResponseBuilder2.default().setMessage(response[1]).build());
