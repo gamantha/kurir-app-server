@@ -6,8 +6,7 @@ import BaseService from './BaseService';
 import randtoken from 'rand-token';
 import models from '../models';
 import mailgun from 'mailgun-js';
-
-const config = require('../config/config.json');
+import config from '../config/config.json';
 
 import { buildEmailValidationUri } from '../helpers/constants';
 
@@ -23,7 +22,7 @@ export default class MailService extends BaseService {
     return mailgun({
       apiKey: process.env.mailgunPrivateApiKey,
       publicApiKey: process.env.mailgunPublicValidationKey,
-      domain: process.env.mailgunDomain
+      domain: process.env.mailgunDomain,
     });
   }
 
@@ -53,7 +52,7 @@ export default class MailService extends BaseService {
     return randtoken
       .generator({
         source: 'math',
-        chars: 'numeric'
+        chars: 'numeric',
       })
       .generate(6);
   }
@@ -96,7 +95,7 @@ export default class MailService extends BaseService {
       from: 'Kurir.id <noreply@kurir.id>',
       to: email,
       subject: subject,
-      html: html
+      html: html,
     };
   }
 
@@ -141,13 +140,14 @@ export default class MailService extends BaseService {
     const tokenifyEmail = jwt.sign({ email }, process.env.SECRET, {
       expiresIn: '1h',
       issuer: 'kurir-id-backend',
-      subject: 'email-validation'
+      subject: 'email-validation',
     });
     const userEmail = await this.findOne({ email });
 
     if (userEmail) {
       const verificationLink = `${
-        config.domain.base_url}/api/mails/tokens/${tokenifyEmail}`;
+        config.domain.base_url
+      }/api/mails/tokens/${tokenifyEmail}`;
 
       const verificationMessage = this.setMailgunTemplate(
         email,
@@ -173,13 +173,14 @@ export default class MailService extends BaseService {
       expiresIn: '1h',
       issuer: 'courier.id-backend',
       jwtid: 'courier.user',
-      subject: 'reactivate-account'
+      subject: 'reactivate-account',
     });
     try {
       const userEmail = await this.findOne({ email });
       if (userEmail) {
         const verificationLink = `${
-          config.domain.base_url}/api/mails/tokens/${token}`;
+          config.domain.base_url
+        }/api/mails/tokens/${token}`;
 
         const verificationMessage = this.setMailgunTemplate(
           email,
@@ -199,7 +200,6 @@ export default class MailService extends BaseService {
       throw Error(error);
     }
   }
-
 
   /**
    * Send verification code to the email when user forgot the password
