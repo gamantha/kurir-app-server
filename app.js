@@ -49,7 +49,7 @@ app.use(
 app.use('/api/item', item);
 app.use('/api/user', user);
 app.use('/api/receiver', receiver);
-app.use('/api/mails', mail);
+app.use('/api/mail', mail);
 app.use('/api/google', google);
 app.use('/api/facebook', facebook);
 app.use('/api/proposal', proposal);
