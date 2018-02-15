@@ -147,7 +147,7 @@ export default class MailService extends BaseService {
     if (userEmail) {
       const verificationLink = `${
         config.domain.base_url
-      }/api/mails/tokens/${tokenifyEmail}`;
+      }/api/mail/tokens/${tokenifyEmail}`;
 
       const verificationMessage = this.setMailgunTemplate(
         email,
@@ -180,7 +180,7 @@ export default class MailService extends BaseService {
       if (userEmail) {
         const verificationLink = `${
           config.domain.base_url
-        }/api/mails/tokens/${token}`;
+        }/api/mail/tokens/${token}`;
 
         const verificationMessage = this.setMailgunTemplate(
           email,
