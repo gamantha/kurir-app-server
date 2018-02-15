@@ -80,7 +80,7 @@ var config = {
     use_env_variable: 'DATABASE_URL'
   },
   domain: {
-    base_url: 'http://localhost:3000'
+    base_url: 'https://kurirbackend-dev.herokuapp.com'
   }
 };
 
@@ -315,7 +315,7 @@ var MailService = function (_BaseService) {
                   break;
                 }
 
-                verificationLink = config.domain.base_url + '/api/mails/tokens/' + tokenifyEmail;
+                verificationLink = config.domain.base_url + '/api/mail/tokens/' + tokenifyEmail;
                 verificationMessage = this.setMailgunTemplate(email, 'link', verificationLink);
                 _context3.next = 9;
                 return this.sendMailgunEmail(verificationMessage);
@@ -375,7 +375,7 @@ var MailService = function (_BaseService) {
                   break;
                 }
 
-                verificationLink = config.domain.base_url + '/api/mails/tokens/' + token;
+                verificationLink = config.domain.base_url + '/api/mail/tokens/' + token;
                 verificationMessage = this.setMailgunTemplate(email, 'reactivate-account', verificationLink);
                 _context4.prev = 8;
                 _context4.next = 11;
