@@ -84,7 +84,7 @@ export default class CourierProposalService extends BaseService {
         plain: true,
       }
     );
-    await this.update(
+    await this.userModel.update(
       {
         role: 'sender',
       },
