@@ -3,7 +3,7 @@ import express from 'express';
 const router = express.Router();
 import { mailController } from '../controllers';
 
-router.get('/tokens/:token', (req, res) => {
+router.get('/token/:token', (req, res) => {
   mailController.checkEmail(req, res);
 });
 
