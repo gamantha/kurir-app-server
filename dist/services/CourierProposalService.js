@@ -182,7 +182,7 @@ var CourierProposalService = function (_BaseService) {
               case 2:
                 updated = _context3.sent;
                 _context3.next = 5;
-                return this.update({
+                return this.userModel.update({
                   role: 'sender'
                 }, {
                   where: {

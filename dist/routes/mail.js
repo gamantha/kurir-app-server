@@ -11,7 +11,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var router = _express2.default.Router();
 
 
-router.get('/tokens/:token', function (req, res) {
+router.get('/token/:token', function (req, res) {
   _controllers.mailController.checkEmail(req, res);
 });
 
