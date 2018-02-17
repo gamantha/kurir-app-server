@@ -738,56 +738,65 @@ var UserController = function () {
     key: 'changePassword',
     value: function () {
       var _ref10 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee10(req, res) {
-        var _req$body4, old_password, password, email, result;
-
+        var forgotpassword, old_password, password, email, result;
         return _regenerator2.default.wrap(function _callee10$(_context10) {
           while (1) {
             switch (_context10.prev = _context10.next) {
               case 0:
-                _req$body4 = req.body, old_password = _req$body4.old_password, password = _req$body4.password;
+                forgotpassword = req.query.forgotpassword;
+                old_password = 'undefined';
+                password = 'undefined';
+
+                if (!forgotpassword) {
+                  old_password = req.body.old_password;
+                  password = req.body.password;
+                } else {
+                  password = req.body.password;
+                  old_password = password;
+                }
                 email = res.locals.user.email;
 
                 if (!(typeof old_password === 'undefined' || typeof password === 'undefined')) {
-                  _context10.next = 5;
+                  _context10.next = 8;
                   break;
                 }
 
                 res.status(422).json(new _ResponseBuilder2.default().setMessage('invalid payload').setSuccess(false).build());
                 return _context10.abrupt('return');
 
-              case 5:
-                _context10.prev = 5;
-                _context10.next = 8;
+              case 8:
+                _context10.prev = 8;
+                _context10.next = 11;
                 return this.service.changePassword(email, old_password, password);
 
-              case 8:
+              case 11:
                 result = _context10.sent;
 
                 if (!result) {
-                  _context10.next = 12;
+                  _context10.next = 15;
                   break;
                 }
 
                 res.status(200).json(new _ResponseBuilder2.default().setMessage('password successfully changed').build());
                 return _context10.abrupt('return');
 
-              case 12:
+              case 15:
                 res.status(401).json(new _ResponseBuilder2.default().setMessage('Wrong old password').setSuccess(false).build());
-                _context10.next = 18;
+                _context10.next = 21;
                 break;
 
-              case 15:
-                _context10.prev = 15;
-                _context10.t0 = _context10['catch'](5);
+              case 18:
+                _context10.prev = 18;
+                _context10.t0 = _context10['catch'](8);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage('failed to change password').setSuccess(false).build());
 
-              case 18:
+              case 21:
               case 'end':
                 return _context10.stop();
             }
           }
-        }, _callee10, this, [[5, 15]]);
+        }, _callee10, this, [[8, 18]]);
       }));
 
       function changePassword(_x19, _x20) {
@@ -837,7 +846,7 @@ var UserController = function () {
     key: 'uploadImg',
     value: function () {
       var _ref12 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee12(req, res) {
-        var _req$body5, base64, type, extension, buf, encodeEmail, link, imgPayload;
+        var _req$body4, base64, type, extension, buf, encodeEmail, link, imgPayload;
 
         return _regenerator2.default.wrap(function _callee12$(_context12) {
           while (1) {
@@ -851,7 +860,7 @@ var UserController = function () {
                  * @param {string} extension jpg, png, etc.
                  */
                 // base64 format: data:image/${extension};base64,${base64}
-                _req$body5 = req.body, base64 = _req$body5.base64, type = _req$body5.type, extension = _req$body5.extension;
+                _req$body4 = req.body, base64 = _req$body4.base64, type = _req$body4.type, extension = _req$body4.extension;
 
                 if (!(type !== 'ID' && type !== 'Photo')) {
                   _context12.next = 5;
