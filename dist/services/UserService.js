@@ -126,60 +126,41 @@ var UserService = function (_BaseService) {
     /**
      * Change user password here.
      * @param {String} email
-     * @param {String} oldPassword
      * @param {String} newPassword
      */
 
   }, {
     key: 'changePassword',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(email, oldPassword, newPassword) {
-        var user, saltRounds, hash;
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(email, newPassword) {
+        var saltRounds, hash;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.next = 2;
-                return this.findOne({ email: email });
-
-              case 2:
-                user = _context2.sent;
-
-                if (!_bcrypt2.default.compareSync(oldPassword, user.password)) {
-                  _context2.next = 17;
-                  break;
-                }
-
+                _context2.prev = 0;
                 saltRounds = 10;
                 hash = _bcrypt2.default.hashSync(newPassword, saltRounds);
-                _context2.prev = 6;
-                _context2.next = 9;
+                _context2.next = 5;
                 return this.update({ password: hash }, { email: email });
 
-              case 9:
+              case 5:
                 return _context2.abrupt('return', true);
 
-              case 12:
-                _context2.prev = 12;
-                _context2.t0 = _context2['catch'](6);
+              case 8:
+                _context2.prev = 8;
+                _context2.t0 = _context2['catch'](0);
                 throw Error(_context2.t0.message);
 
-              case 15:
-                _context2.next = 18;
-                break;
-
-              case 17:
-                return _context2.abrupt('return', false);
-
-              case 18:
+              case 11:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[6, 12]]);
+        }, _callee2, this, [[0, 8]]);
       }));
 
-      function changePassword(_x2, _x3, _x4) {
+      function changePassword(_x2, _x3) {
         return _ref2.apply(this, arguments);
       }
 
