@@ -37,6 +37,7 @@ describe('Login', () => {
           res.should.have.status(404);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('username or email not found');
           done();
         });
     });
@@ -52,6 +53,7 @@ describe('Login', () => {
           res.should.have.status(400);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('invalid payload');
           done();
         });
     });
@@ -65,11 +67,12 @@ describe('Login', () => {
         })
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.data.should.include.keys(TOKEN_RESPONSE_STRUCTURE);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           accessToken = res.body.data.accessToken;
           refreshToken = res.body.data.refreshToken;
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql('Logged in successfully');
           done();
         });
     });
@@ -83,43 +86,46 @@ describe('Login', () => {
         .set('Authorization', `bearer ${accessToken}`)
         .send({
           old_password: 'randomoldpassword',
-          password: 'newpassword',
+          new_password: 'newpassword',
         })
         .end((err, res) => {
           res.should.have.status(401);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('Wrong old password');
           done();
         });
     });
-    it('should return 200 password successfully changed', done => {
+    it('PARAMS FALSE: should return 200 password successfully changed', done => {
       chai
         .request(app)
         .post('/api/user/change-password?forgotpassword=false')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
           old_password: user.password,
-          password: user.password,
+          new_password: user.password,
         })
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql('password successfully changed');
           done();
         });
     });
-    it('should return 200 password successfully changed', done => {
+    it('PARAMS TRUE: should return 200 password successfully changed', done => {
       chai
         .request(app)
         .post('/api/user/change-password?forgotpassword=true')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
-          password: user.password,
+          new_password: user.password,
         })
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql('password successfully changed');
           done();
         });
     });
@@ -138,10 +144,11 @@ describe('Login', () => {
           res.should.have.status(400);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('refresh token not found');
           done();
         });
     });
-    it('should return 401 unauthenticated', done => {
+    it('IF TOKEN IS RANDOM: should return 401 unauthenticated', done => {
       chai
         .request(app)
         .post('/api/user/refreshtoken')
@@ -153,10 +160,11 @@ describe('Login', () => {
           res.should.have.status(401);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('invalid token provided');
           done();
         });
     });
-    it('should return 200 token refreshed', done => {
+    it('SUCCESS REFRESH: should return 200 token refreshed', done => {
       chai
         .request(app)
         .post('/api/user/refreshtoken')
@@ -170,6 +178,9 @@ describe('Login', () => {
           res.body.data.should.include.keys(TOKEN_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
           accessToken = res.body.data.accessToken;
+          res.body.meta.message.should.be.eql(
+            'Access token successfully refreshed.'
+          );
           done();
         });
     });
@@ -182,10 +193,11 @@ describe('Login', () => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql('operations success');
           done();
         });
     });
-    it('should return 401 unauthorized', done => {
+    it('USER NOT LOGGED IN YET: should return 401 unauthorized', done => {
       chai
         .request(app)
         .post('/api/user/logout')
@@ -194,14 +206,16 @@ describe('Login', () => {
           res.should.have.status(401);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('you have not logged in');
           done();
         });
     });
   });
 
   describe('deactivate account', () => {
-    it('should return re-logged in successfully', (done) => {
-      chai.request(app)
+    it('should return re-logged in successfully', done => {
+      chai
+        .request(app)
         .post('/api/user/login')
         .send({
           username: user.email,
@@ -214,21 +228,24 @@ describe('Login', () => {
           accessToken = res.body.data.accessToken;
           refreshToken = res.body.data.refreshToken;
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql('Logged in successfully');
           done();
         });
     });
-    it('should return 200', (done) => {
-      chai.request(app)
+    it('success deactivate account should return 200', done => {
+      chai
+        .request(app)
         .delete('/api/user/deactivate')
         .set('Authorization', `bearer ${accessToken}`)
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql('User deactivated');
           done();
         });
     });
-    it('should return 401 unauthorized', done => {
+    it('if random token provided: should return 401 unauthorized', done => {
       chai
         .request(app)
         .delete('/api/user/deactivate')
@@ -237,13 +254,14 @@ describe('Login', () => {
           res.should.have.status(401);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('invalid token provided');
           done();
         });
     });
   });
 
   describe('reactivate account', () => {
-    it('should return 422 invalid payload', done => {
+    it('if email not provided: should return 422 invalid payload', done => {
       chai
         .request(app)
         .post('/api/user/reactivate')
@@ -251,10 +269,11 @@ describe('Login', () => {
           res.should.have.status(422);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('Invalid payload');
           done();
         });
     });
-    it('should return 404 email not found', done => {
+    it('if email not found: should return 404 email not found', done => {
       chai
         .request(app)
         .post('/api/user/reactivate')
@@ -265,6 +284,7 @@ describe('Login', () => {
           res.should.have.status(404);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('invalid email');
           done();
         });
     });
@@ -284,10 +304,13 @@ describe('Login', () => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql(
+            'Reactivation email sent, please check your email.'
+          );
           done();
         });
     });
-    it('should return 404  invalid email', done => {
+    it('if email not found on database: should return 404 invalid email', done => {
       MailService.prototype.sendReactivateAccountLink.restore();
       const stub = sinon
         .stub(MailService.prototype, 'sendReactivateAccountLink')
@@ -304,6 +327,7 @@ describe('Login', () => {
           res.should.have.status(404);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('invalid email');
           done();
         });
     });
@@ -318,6 +342,7 @@ describe('Login', () => {
           res.should.have.status(422);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('invalid payload');
           done();
         });
     });
@@ -334,10 +359,13 @@ describe('Login', () => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql(
+            'Your account has been successfully reactivated'
+          );
           done();
         });
     });
-    it('should return 400 invalid token', done => {
+    it('if token not valid: should return 400 invalid token', done => {
       UserService.prototype.confirmReactivation.restore();
 
       const stub = sinon
@@ -352,6 +380,7 @@ describe('Login', () => {
           res.should.have.status(400);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
+          res.body.meta.message.should.be.eql('Fail to reactivate your email');
           done();
         });
     });
