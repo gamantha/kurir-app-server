@@ -13,7 +13,7 @@ export default class UserService extends BaseService {
   }
 
   /**
-   * Confirm the token validity. 
+   * Confirm the token validity.
    * @param {String} token
    */
   async confirmReactivation(token) {
@@ -38,23 +38,17 @@ export default class UserService extends BaseService {
 
   /**
    * Change user password here.
-   * @param {String} email 
-   * @param {String} oldPassword 
-   * @param {String} newPassword 
+   * @param {String} email
+   * @param {String} newPassword
    */
-  async changePassword(email, oldPassword, newPassword) {
-    const user = await this.findOne({ email });
-    if (bcrypt.compareSync(oldPassword, user.password)) {
+  async changePassword(email, newPassword) {
+    try {
       const saltRounds = 10;
       const hash = bcrypt.hashSync(newPassword, saltRounds);
-      try {
-        await this.update({ password: hash }, { email });
-        return true;
-      } catch (error) {
-        throw Error(error.message);
-      }
-    } else {
-      return false;
+      await this.update({ password: hash }, { email });
+      return true;
+    } catch (error) {
+      throw Error(error.message);
     }
   }
 }

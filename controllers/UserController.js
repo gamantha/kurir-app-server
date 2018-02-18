@@ -195,9 +195,10 @@ export default class UserController {
         if (result === true) {
           res
             .status(200)
-            .json(new ResponseBuilder()
-              .setMessage('Your account has been successfully reactivated')
-              .build()
+            .json(
+              new ResponseBuilder()
+                .setMessage('Your account has been successfully reactivated')
+                .build()
             );
         } else {
           res.status(400).json(
@@ -235,9 +236,10 @@ export default class UserController {
         }
         res
           .status(200)
-          .json(new ResponseBuilder()
-            .setMessage('Reactivation email sent, please check your email.')
-            .build()
+          .json(
+            new ResponseBuilder()
+              .setMessage('Reactivation email sent, please check your email.')
+              .build()
           );
         return;
       } catch (error) {
@@ -393,10 +395,11 @@ export default class UserController {
         email,
       });
       if (response === null) {
-        res.status(404).json(new ResponseBuilder()
-          .setSuccess(false)
-          .setMessage('User not found')
-          .build()
+        res.status(404).json(
+          new ResponseBuilder()
+            .setSuccess(false)
+            .setMessage('User not found')
+            .build()
         );
         return;
       }
@@ -404,14 +407,21 @@ export default class UserController {
       if (response.forgotPassVeriCode === veriCode) {
         try {
           await this.service.update({ forgotPassVeriCode: null }, { email });
-          res.status(200)
-            .json(new ResponseBuilder()
-              .setMessage('Verification code match. User now can safely reset password.')
-              .build());
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage(
+                  'Verification code match. User now can safely reset password.'
+                )
+                .build()
+            );
         } catch (error) {
           res.status(400).json(
             new ResponseBuilder()
-              .setMessage('There is a problem with our server please try again later')
+              .setMessage(
+                'There is a problem with our server please try again later'
+              )
               .setSuccess(false)
               .build()
           );
@@ -427,7 +437,9 @@ export default class UserController {
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage('There is a problem with our server please try again later')
+          .setMessage(
+            'There is a problem with our server please try again later'
+          )
           .setSuccess(false)
           .build()
       );
@@ -440,59 +452,85 @@ export default class UserController {
     const result = await this.mailService.sendVerificationCode(email);
 
     if (result === true) {
-      res.status(200).json(new ResponseBuilder()
-        .setMessage(`verification code successfully sent to ${email}.`).build()
-      );
+      res
+        .status(200)
+        .json(
+          new ResponseBuilder()
+            .setMessage(`verification code successfully sent to ${email}.`)
+            .build()
+        );
     } else {
-      res.status(422).json(new ResponseBuilder()
-        .setSuccess(false)
-        .setMessage(`uh oh! there is an error when sending email to ${email}`).build()
+      res.status(422).json(
+        new ResponseBuilder()
+          .setSuccess(false)
+          .setMessage(`uh oh! there is an error when sending email to ${email}`)
+          .build()
       );
     }
   }
 
   async changePassword(req, res) {
     const { forgotpassword } = req.query;
-    let old_password = 'undefined';
-    let password = 'undefined';
-    if (!forgotpassword) {
-      old_password = req.body.old_password;
-      password = req.body.password;
-    } else {
-      password = req.body.password;
-      old_password = password;
-    }
-    const { email } = res.locals.user;
-    if (typeof old_password === 'undefined' ||
-      typeof password === 'undefined') {
-      res.status(422).json(
-        new ResponseBuilder()
-          .setMessage('invalid payload')
-          .setSuccess(false)
-          .build()
-      );
-      return;
-    }
+    const { old_password, new_password } = req.body;
+    const email = res.locals.user.email;
     try {
-      const result = await this.service.changePassword(email, old_password, password);
-      if (result) {
-        res.status(200).json(
+      if (forgotpassword === 'false') {
+        const user = await this.service.findOne({ email });
+        const oldPass = bcrypt.compareSync(
+          old_password,
+          user.dataValues.password
+        );
+        // if oldPass same with in db
+        if (oldPass) {
+          const result = await this.service.changePassword(
+            email,
+            new_password,
+            forgotpassword
+          );
+          if (result) {
+            res
+              .status(200)
+              .json(
+                new ResponseBuilder()
+                  .setMessage('password successfully changed')
+                  .build()
+              );
+          }
+        } else {
+          res.status(401).json(
+            new ResponseBuilder()
+              .setMessage('Wrong old password')
+              .setSuccess(false)
+              .build()
+          );
+        }
+      } else if (forgotpassword === 'true') {
+        const result = await this.service.changePassword(
+          email,
+          new_password,
+          forgotpassword
+        );
+        if (result) {
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage('password successfully changed')
+                .build()
+            );
+        }
+      } else {
+        res.status(400).json(
           new ResponseBuilder()
-            .setMessage('password successfully changed')
+            .setMessage('forgot password params value is invalid')
+            .setSuccess(false)
             .build()
         );
-        return;
       }
-      res.status(401).json(
-        new ResponseBuilder()
-          .setMessage('Wrong old password')
-          .setSuccess(false)
-          .build()
-      );
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage('failed to change password')
+          .setMessage(error.message)
           .setSuccess(false)
           .build()
       );
