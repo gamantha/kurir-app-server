@@ -35,7 +35,6 @@ export default class UserService extends BaseService {
       throw Error(error);
     }
   }
-
   /**
    * Change user password here.
    * @param {String} email

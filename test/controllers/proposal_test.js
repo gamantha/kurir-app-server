@@ -159,7 +159,9 @@ describe('Proposal Controller Test', () => {
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.data.should.be.an('object');
           res.body.meta.success.should.be.eql(false);
-          res.body.meta.message.should.be.eql('invalid token provided');
+          res.body.meta.message.should.be.eql(
+            'JsonWebTokenError: invalid signature'
+          );
           done();
         });
     });

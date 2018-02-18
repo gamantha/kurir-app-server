@@ -9,6 +9,7 @@ import {
   TokenService,
   MailService,
   DroppointService,
+  S3Service,
 } from '../services/index';
 
 export default class UserController {
@@ -21,8 +22,10 @@ export default class UserController {
     this.tokenService = new TokenService();
     this.mailService = new MailService();
     this.droppointService = new DroppointService();
+    this.S3Service = new S3Service();
   }
 
+  // TODO: dont get user that has role sysadmin
   async get(req, res) {
     try {
       const response = await this.service.findAll();
@@ -61,9 +64,13 @@ export default class UserController {
     let uniqueUsername = null;
     let validation = false;
     try {
-      uniqueEmail = await this.service.findOne({ email });
-      uniqueUsername = await this.service.findOne({ username });
-      if (uniqueEmail === null && uniqueUsername === null) {
+      uniqueEmail = await this.service.findOne({
+        email,
+      });
+      uniqueUsername = await this.service.findOne({
+        username,
+      });
+      if (uniqueEmail === null && uniqueUsername == null) {
         validation = true;
       } else if (uniqueEmail) {
         res.status(400).json(
@@ -268,7 +275,14 @@ export default class UserController {
       // find with username or email
       try {
         const user = await this.service.findOne({
-          [Op.or]: [{ email: username }, { username }],
+          [Op.or]: [
+            {
+              email: username,
+            },
+            {
+              username,
+            },
+          ],
         });
         if (user === null) {
           res.status(404).json(
@@ -553,6 +567,116 @@ export default class UserController {
       res.status(400).json(
         new ResponseBuilder()
           .setMessage('error occured')
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async uploadImg(req, res) {
+    // convert image to base64 from mobile client
+    /**
+     * send image to S3
+     * @param {string} base64
+     * @param {string} type of upload (ID,Photo)
+     * @param {string} extension jpg, png, etc.
+     */
+    // base64 format: data:image/${extension};base64,${base64}
+    const { base64, type, extension } = req.body;
+    if (type !== 'ID' && type !== 'Photo') {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('type only ID or Photo')
+          .setSuccess(false)
+          .build()
+      );
+    } else {
+      try {
+        // const base64 = await this.S3Service.convertToBase64(
+        //   'assets/ktp-test.jpg'
+        // );
+        const buf = new Buffer(
+          base64.replace(/^data:image\/\w+;base64,/, ''),
+          'base64'
+        );
+
+        const encodeEmail = encodeURIComponent(res.locals.user.email);
+        const link = `https://s3-ap-southeast-1.amazonaws.com/kurir-backend/${encodeEmail}/${encodeEmail}-${type}.${extension}`;
+
+        const imgPayload = {
+          Bucket: `kurir-backend/${res.locals.user.email}`,
+          Key: `${res.locals.user.email}-${type}.${extension}`,
+          Body: buf,
+          ACL: 'public-read',
+        };
+
+        try {
+          await this.S3Service.client.upload(imgPayload, (err, data) => {
+            return data;
+          });
+          if (type === 'ID') {
+            await this.service.proposeModel.update(
+              {
+                idLink: link,
+              },
+              {
+                where: {
+                  UserId: res.locals.user.id,
+                },
+              }
+            );
+          } else if (type === 'Photo') {
+            await this.service.proposeModel.update(
+              {
+                photoLink: link,
+              },
+              {
+                where: {
+                  UserId: res.locals.user.id,
+                },
+              }
+            );
+          }
+          res.status(200).json(
+            new ResponseBuilder()
+              .setMessage('successfully upload image to S3')
+              .setSuccess(true)
+              .build()
+          );
+        } catch (error) {
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage(error.message)
+              .setSuccess(false)
+              .build()
+          );
+        }
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+      }
+    }
+  }
+
+  async checkToken(req, res) {
+    const { token } = req.body;
+    try {
+      const result = await helpers.verifyJwt(token);
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData(result)
+          .setMessage('token still valid')
+          .setSuccess(true)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage('invalid_token')
           .setSuccess(false)
           .build()
       );
