@@ -11,24 +11,26 @@ export default class ProposalController {
   }
 
   async proposeToCourier(req, res) {
-    // link from aws s3
-    // const { idLink, photoLink }
-
     try {
       // make sure sender not double request
-      const checkUser = await this.service.findOne({ userId: res.locals.user.id });
+      const checkUser = await this.service.findOne({
+        // where must provided, otherwise won't work
+        UserId: res.locals.user.id,
+      });
       // first proposal from user
       // TODO: send email to user in this first attempt
-      if (checkUser === null || checkUser.status === null) {
+      if (checkUser === null) {
         const response = await this.service.create({
           status: 'waiting',
-          userId: res.locals.user.id,
+          UserId: res.locals.user.id,
           proposeDate: new Date(),
         });
         res.status(201).json(
           new ResponseBuilder()
             .setData(response)
-            .setMessage('We are reviewing your process. Thank you.')
+            .setMessage(
+              'We\'ll be reviewing your proposal and respond very soon. Thank you'
+            )
             .setSuccess(true)
             .build()
         );
@@ -36,26 +38,34 @@ export default class ProposalController {
       } else if (checkUser.status === 'rejected') {
         // TODO: send email to user
         await this.service.update(
-          { status: 'waiting' },
-          { where: { userId: res.locals.user.id } }
+          {
+            status: 'waiting',
+          },
+          {
+            UserId: res.locals.user.id,
+          }
         );
         res.status(200).json(
           new ResponseBuilder()
             .setSuccess(true)
-            .setMessage('We are reviewing your process. Thank you.')
+            .setMessage(
+              'We\'ll be reviewing your proposal and respond very soon. Thank you'
+            )
             .build()
         );
       } else if (checkUser.status === 'verified') {
-        res.status(200).json(
+        res.status(401).json(
           new ResponseBuilder()
-            .setMessage('You are already registered as courier')
+            .setMessage('You already a courier')
             .setSuccess(false)
             .build()
         );
       } else {
         res.status(200).json(
           new ResponseBuilder()
-            .setMessage('You already submit upgrade proposal. Please wait for our team to reach you.')
+            .setMessage(
+              'You already submit upgrade proposal. Please wait for our team to reach you.'
+            )
             .setSuccess(false)
             .build()
         );
@@ -78,40 +88,48 @@ export default class ProposalController {
       status === 'rejected' ||
       status === 'waiting'
     ) {
+      // res.json({ userId });
       try {
         if (status === 'verified') {
           // TODO: send email to user to inform
-          await this.service.update(
-            {
-              status,
-              acceptDate: new Date(),
-              rejectDate: null,
-              rejectReason: null,
-            },
-            { userId: userId });
-          await this.userService.update(
-            {
-              role: 'sender+kurir',
-            },
-            { id: userId });
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+          const updated = await this.service.proposalAccepted(
+            status,
+            rejectReason,
+            userId
+          );
+          res.status(200).json(
+            new ResponseBuilder()
+              .setData({ userId: parseInt(userId), updated: updated })
+              .setSuccess(true)
+              .build()
+          );
         } else if (status === 'rejected') {
           // TODO: send email to user to inform
-          await this.service.update(
-            { status, rejectDate: new Date(), acceptDate: null, rejectReason },
-            { userId: userId }
+          const updated = await this.service.proposalRejected(
+            status,
+            rejectReason,
+            userId
           );
-          await this.userService.update({ role: 'sender' }, { id: userId });
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+          res.status(200).json(
+            new ResponseBuilder()
+              .setData({ userId: parseInt(userId), updated: updated })
+              .setSuccess(true)
+              .build()
+          );
         } else {
           // TODO: send email to user to inform
           // status:waiting
-          await this.service.update(
-            { status, rejectDate: null, acceptDate: null, rejectReason: null },
-            { userId: parseInt(userId) }
+          const updated = await this.service.proposalWaiting(
+            status,
+            rejectReason,
+            userId
           );
-          await this.userService.update({ role: 'sender' }, { id: userId });
-          res.status(200).json(new ResponseBuilder().setSuccess(true).build());
+          res.status(200).json(
+            new ResponseBuilder()
+              .setData({ userId: parseInt(userId), updated: updated })
+              .setSuccess(true)
+              .build()
+          );
         }
       } catch (error) {
         res.status(400).json(
@@ -131,4 +149,32 @@ export default class ProposalController {
     }
   }
 
+  async getSenderProposals(req, res) {
+    try {
+      // must include service.model to work
+      const result = await this.service.model.findAll({
+        include: [
+          {
+            model: this.userService.model,
+            attributes: {
+              exclude: ['password', 'forgotPassVeriCode'],
+            },
+          },
+        ],
+      });
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData(result)
+          .setSuccess(true)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
 }
