@@ -51,10 +51,12 @@ module.exports = function(sequelize, DataTypes) {
     User.hasMany(models.Token, { foreignKey: 'userId' });
     User.hasOne(models.Courier, { foreignKey: 'userId' });
     User.hasOne(models.Droppoint, { foreignKey: 'userId' });
-    User.hasOne(models.CourierProposal, { foreignKey: 'userId' });
+    // for hasOne and belongsTo, should not have foreignKey config
+    User.hasOne(models.CourierProposal);
   };
   User.prototype.toJSON = function() {
     let values = Object.assign({}, this.get());
+    delete values.forgotPassVeriCode;
     delete values.password;
     return values;
   };
