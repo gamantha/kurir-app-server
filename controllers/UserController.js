@@ -485,54 +485,66 @@ export default class UserController {
 
   async changePassword(req, res) {
     const { forgotpassword } = req.query;
-    let old_password = 'undefined';
-    let password = 'undefined';
-    if (!forgotpassword) {
-      old_password = req.body.old_password;
-      password = req.body.password;
-    } else {
-      password = req.body.password;
-      old_password = password;
-    }
-    const { email } = res.locals.user;
-    if (
-      typeof old_password === 'undefined' ||
-      typeof password === 'undefined'
-    ) {
-      res.status(422).json(
-        new ResponseBuilder()
-          .setMessage('invalid payload')
-          .setSuccess(false)
-          .build()
-      );
-      return;
-    }
+    const { old_password, new_password } = req.body;
+    const email = res.locals.user.email;
     try {
-      const result = await this.service.changePassword(
-        email,
-        old_password,
-        password
-      );
-      if (result) {
-        res
-          .status(200)
-          .json(
+      if (forgotpassword === 'false') {
+        const user = await this.service.findOne({ email });
+        const oldPass = bcrypt.compareSync(
+          old_password,
+          user.dataValues.password
+        );
+        // if oldPass same with in db
+        if (oldPass) {
+          const result = await this.service.changePassword(
+            email,
+            new_password,
+            forgotpassword
+          );
+          if (result) {
+            res
+              .status(200)
+              .json(
+                new ResponseBuilder()
+                  .setMessage('password successfully changed')
+                  .build()
+              );
+          }
+        } else {
+          res.status(401).json(
             new ResponseBuilder()
-              .setMessage('password successfully changed')
+              .setMessage('Wrong old password')
+              .setSuccess(false)
               .build()
           );
-        return;
+        }
+      } else if (forgotpassword === 'true') {
+        const result = await this.service.changePassword(
+          email,
+          new_password,
+          forgotpassword
+        );
+        if (result) {
+          res
+            .status(200)
+            .json(
+              new ResponseBuilder()
+                .setMessage('password successfully changed')
+                .build()
+            );
+        }
+      } else {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage('forgot password params value is invalid')
+            .setSuccess(false)
+            .build()
+        );
       }
-      res.status(401).json(
-        new ResponseBuilder()
-          .setMessage('Wrong old password')
-          .setSuccess(false)
-          .build()
-      );
     } catch (error) {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage('failed to change password')
+          .setMessage(error.message)
           .setSuccess(false)
           .build()
       );
