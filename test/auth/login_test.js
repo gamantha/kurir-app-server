@@ -160,7 +160,9 @@ describe('Login', () => {
           res.should.have.status(401);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
-          res.body.meta.message.should.be.eql('invalid token provided');
+          res.body.meta.message.should.be.eql(
+            'JsonWebTokenError: jwt malformed'
+          );
           done();
         });
     });
@@ -254,7 +256,9 @@ describe('Login', () => {
           res.should.have.status(401);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
-          res.body.meta.message.should.be.eql('invalid token provided');
+          res.body.meta.message.should.be.eql(
+            'JsonWebTokenError: jwt malformed'
+          );
           done();
         });
     });

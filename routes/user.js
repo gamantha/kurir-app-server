@@ -1,10 +1,11 @@
 import express from 'express';
 import { userController } from '../controllers';
 import Auth from '../helpers/Auth';
+import SysAdmin from '../helpers/SysAdmin';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', SysAdmin, (req, res) => {
   userController.get(req, res);
 });
 
@@ -44,8 +45,16 @@ router.post('/reactivate', (req, res) => {
   userController.reactivate(req, res);
 });
 
+router.post('/upload-img', Auth, (req, res) => {
+  userController.uploadImg(req, res);
+});
+
 router.get('/confirmreactivation', (req, res) => {
   userController.confirmReactivation(req, res);
+});
+
+router.post('/check-token', (req, res) => {
+  userController.checkToken(req, res);
 });
 
 module.exports = router;

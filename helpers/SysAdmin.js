@@ -17,7 +17,7 @@ export default async (req, res, next) => {
   // validate token
   try {
     const token = helper.parseToken(authorization);
-    const parsed = helper.verifyJwt(token);
+    const result = helper.verifyJwt(token);
     const tokenService = new TokenService();
     const userService = new UserService();
     try {
@@ -38,7 +38,7 @@ export default async (req, res, next) => {
         );
         return;
       }
-      const user = await userService.findOne({ email: parsed.email });
+      const user = await userService.findOne({ email: result.email });
       if (user.role !== 'sysadmin') {
         res.status(401).json(
           new ResponseBuilder()
@@ -49,9 +49,9 @@ export default async (req, res, next) => {
         return;
       }
       res.locals.user = {
-        email: parsed.email,
-        id: parsed.id,
-        role: parsed.role,
+        email: result.email,
+        id: result.id,
+        role: result.role,
       };
     } catch (error) {
       throw Error(error);

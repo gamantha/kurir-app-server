@@ -94,7 +94,9 @@ describe('Receivers', () => {
           res.should.have.status(401);
           res.body.meta.success.should.be.eql(false);
           res.body.data.should.be.eql({});
-          res.body.meta.message.should.be.eql('invalid token provided');
+          res.body.meta.message.should.be.eql(
+            'JsonWebTokenError: jwt malformed'
+          );
           done();
         });
     });
