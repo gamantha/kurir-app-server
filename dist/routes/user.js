@@ -26,7 +26,7 @@ router.post('/create', function (req, res) {
   _controllers.userController.create(req, res);
 });
 
-router.post('/check-forgot-password-verif-code', function (req, res) {
+router.post('/password/code', function (req, res) {
   _controllers.userController.checkForgotPassVeriCode(req, res);
 });
 
@@ -42,11 +42,11 @@ router.post('/logout', _Auth2.default, function (req, res) {
   _controllers.userController.logout(req, res);
 });
 
-router.post('/change-password', _Auth2.default, function (req, res) {
+router.post('/password/change', _Auth2.default, function (req, res) {
   _controllers.userController.changePassword(req, res);
 });
 
-router.post('/forgot-password', function (req, res) {
+router.post('/password/forgot', function (req, res) {
   _controllers.userController.forgotPassword(req, res);
 });
 
