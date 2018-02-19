@@ -26,7 +26,7 @@ router.post('/create', function (req, res) {
   _controllers.userController.create(req, res);
 });
 
-router.post('/password/code', function (req, res) {
+router.post('/password/check-code', function (req, res) {
   _controllers.userController.checkForgotPassVeriCode(req, res);
 });
 
@@ -46,7 +46,7 @@ router.post('/password/change', _Auth2.default, function (req, res) {
   _controllers.userController.changePassword(req, res);
 });
 
-router.post('/password/forgot', function (req, res) {
+router.post('/password/send-code', function (req, res) {
   _controllers.userController.forgotPassword(req, res);
 });
 

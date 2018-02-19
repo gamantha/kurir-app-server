@@ -13,7 +13,7 @@ router.post('/create', (req, res) => {
   userController.create(req, res);
 });
 
-router.post('/password/code', (req, res) => {
+router.post('/password/check-code', (req, res) => {
   userController.checkForgotPassVeriCode(req, res);
 });
 
@@ -33,7 +33,7 @@ router.post('/password/change', Auth, (req, res) => {
   userController.changePassword(req, res);
 });
 
-router.post('/password/forgot', (req, res) => {
+router.post('/password/send-code', (req, res) => {
   userController.forgotPassword(req, res);
 });
 
