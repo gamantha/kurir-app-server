@@ -466,12 +466,15 @@ export default class UserController {
     const result = await this.mailService.sendVerificationCode(email);
 
     const response = result
-      ? [200, 'Successfully sent verification code forgot password to email']
-      : [422, `${email ? email : 'email'} is not registered!`];
+      ? [200, 'Successfully sent verification code forgot password to email', true]
+      : [422, `${email ? email : 'email'} is not registered!`, false];
 
-    res
-      .status(response[0])
-      .json(new ResponseBuilder().setMessage(response[1]).build());
+    res.status(response[0]).json(
+      new ResponseBuilder()
+        .setMessage(response[1])
+        .setSuccess(response[2])
+        .build()
+    );
   }
 
   async changePassword(req, res) {
