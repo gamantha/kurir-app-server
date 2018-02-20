@@ -43,18 +43,4 @@ export default class MailController {
       .status(response[0])
       .json(new ResponseBuilder().setMessage(response[1]).build());
   }
-
-  async sendForgotPassVerifCode(req, res) {
-    const { email } = req.body;
-
-    const result = await this.service.sendVerificationCode(email);
-
-    const response = result
-      ? [200, 'Successfully sent verification code forgot password to email']
-      : [422, `${email ? email : 'email'} is not registered!`];
-
-    res
-      .status(response[0])
-      .json(new ResponseBuilder().setMessage(response[1]).build());
-  }
 }
