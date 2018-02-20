@@ -712,10 +712,10 @@ var UserController = function () {
 
               case 3:
                 result = _context9.sent;
-                response = result ? [200, 'Successfully sent verification code forgot password to email'] : [422, (email ? email : 'email') + ' is not registered!'];
+                response = result ? [200, 'Successfully sent verification code forgot password to email', true] : [422, (email ? email : 'email') + ' is not registered!', false];
 
 
-                res.status(response[0]).json(new _ResponseBuilder2.default().setMessage(response[1]).build());
+                res.status(response[0]).json(new _ResponseBuilder2.default().setMessage(response[1]).setSuccess(response[2]).build());
 
               case 6:
               case 'end':
