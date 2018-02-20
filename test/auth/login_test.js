@@ -82,7 +82,7 @@ describe('Login', () => {
     it('should return 401 wrong old password', done => {
       chai
         .request(app)
-        .post('/api/user/change-password?forgotpassword=false')
+        .post('/api/user/password/change?forgotpassword=false')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
           old_password: 'randomoldpassword',
@@ -99,7 +99,7 @@ describe('Login', () => {
     it('PARAMS FALSE: should return 200 password successfully changed', done => {
       chai
         .request(app)
-        .post('/api/user/change-password?forgotpassword=false')
+        .post('/api/user/password/change?forgotpassword=false')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
           old_password: user.password,
@@ -116,7 +116,7 @@ describe('Login', () => {
     it('PARAMS TRUE: should return 200 password successfully changed', done => {
       chai
         .request(app)
-        .post('/api/user/change-password?forgotpassword=true')
+        .post('/api/user/password/change?forgotpassword=true')
         .set('Authorization', `bearer ${accessToken}`)
         .send({
           new_password: user.password,
