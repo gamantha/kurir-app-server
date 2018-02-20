@@ -4,6 +4,8 @@ import bodyParser from 'body-parser';
 import logger from 'morgan';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
+// import Http from 'http';
+// import Io from 'socket.io';
 
 import { userController } from './controllers';
 // routes import
@@ -16,7 +18,8 @@ import facebook from './routes/facebook';
 import proposal from './routes/proposal';
 
 const app = express();
-// const { SMTPServer } = require('smtp-server');
+// const http = Http.Server(app);
+// const io = Io(http);
 require('dotenv').config();
 
 app.use(cors());
@@ -34,30 +37,22 @@ app.set('port', process.env.PORT || 3000);
 app.use(logger('dev'));
 
 // bodyparser setup
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
-// smtp server setup
-// const options = {
-//   secure: true,
-//   name: 'localhost',
-//   banner: 'hello kurir',
-// };
-// const mailServer = new SMTPServer(options);
-// mailServer.listen(4000, null, () => {
-//   console.log('berhasil konek ke email server');
-// });
-// mailServer.on('error', (err) => {
-//   console.log('Error %s', err.message);
-// });
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(
+  bodyParser.urlencoded({
+    limit: '50mb',
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 
 app.use('/api/item', item);
 app.use('/api/user', user);
 app.use('/api/receiver', receiver);
-app.use('/api/mails', mail);
+app.use('/api/mail', mail);
 app.use('/api/google', google);
 app.use('/api/facebook', facebook);
-app.use('/api/proposals', proposal);
+app.use('/api/proposal', proposal);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -82,6 +77,10 @@ app.use((err, req, res, next) => {
     },
   });
 });
+
+// io.on('connection', socket => {
+//   console.log('a socket io connected');
+// });
 
 app.listen(app.get('port'), () => {
   console.log(`app listening on ${app.get('port')}`);

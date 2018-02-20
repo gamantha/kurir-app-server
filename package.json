@@ -4,15 +4,26 @@
   "description": "server untuk kurir-app",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --compilers js:babel-core/register ./test/**/*_test.js --exit --timeout 5000",
+    "test":
+      "NODE_ENV=test mocha --compilers js:babel-core/register ./test/**/*_test.js --exit --timeout 5000",
     "babel-node": "babel-node",
     "start": "nodemon --exec npm run babel-node -- ./app.js",
-    "build": "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./migrations"
+    "build":
+      "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./test,./seeders",
+    "serve": "nodemon dist/app.js",
+    "clean": "rm -rf ./dist && npm run build"
+  },
+  "engines": {
+    "node": "8.9.4",
+    "npm": "5.6.0"
   },
   "author": "bm",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.189.0",
     "axios": "^0.17.1",
+    "base-64": "^0.1.0",
+    "base64-img": "^1.0.3",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
@@ -23,19 +34,19 @@
     "jsonwebtoken": "^8.1.0",
     "mailgun-js": "^0.14.1",
     "morgan": "^1.9.0",
-    "nodemailer": "^4.4.1",
-    "nodemon": "^1.14.11",
+    "nodemon": "^1.14.12",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.4.0",
     "rand-token": "^0.4.0",
     "sequelize": "^4.22.6",
-    "sequelize-cli": "^3.2.0",
-    "smtp-server": "^3.4.1"
+    "sequelize-cli": "^3.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-plugin-inline-json-import": "^0.2.1",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
     "eslint": "^4.11.0",

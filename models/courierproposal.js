@@ -1,7 +1,7 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var CourierProposal = sequelize.define('CourierProposal', {
-    userId: DataTypes.INTEGER,
+    UserId: DataTypes.INTEGER,
     status: DataTypes.STRING, // @param {String} waiting, verified, rejected
     proposeDate: DataTypes.DATE,
     rejectDate: DataTypes.DATE,
@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
     idLink: DataTypes.STRING,
     photoLink: DataTypes.STRING,
   });
-  CourierProposal.associate = function(models) {};
+  CourierProposal.associate = function(models) {
+    CourierProposal.belongsTo(models.User);
+  };
   return CourierProposal;
 };
