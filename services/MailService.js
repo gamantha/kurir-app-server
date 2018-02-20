@@ -155,7 +155,7 @@ export default class MailService extends BaseService {
     if (userEmail && !userEmail.dataValues.isEmailValidated) {
       const verificationLink = `${
         config.domain.base_url
-      }/api/mail/tokens/${tokenifyEmail}`;
+      }/api/mail/registration/check/${tokenifyEmail}`;
 
       const verificationMessage = this.setMailgunTemplate(
         email,

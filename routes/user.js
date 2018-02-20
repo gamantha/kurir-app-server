@@ -13,8 +13,8 @@ router.post('/create', (req, res) => {
   userController.create(req, res);
 });
 
-router.post('/check-forgot-password-verif-code', (req, res) => {
-  userController.checkForgotPassVeriCode(req, res);
+router.post('/password/check-code', (req, res) => {
+  userController.checkForgotCode(req, res);
 });
 
 router.post('/login', (req, res) => {
@@ -29,12 +29,12 @@ router.post('/logout', Auth, (req, res) => {
   userController.logout(req, res);
 });
 
-router.post('/change-password', Auth, (req, res) => {
+router.post('/password/change', Auth, (req, res) => {
   userController.changePassword(req, res);
 });
 
-router.post('/forgot-password', (req, res) => {
-  userController.forgotPassword(req, res);
+router.post('/password/send-code', (req, res) => {
+  userController.sendForgotCode(req, res);
 });
 
 router.delete('/deactivate', Auth, (req, res) => {
