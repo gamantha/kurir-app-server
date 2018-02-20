@@ -401,7 +401,7 @@ export default class UserController {
     }
   }
 
-  async checkForgotPassVeriCode(req, res) {
+  async checkForgotCode(req, res) {
     const { email, veriCode } = req.body;
 
     try {
@@ -460,27 +460,18 @@ export default class UserController {
     }
   }
 
-  async forgotPassword(req, res) {
+  async sendForgotCode(req, res) {
     const { email } = req.body;
 
     const result = await this.mailService.sendVerificationCode(email);
 
-    if (result === true) {
-      res
-        .status(200)
-        .json(
-          new ResponseBuilder()
-            .setMessage(`verification code successfully sent to ${email}.`)
-            .build()
-        );
-    } else {
-      res.status(422).json(
-        new ResponseBuilder()
-          .setSuccess(false)
-          .setMessage(`uh oh! there is an error when sending email to ${email}`)
-          .build()
-      );
-    }
+    const response = result
+      ? [200, 'Successfully sent verification code forgot password to email']
+      : [422, `${email ? email : 'email'} is not registered!`];
+
+    res
+      .status(response[0])
+      .json(new ResponseBuilder().setMessage(response[1]).build());
   }
 
   async changePassword(req, res) {
