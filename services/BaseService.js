@@ -179,8 +179,8 @@ export default class BaseService {
       }
       const baseUrl = `${config.domain.base_url}${url}?page=`;
       orders = typeof orders === 'undefined' ? '' : `&order=${orders}`;
-      attributes = Object.keys(attributes).length === 0 ? '' : `&fields=${attributes.toString()}`
-      const params = `&limit=${limit}${orders}${attributes}`
+      attributes = Object.keys(attributes).length === 0 ? '' : `&fields=${attributes.toString()}`;
+      const params = `&limit=${limit}${orders}${attributes}`;
       const links = {
         prev: null,
         next: null,
