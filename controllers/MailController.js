@@ -11,19 +11,12 @@ export default class MailController {
     const email = this.service.decodeToken(token);
 
     const result = await this.service.checkEmail(email);
-
-    const response = result
-      ? [200, `Email ${email} is valid, we are pleased you are being here!`]
-      : [
-        422,
-        `${
-          email ? email : 'email'
-        } is not valid or your email is already verified!`,
-      ];
-
-    res
-      .status(response[0])
-      .json(new ResponseBuilder().setMessage(response[1]).build());
+    if (result) {
+      res.sendFile('confirmed.html', { root: 'views/confirmation/' });
+      return;
+    }
+    res.sendFile('fail.html', { root: 'views/confirmation/' });
+    return;
   }
 
   async sendRegisValidationLink(req, res) {
@@ -34,9 +27,7 @@ export default class MailController {
       ? [200, `Successfully sent verification link to ${email}`]
       : [
         422,
-        `${
-          email ? email : 'email'
-        } is not valid or you already verified your email!`,
+        `${email ? email : 'email'} is not valid or you already verified your email!`,
       ];
 
     res
