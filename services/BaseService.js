@@ -132,7 +132,10 @@ export default class BaseService {
         const links = await BaseService.generateLinks(
           page,
           lastPage,
-          req.baseUrl
+          req.baseUrl,
+          limit,
+          orders,
+          attributes,
         );
         if (response) {
           return {
@@ -169,23 +172,26 @@ export default class BaseService {
    * @param {Integer} lastPage
    * @param {String} url
    */
-  static generateLinks(page, lastPage, url) {
+  static generateLinks(page, lastPage, url, limit, orders, attributes) {
     return new Promise((resolve, reject) => {
       if (page === 0) {
         reject(new Error('page cannot be 0'));
       }
       const baseUrl = `${config.domain.base_url}${url}?page=`;
+      orders = typeof orders === 'undefined' ? '' : `&order=${orders}`;
+      attributes = Object.keys(attributes).length === 0 ? '' : `&fields=${attributes.toString()}`;
+      const params = `&limit=${limit}${orders}${attributes}`;
       const links = {
         prev: null,
         next: null,
-        last: baseUrl + lastPage,
-        curr: baseUrl + page,
+        last: `${baseUrl}${lastPage}${params}`,
+        curr: `${baseUrl}${page}${params}`,
       };
       if (page > 1) {
-        links.prev = baseUrl + (page - 1);
+        links.prev = `${baseUrl}${(parseInt(page) - 1)}${params}`;
       }
       if (page < lastPage) {
-        links.next = baseUrl + (page + 1);
+        links.next = `${baseUrl}${(parseInt(page) + 1)}${params}`;
       }
       resolve(links);
     });
