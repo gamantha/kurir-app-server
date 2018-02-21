@@ -379,7 +379,7 @@ var BaseService = function () {
                 _context6.prev = 8;
                 lastPage = Math.ceil(response.count / limit);
                 _context6.next = 12;
-                return BaseService.generateLinks(page, lastPage, req.baseUrl);
+                return BaseService.generateLinks(page, lastPage, req.baseUrl, limit, orders, attributes);
 
               case 12:
                 links = _context6.sent;
@@ -456,23 +456,26 @@ var BaseService = function () {
 
   }, {
     key: 'generateLinks',
-    value: function generateLinks(page, lastPage, url) {
+    value: function generateLinks(page, lastPage, url, limit, orders, attributes) {
       return new Promise(function (resolve, reject) {
         if (page === 0) {
           reject(new Error('page cannot be 0'));
         }
         var baseUrl = '' + config.domain.base_url + url + '?page=';
+        orders = typeof orders === 'undefined' ? '' : '&order=' + orders;
+        attributes = Object.keys(attributes).length === 0 ? '' : '&fields=' + attributes.toString();
+        var params = '&limit=' + limit + orders + attributes;
         var links = {
           prev: null,
           next: null,
-          last: baseUrl + lastPage,
-          curr: baseUrl + page
+          last: '' + baseUrl + lastPage + params,
+          curr: '' + baseUrl + page + params
         };
         if (page > 1) {
-          links.prev = baseUrl + (page - 1);
+          links.prev = '' + baseUrl + (parseInt(page) - 1) + params;
         }
         if (page < lastPage) {
-          links.next = baseUrl + (page + 1);
+          links.next = '' + baseUrl + (parseInt(page) + 1) + params;
         }
         resolve(links);
       });

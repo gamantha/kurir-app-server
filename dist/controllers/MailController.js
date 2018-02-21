@@ -39,7 +39,7 @@ var MailController = function () {
     key: 'checkEmail',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(req, res) {
-        var token, email, result, response;
+        var token, email, result;
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -51,12 +51,20 @@ var MailController = function () {
 
               case 4:
                 result = _context.sent;
-                response = result ? [200, 'Email ' + email + ' is valid, we are pleased you are being here!'] : [422, (email ? email : 'email') + ' is not valid or your email is already verified!'];
 
+                if (!result) {
+                  _context.next = 8;
+                  break;
+                }
 
-                res.status(response[0]).json(new _ResponseBuilder2.default().setMessage(response[1]).build());
+                res.sendFile('confirmed.html', { root: 'views/confirmation/' });
+                return _context.abrupt('return');
 
-              case 7:
+              case 8:
+                res.sendFile('fail.html', { root: 'views/confirmation/' });
+                return _context.abrupt('return');
+
+              case 10:
               case 'end':
                 return _context.stop();
             }

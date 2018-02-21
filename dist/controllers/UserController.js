@@ -44,7 +44,6 @@ var _index = require('../services/index');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import auth from '../helpers/Auth';
 var UserController = function () {
   /**
    * User controller class
@@ -147,144 +146,178 @@ var UserController = function () {
               case 16:
                 uniqueUsername = _context2.sent;
 
-                if (uniqueEmail === null && uniqueUsername == null) {
-                  validation = true;
-                } else if (uniqueEmail) {
-                  res.status(400).json(new _ResponseBuilder2.default().setMessage('Oops. Looks we already have this email registered.').setSuccess(false).build());
-                } else if (uniqueUsername) {
-                  res.status(400).json(new _ResponseBuilder2.default().setMessage('Oops. Username already exist. Please choose another.').setSuccess(false).build());
-                }
-                _context2.next = 23;
-                break;
-
-              case 20:
-                _context2.prev = 20;
-                _context2.t0 = _context2['catch'](10);
-
-                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t0.message).setSuccess(false).build());
-
-              case 23:
-                if (!(role !== 'sysadmin' && role !== 'siteadmin' && role !== 'sender')) {
-                  _context2.next = 27;
+                if (!(uniqueEmail === null && uniqueUsername == null)) {
+                  _context2.next = 21;
                   break;
                 }
 
-                res.status(417).json(new _ResponseBuilder2.default().setMessage('role must one of sysadmin,siteadmin or sender').setSuccess(false).build());
-                _context2.next = 76;
+                validation = true;
+                _context2.next = 29;
                 break;
 
-              case 27:
-                if (!(role === 'sysadmin' && validation)) {
+              case 21:
+                if (!uniqueEmail) {
+                  _context2.next = 26;
+                  break;
+                }
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage('Oops. Looks we already have this email registered.').setSuccess(false).build());
+                return _context2.abrupt('return');
+
+              case 26:
+                if (!uniqueUsername) {
+                  _context2.next = 29;
+                  break;
+                }
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage('Oops. Username already exist. Please choose another.').setSuccess(false).build());
+                return _context2.abrupt('return');
+
+              case 29:
+                _context2.next = 35;
+                break;
+
+              case 31:
+                _context2.prev = 31;
+                _context2.t0 = _context2['catch'](10);
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t0.message).setSuccess(false).build());
+                return _context2.abrupt('return');
+
+              case 35:
+                if (!(role !== 'sysadmin' && role !== 'siteadmin' && role !== 'sender')) {
                   _context2.next = 40;
                   break;
                 }
 
-                _context2.prev = 28;
-                _context2.next = 31;
-                return this.service.create(payload);
-
-              case 31:
-                response = _context2.sent;
-
-                res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('successfully created new system admin').build());
-                _context2.next = 38;
-                break;
-
-              case 35:
-                _context2.prev = 35;
-                _context2.t1 = _context2['catch'](28);
-
-                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t1.message).setSuccess(false).build());
-
-              case 38:
-                _context2.next = 76;
-                break;
+                res.status(417).json(new _ResponseBuilder2.default().setMessage('role must one of sysadmin,siteadmin or sender').setSuccess(false).build());
+                return _context2.abrupt('return');
 
               case 40:
-                if (!(role === 'siteadmin' && validation)) {
-                  _context2.next = 63;
+                if (!(role === 'sysadmin' && validation)) {
+                  _context2.next = 54;
                   break;
                 }
 
-                // hanya sysadmin yg bisa create siteadmin
-                if (!authorization || authorization === '') {
-                  // Auth token not provided
-                  res.status(403).json(new _ResponseBuilder2.default().setMessage('Authorization header not provided or empty.').setSuccess(false).build());
+                _context2.prev = 41;
+                _context2.next = 44;
+                return this.service.create(payload);
+
+              case 44:
+                response = _context2.sent;
+
+                res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('successfully created new system admin').build());
+                _context2.next = 52;
+                break;
+
+              case 48:
+                _context2.prev = 48;
+                _context2.t1 = _context2['catch'](41);
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t1.message).setSuccess(false).build());
+                return _context2.abrupt('return');
+
+              case 52:
+                _context2.next = 95;
+                break;
+
+              case 54:
+                if (!(role === 'siteadmin' && validation)) {
+                  _context2.next = 81;
+                  break;
                 }
+
+                if (!(!authorization || authorization === '')) {
+                  _context2.next = 58;
+                  break;
+                }
+
+                // Auth token not provided
+                res.status(403).json(new _ResponseBuilder2.default().setMessage('Authorization header not provided or empty.').setSuccess(false).build());
+                return _context2.abrupt('return');
+
+              case 58:
                 token = _helpers2.default.parseToken(authorization);
                 parsed = _helpers2.default.verifyJwt(token);
 
                 if (!(parsed.role === 'sysadmin')) {
-                  _context2.next = 60;
+                  _context2.next = 77;
                   break;
                 }
 
-                _context2.prev = 45;
-                _context2.next = 48;
+                _context2.prev = 61;
+                _context2.next = 64;
                 return this.service.create(payload);
 
-              case 48:
+              case 64:
                 response = _context2.sent;
                 siteadminPayload = {
                   userId: response.id
                 };
                 // tambah payload lain yg dibutuhkan model droppoint
 
-                _context2.next = 52;
+                _context2.next = 68;
                 return this.droppointService.create(siteadminPayload);
 
-              case 52:
+              case 68:
                 res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('successfully created new site admin').build());
-                _context2.next = 58;
+                _context2.next = 75;
                 break;
 
-              case 55:
-                _context2.prev = 55;
-                _context2.t2 = _context2['catch'](45);
+              case 71:
+                _context2.prev = 71;
+                _context2.t2 = _context2['catch'](61);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t2.message).setSuccess(false).build());
+                return _context2.abrupt('return');
 
-              case 58:
-                _context2.next = 61;
+              case 75:
+                _context2.next = 79;
                 break;
 
-              case 60:
+              case 77:
                 res.status(400).json(new _ResponseBuilder2.default().setMessage('only sysadmin can create site admin').setSuccess(false).build());
+                return _context2.abrupt('return');
 
-              case 61:
-                _context2.next = 76;
+              case 79:
+                _context2.next = 95;
                 break;
 
-              case 63:
-                _context2.prev = 63;
-                _context2.next = 66;
+              case 81:
+                _context2.prev = 81;
+                _context2.next = 84;
                 return this.service.create(payload);
 
-              case 66:
+              case 84:
                 response = _context2.sent;
                 senderPayload = {
                   userId: response.id
                 };
-                _context2.next = 70;
+                _context2.next = 88;
                 return this.senderService.create(senderPayload);
 
-              case 70:
+              case 88:
                 res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('successfully created new sender').build());
-                _context2.next = 76;
+                _context2.next = 95;
                 break;
 
-              case 73:
-                _context2.prev = 73;
-                _context2.t3 = _context2['catch'](63);
+              case 91:
+                _context2.prev = 91;
+                _context2.t3 = _context2['catch'](81);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t3.message).setSuccess(false).build());
+                return _context2.abrupt('return');
 
-              case 76:
+              case 95:
+                _context2.next = 97;
+                return this.mailService.sendRegisValidationLink(email);
+
+              case 97:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[10, 20], [28, 35], [45, 55], [63, 73]]);
+        }, _callee2, this, [[10, 31], [41, 48], [61, 71], [81, 91]]);
       }));
 
       function create(_x3, _x4) {
