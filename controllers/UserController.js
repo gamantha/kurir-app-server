@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
-// import auth from '../helpers/Auth';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 import {
   UserService,
@@ -79,6 +78,7 @@ export default class UserController {
             .setSuccess(false)
             .build()
         );
+        return;
       } else if (uniqueUsername) {
         res.status(400).json(
           new ResponseBuilder()
@@ -86,6 +86,7 @@ export default class UserController {
             .setSuccess(false)
             .build()
         );
+        return;
       }
     } catch (error) {
       res.status(400).json(
@@ -94,6 +95,7 @@ export default class UserController {
           .setSuccess(false)
           .build()
       );
+      return;
     }
 
     if (role !== 'sysadmin' && role !== 'siteadmin' && role !== 'sender') {
@@ -103,6 +105,7 @@ export default class UserController {
           .setSuccess(false)
           .build()
       );
+      return;
     } else if (role === 'sysadmin' && validation) {
       try {
         response = await this.service.create(payload);
@@ -119,6 +122,7 @@ export default class UserController {
             .setSuccess(false)
             .build()
         );
+        return;
       }
     } else if (role === 'siteadmin' && validation) {
       // hanya sysadmin yg bisa create siteadmin
@@ -130,6 +134,7 @@ export default class UserController {
             .setSuccess(false)
             .build()
         );
+        return;
       }
       const token = helpers.parseToken(authorization);
       const parsed = helpers.verifyJwt(token);
@@ -154,6 +159,7 @@ export default class UserController {
               .setSuccess(false)
               .build()
           );
+          return;
         }
       } else {
         res.status(400).json(
@@ -162,6 +168,7 @@ export default class UserController {
             .setSuccess(false)
             .build()
         );
+        return;
       }
     } else {
       try {
@@ -183,8 +190,11 @@ export default class UserController {
             .setSuccess(false)
             .build()
         );
+        return;
       }
     }
+    /** Send Confirmation Email */
+    await this.mailService.sendRegisValidationLink(email);
   }
 
   async confirmReactivation(req, res) {
@@ -202,10 +212,9 @@ export default class UserController {
         if (result === true) {
           res
             .status(200)
-            .json(
-              new ResponseBuilder()
-                .setMessage('Your account has been successfully reactivated')
-                .build()
+            .json(new ResponseBuilder()
+              .setMessage('Your account has been successfully reactivated')
+              .build()
             );
         } else {
           res.status(400).json(
@@ -243,10 +252,9 @@ export default class UserController {
         }
         res
           .status(200)
-          .json(
-            new ResponseBuilder()
-              .setMessage('Reactivation email sent, please check your email.')
-              .build()
+          .json(new ResponseBuilder()
+            .setMessage('Reactivation email sent, please check your email.')
+            .build()
           );
         return;
       } catch (error) {
@@ -423,21 +431,15 @@ export default class UserController {
           await this.service.update({ forgotPassVeriCode: null }, { email });
           res
             .status(200)
-            .json(
-              new ResponseBuilder()
-                .setMessage(
-                  'Verification code match. User now can safely reset password.'
-                )
-                .build()
+            .json(new ResponseBuilder()
+              .setMessage('Verification code match. User now can safely reset password.')
+              .build()
             );
         } catch (error) {
-          res.status(400).json(
-            new ResponseBuilder()
-              .setMessage(
-                'There is a problem with our server please try again later'
-              )
-              .setSuccess(false)
-              .build()
+          res.status(400).json(new ResponseBuilder()
+            .setMessage('There is a problem with our server please try again later')
+            .setSuccess(false)
+            .build()
           );
         }
       } else {
@@ -449,13 +451,10 @@ export default class UserController {
         );
       }
     } catch (error) {
-      res.status(400).json(
-        new ResponseBuilder()
-          .setMessage(
-            'There is a problem with our server please try again later'
-          )
-          .setSuccess(false)
-          .build()
+      res.status(400).json(new ResponseBuilder()
+        .setMessage('There is a problem with our server please try again later')
+        .setSuccess(false)
+        .build()
       );
     }
   }
@@ -495,10 +494,9 @@ export default class UserController {
           if (result) {
             res
               .status(200)
-              .json(
-                new ResponseBuilder()
-                  .setMessage('password successfully changed')
-                  .build()
+              .json(new ResponseBuilder()
+                .setMessage('password successfully changed')
+                .build()
               );
           }
         } else {
@@ -518,10 +516,9 @@ export default class UserController {
         if (result) {
           res
             .status(200)
-            .json(
-              new ResponseBuilder()
-                .setMessage('password successfully changed')
-                .build()
+            .json(new ResponseBuilder()
+              .setMessage('password successfully changed')
+              .build()
             );
         }
       } else {

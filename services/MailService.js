@@ -153,9 +153,7 @@ export default class MailService extends BaseService {
     });
     const userEmail = await this.findOne({ email });
     if (userEmail && !userEmail.dataValues.isEmailValidated) {
-      const verificationLink = `${
-        config.domain.base_url
-      }/api/mail/registration/check/${tokenifyEmail}`;
+      const verificationLink = `${config.domain.base_url}/api/mail/registration/check/${tokenifyEmail}`;
 
       const verificationMessage = this.setMailgunTemplate(
         email,
@@ -186,9 +184,7 @@ export default class MailService extends BaseService {
     try {
       const userEmail = await this.findOne({ email });
       if (userEmail) {
-        const verificationLink = `${
-          config.domain.base_url
-        }/api/mail/tokens/${token}`;
+        const verificationLink = `${config.domain.base_url}/api/mail/tokens/${token}`;
 
         const verificationMessage = this.setMailgunTemplate(
           email,
