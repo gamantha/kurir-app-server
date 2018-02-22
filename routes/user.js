@@ -57,4 +57,8 @@ router.post('/check-token', (req, res) => {
   userController.checkToken(req, res);
 });
 
+router.put('/', Auth, (req, res) => {
+  userController.editUserProfile(req, res);
+});
+
 module.exports = router;
