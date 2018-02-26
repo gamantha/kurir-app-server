@@ -27,7 +27,9 @@ export default class MailController {
       ? [200, `Successfully sent verification link to ${email}`]
       : [
         422,
-        `${email ? email : 'email'} is not valid or you already verified your email!`,
+        `${
+          email ? email : 'email'
+        } is not valid or you already verified your email!`,
       ];
 
     res

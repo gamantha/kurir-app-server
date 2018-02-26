@@ -174,9 +174,11 @@ export default class UserController {
       try {
         response = await this.service.create(payload);
         const senderPayload = {
-          userId: response.id,
+          UserId: response.id,
         };
         await this.senderService.create(senderPayload);
+        /** Send Confirmation Email Only for Sender Role */
+        await this.mailService.sendRegisValidationLink(email);
         res.status(201).json(
           new ResponseBuilder()
             .setData(response)
@@ -193,8 +195,6 @@ export default class UserController {
         return;
       }
     }
-    /** Send Confirmation Email */
-    await this.mailService.sendRegisValidationLink(email);
   }
 
   async confirmReactivation(req, res) {
@@ -212,9 +212,10 @@ export default class UserController {
         if (result === true) {
           res
             .status(200)
-            .json(new ResponseBuilder()
-              .setMessage('Your account has been successfully reactivated')
-              .build()
+            .json(
+              new ResponseBuilder()
+                .setMessage('Your account has been successfully reactivated')
+                .build()
             );
         } else {
           res.status(400).json(
@@ -252,9 +253,10 @@ export default class UserController {
         }
         res
           .status(200)
-          .json(new ResponseBuilder()
-            .setMessage('Reactivation email sent, please check your email.')
-            .build()
+          .json(
+            new ResponseBuilder()
+              .setMessage('Reactivation email sent, please check your email.')
+              .build()
           );
         return;
       } catch (error) {
@@ -431,15 +433,21 @@ export default class UserController {
           await this.service.update({ forgotPassVeriCode: null }, { email });
           res
             .status(200)
-            .json(new ResponseBuilder()
-              .setMessage('Verification code match. User now can safely reset password.')
-              .build()
+            .json(
+              new ResponseBuilder()
+                .setMessage(
+                  'Verification code match. User now can safely reset password.'
+                )
+                .build()
             );
         } catch (error) {
-          res.status(400).json(new ResponseBuilder()
-            .setMessage('There is a problem with our server please try again later')
-            .setSuccess(false)
-            .build()
+          res.status(400).json(
+            new ResponseBuilder()
+              .setMessage(
+                'There is a problem with our server please try again later'
+              )
+              .setSuccess(false)
+              .build()
           );
         }
       } else {
@@ -451,10 +459,13 @@ export default class UserController {
         );
       }
     } catch (error) {
-      res.status(400).json(new ResponseBuilder()
-        .setMessage('There is a problem with our server please try again later')
-        .setSuccess(false)
-        .build()
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(
+            'There is a problem with our server please try again later'
+          )
+          .setSuccess(false)
+          .build()
       );
     }
   }
@@ -465,7 +476,11 @@ export default class UserController {
     const result = await this.mailService.sendVerificationCode(email);
 
     const response = result
-      ? [200, 'Successfully sent verification code forgot password to email', true]
+      ? [
+        200,
+        'Successfully sent verification code forgot password to email',
+        true,
+      ]
       : [422, `${email ? email : 'email'} is not registered!`, false];
 
     res.status(response[0]).json(
@@ -497,9 +512,10 @@ export default class UserController {
           if (result) {
             res
               .status(200)
-              .json(new ResponseBuilder()
-                .setMessage('password successfully changed')
-                .build()
+              .json(
+                new ResponseBuilder()
+                  .setMessage('password successfully changed')
+                  .build()
               );
           }
         } else {
@@ -519,9 +535,10 @@ export default class UserController {
         if (result) {
           res
             .status(200)
-            .json(new ResponseBuilder()
-              .setMessage('password successfully changed')
-              .build()
+            .json(
+              new ResponseBuilder()
+                .setMessage('password successfully changed')
+                .build()
             );
         }
       } else {
@@ -668,6 +685,39 @@ export default class UserController {
       res.status(400).json(
         new ResponseBuilder()
           .setMessage('invalid_token')
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async editUserProfile(req, res) {
+    const { email, photoLink } = req.body;
+    const { name, address, phone } = req.body;
+    const loggedInUser = res.locals.user.id;
+    try {
+      const user = await this.service.update(
+        { email, photoLink },
+        { id: loggedInUser },
+        {
+          returning: true,
+          plain: true,
+        }
+      );
+      const sender = await this.senderService.update(
+        { name, address, phone },
+        { UserId: loggedInUser }
+      );
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData({ user, sender })
+          .setSuccess(true)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
           .setSuccess(false)
           .build()
       );

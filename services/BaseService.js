@@ -135,7 +135,7 @@ export default class BaseService {
           req.baseUrl,
           limit,
           orders,
-          attributes,
+          attributes
         );
         if (response) {
           return {
@@ -179,7 +179,10 @@ export default class BaseService {
       }
       const baseUrl = `${config.domain.base_url}${url}?page=`;
       orders = typeof orders === 'undefined' ? '' : `&order=${orders}`;
-      attributes = Object.keys(attributes).length === 0 ? '' : `&fields=${attributes.toString()}`;
+      attributes =
+        Object.keys(attributes).length === 0
+          ? ''
+          : `&fields=${attributes.toString()}`;
       const params = `&limit=${limit}${orders}${attributes}`;
       const links = {
         prev: null,
@@ -188,10 +191,10 @@ export default class BaseService {
         curr: `${baseUrl}${page}${params}`,
       };
       if (page > 1) {
-        links.prev = `${baseUrl}${(parseInt(page) - 1)}${params}`;
+        links.prev = `${baseUrl}${parseInt(page) - 1}${params}`;
       }
       if (page < lastPage) {
-        links.next = `${baseUrl}${(parseInt(page) + 1)}${params}`;
+        links.next = `${baseUrl}${parseInt(page) + 1}${params}`;
       }
       resolve(links);
     });
