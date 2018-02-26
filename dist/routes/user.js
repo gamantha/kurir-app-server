@@ -70,4 +70,8 @@ router.post('/check-token', function (req, res) {
   _controllers.userController.checkToken(req, res);
 });
 
+router.put('/', _Auth2.default, function (req, res) {
+  _controllers.userController.editUserProfile(req, res);
+});
+
 module.exports = router;

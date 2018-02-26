@@ -54,11 +54,7 @@ var UserService = function (_BaseService) {
    */
   function UserService() {
     (0, _classCallCheck3.default)(this, UserService);
-
-    var _this = (0, _possibleConstructorReturn3.default)(this, (UserService.__proto__ || Object.getPrototypeOf(UserService)).call(this, _models2.default.User));
-
-    _this.proposeModel = _models2.default.CourierProposal;
-    return _this;
+    return (0, _possibleConstructorReturn3.default)(this, (UserService.__proto__ || Object.getPrototypeOf(UserService)).call(this, _models2.default.User));
   }
 
   /**

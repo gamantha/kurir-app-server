@@ -218,7 +218,7 @@ var UserController = function () {
                 return _context2.abrupt('return');
 
               case 52:
-                _context2.next = 95;
+                _context2.next = 97;
                 break;
 
               case 54:
@@ -280,7 +280,7 @@ var UserController = function () {
                 return _context2.abrupt('return');
 
               case 79:
-                _context2.next = 95;
+                _context2.next = 97;
                 break;
 
               case 81:
@@ -291,33 +291,33 @@ var UserController = function () {
               case 84:
                 response = _context2.sent;
                 senderPayload = {
-                  userId: response.id
+                  UserId: response.id
                 };
                 _context2.next = 88;
                 return this.senderService.create(senderPayload);
 
               case 88:
+                _context2.next = 90;
+                return this.mailService.sendRegisValidationLink(email);
+
+              case 90:
                 res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('successfully created new sender').build());
-                _context2.next = 95;
+                _context2.next = 97;
                 break;
 
-              case 91:
-                _context2.prev = 91;
+              case 93:
+                _context2.prev = 93;
                 _context2.t3 = _context2['catch'](81);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t3.message).setSuccess(false).build());
                 return _context2.abrupt('return');
-
-              case 95:
-                _context2.next = 97;
-                return this.mailService.sendRegisValidationLink(email);
 
               case 97:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[10, 31], [41, 48], [61, 71], [81, 91]]);
+        }, _callee2, this, [[10, 31], [41, 48], [61, 71], [81, 93]]);
       }));
 
       function create(_x3, _x4) {
@@ -1057,6 +1057,58 @@ var UserController = function () {
       }
 
       return checkToken;
+    }()
+  }, {
+    key: 'editUserProfile',
+    value: function () {
+      var _ref14 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee14(req, res) {
+        var _req$body6, email, photoLink, _req$body7, name, address, phone, loggedInUser, user, sender;
+
+        return _regenerator2.default.wrap(function _callee14$(_context14) {
+          while (1) {
+            switch (_context14.prev = _context14.next) {
+              case 0:
+                _req$body6 = req.body, email = _req$body6.email, photoLink = _req$body6.photoLink;
+                _req$body7 = req.body, name = _req$body7.name, address = _req$body7.address, phone = _req$body7.phone;
+                loggedInUser = res.locals.user.id;
+                _context14.prev = 3;
+                _context14.next = 6;
+                return this.service.update({ email: email, photoLink: photoLink }, { id: loggedInUser }, {
+                  returning: true,
+                  plain: true
+                });
+
+              case 6:
+                user = _context14.sent;
+                _context14.next = 9;
+                return this.senderService.update({ name: name, address: address, phone: phone }, { UserId: loggedInUser });
+
+              case 9:
+                sender = _context14.sent;
+
+                res.status(200).json(new _ResponseBuilder2.default().setData({ user: user, sender: sender }).setSuccess(true).build());
+                _context14.next = 16;
+                break;
+
+              case 13:
+                _context14.prev = 13;
+                _context14.t0 = _context14['catch'](3);
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context14.t0.message).setSuccess(false).build());
+
+              case 16:
+              case 'end':
+                return _context14.stop();
+            }
+          }
+        }, _callee14, this, [[3, 13]]);
+      }));
+
+      function editUserProfile(_x27, _x28) {
+        return _ref14.apply(this, arguments);
+      }
+
+      return editUserProfile;
     }()
   }]);
   return UserController;
