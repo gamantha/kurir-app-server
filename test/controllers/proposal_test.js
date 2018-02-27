@@ -17,7 +17,7 @@ describe('Proposal Controller Test', () => {
   /**
    * Base attribute definition.
    */
-  let userId = '';
+  let UserId = '';
   let sysToken = '';
   let userToken = '';
 
@@ -37,7 +37,7 @@ describe('Proposal Controller Test', () => {
       .send({ username: user.email, password: user.password })
       .end((err, res) => {
         userToken = res.body.data.accessToken;
-        userId = res.body.data.userId;
+        UserId = res.body.data.UserId;
         chai
           .request(app)
           .post('/api/user/login')
@@ -97,7 +97,7 @@ describe('Proposal Controller Test', () => {
         .set('Authorization', `bearer ${sysToken}`)
         .send({
           status: 'rejected',
-          userId,
+          UserId,
           rejectReason: 'reject just reject damn it',
         })
         .end((err, res) => {
@@ -117,7 +117,7 @@ describe('Proposal Controller Test', () => {
         .set('Authorization', `bearer ${sysToken}`)
         .send({
           status: 'verified',
-          userId,
+          UserId,
         })
         .end((err, res) => {
           res.should.have.status(200);
