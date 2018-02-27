@@ -17,9 +17,9 @@ module.exports = {
 
   down: (queryInterface, Sequelize) => {
     return [
-      queryInterface.removeColumn('Users', 'from'),
-      queryInterface.removeColumn('Users', 'to'),
-      queryInterface.removeColumn('Users', 'isCanceled'),
+      queryInterface.removeColumn('Items', 'from'),
+      queryInterface.removeColumn('Items', 'to'),
+      queryInterface.removeColumn('Items', 'isCanceled'),
     ];
   },
 };
