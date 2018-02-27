@@ -1,15 +1,20 @@
 module.exports = function(sequelize, DataTypes) {
   const Item = sequelize.define('Item', {
-    orderId: DataTypes.INTEGER,
+    ticketNumber: DataTypes.STRING,
     courierId: DataTypes.INTEGER,
     senderId: DataTypes.INTEGER,
     categoryId: DataTypes.INTEGER,
-    receiverId: DataTypes.INTEGER,
+    ReceiverId: DataTypes.INTEGER,
+    from: DataTypes.STRING,
+    to: DataTypes.STRING,
+    country: DataTypes.STRING,
+    city: DataTypes.STRING,
+    address: DataTypes.STRING,
+    type: DataTypes.STRING,
     weight: DataTypes.FLOAT,
     name: DataTypes.STRING,
-    deadline: DataTypes.STRING,
-    price: DataTypes.STRING,
-    value: DataTypes.STRING,
+    cost: DataTypes.STRING,
+    reward: DataTypes.STRING,
     note: DataTypes.STRING,
     statusMsg: DataTypes.STRING,
     isCustomPickupAddress: {
@@ -48,10 +53,14 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    isCanceled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   });
   Item.associate = function(models) {
     Item.belongsTo(models.Sender, { foreignKey: 'senderId' });
-    Item.belongsTo(models.Receiver, { foreignKey: 'receiverId' });
+    Item.belongsTo(models.Receiver);
     Item.belongsTo(models.Courier, { foreignKey: 'courierId' });
     Item.belongsTo(models.Category, { foreignKey: 'categoryId' });
     Item.hasMany(models.Droppoint, { foreignKey: 'itemId' });
