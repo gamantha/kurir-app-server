@@ -9,7 +9,7 @@
     "babel-node": "babel-node",
     "start": "nodemon --exec npm run babel-node -- ./app.js",
     "build":
-      "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./test,./seeders",
+      "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./test,./seeders,./coverage",
     "serve": "nodemon dist/app.js",
     "clean": "rm -rf ./dist && npm run build",
     "coverage":
