@@ -73,7 +73,8 @@ var ProposalController = function () {
               case 7:
                 response = _context.sent;
 
-                res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('We\'ll be reviewing your proposal and respond very soon. Thank you').setSuccess(true).build());
+                res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('We\'ll be reviewing your proposal \
+              and respond very soon. Thank you').setSuccess(true).build());
                 // user that rejected send another request
                 _context.next = 18;
                 break;
@@ -92,7 +93,8 @@ var ProposalController = function () {
                 });
 
               case 14:
-                res.status(200).json(new _ResponseBuilder2.default().setSuccess(true).setMessage('We\'ll be reviewing your proposal and respond very soon. Thank you').build());
+                res.status(200).json(new _ResponseBuilder2.default().setSuccess(true).setMessage('We\'ll be reviewing your proposal and \
+              respond very soon. Thank you').build());
                 _context.next = 18;
                 break;
 
@@ -100,7 +102,8 @@ var ProposalController = function () {
                 if (checkUser.status === 'verified') {
                   res.status(401).json(new _ResponseBuilder2.default().setMessage('You already a courier').setSuccess(false).build());
                 } else {
-                  res.status(200).json(new _ResponseBuilder2.default().setMessage('You already submit upgrade proposal. Please wait for our team to reach you.').setSuccess(false).build());
+                  res.status(200).json(new _ResponseBuilder2.default().setMessage('You already submit upgrade proposal.\
+              Please wait for our team to reach you.').setSuccess(false).build());
                 }
 
               case 18:
@@ -134,13 +137,13 @@ var ProposalController = function () {
     key: 'updateSenderProposal',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(req, res) {
-        var _req$body, status, userId, rejectReason, updated, _updated, _updated2;
+        var _req$body, status, UserId, rejectReason, updated, _updated, _updated2;
 
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _req$body = req.body, status = _req$body.status, userId = _req$body.userId, rejectReason = _req$body.rejectReason;
+                _req$body = req.body, status = _req$body.status, UserId = _req$body.UserId, rejectReason = _req$body.rejectReason;
 
                 if (!(status === 'verified' || status === 'rejected' || status === 'waiting')) {
                   _context2.next = 28;
@@ -155,12 +158,12 @@ var ProposalController = function () {
                 }
 
                 _context2.next = 6;
-                return this.service.proposalAccepted(status, rejectReason, userId);
+                return this.service.proposalAccepted(status, rejectReason, UserId);
 
               case 6:
                 updated = _context2.sent;
 
-                res.status(200).json(new _ResponseBuilder2.default().setData({ userId: parseInt(userId), updated: updated }).setSuccess(true).build());
+                res.status(200).json(new _ResponseBuilder2.default().setData({ UserId: parseInt(UserId), updated: updated }).setSuccess(true).build());
                 _context2.next = 21;
                 break;
 
@@ -171,23 +174,23 @@ var ProposalController = function () {
                 }
 
                 _context2.next = 13;
-                return this.service.proposalRejected(status, rejectReason, userId);
+                return this.service.proposalRejected(status, rejectReason, UserId);
 
               case 13:
                 _updated = _context2.sent;
 
-                res.status(200).json(new _ResponseBuilder2.default().setData({ userId: parseInt(userId), updated: _updated }).setSuccess(true).build());
+                res.status(200).json(new _ResponseBuilder2.default().setData({ UserId: parseInt(UserId), updated: _updated }).setSuccess(true).build());
                 _context2.next = 21;
                 break;
 
               case 17:
                 _context2.next = 19;
-                return this.service.proposalWaiting(status, rejectReason, userId);
+                return this.service.proposalWaiting(status, rejectReason, UserId);
 
               case 19:
                 _updated2 = _context2.sent;
 
-                res.status(200).json(new _ResponseBuilder2.default().setData({ userId: parseInt(userId), updated: _updated2 }).setSuccess(true).build());
+                res.status(200).json(new _ResponseBuilder2.default().setData({ UserId: parseInt(UserId), updated: _updated2 }).setSuccess(true).build());
 
               case 21:
                 _context2.next = 26;
