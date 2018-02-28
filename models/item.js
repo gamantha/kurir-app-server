@@ -16,47 +16,9 @@ module.exports = function(sequelize, DataTypes) {
     cost: DataTypes.STRING,
     reward: DataTypes.STRING,
     note: DataTypes.STRING,
+    // @params status
+    // firstDropsite,pickedByCourier,startDroppoint,onTravel,endDroppoint,ontheway,received,canceled
     statusMsg: DataTypes.STRING,
-    isCustomPickupAddress: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isExpensive: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isOnFirstDropsite: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isPicked: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isOnStartDroppoint: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isOnTravel: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isOnEndDroppoint: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isOnTheWayToReceiver: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isReceived: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    isCanceled: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
   });
   Item.associate = function(models) {
     Item.belongsTo(models.Sender, { foreignKey: 'senderId' });
