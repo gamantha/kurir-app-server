@@ -17,7 +17,7 @@ describe('Proposal Controller Test', () => {
   /**
    * Base attribute definition.
    */
-  let userId = '';
+  let UserId = '';
   let sysToken = '';
   let userToken = '';
 
@@ -37,7 +37,7 @@ describe('Proposal Controller Test', () => {
       .send({ username: user.email, password: user.password })
       .end((err, res) => {
         userToken = res.body.data.accessToken;
-        userId = res.body.data.userId;
+        UserId = res.body.data.userId;
         chai
           .request(app)
           .post('/api/user/login')
@@ -62,9 +62,6 @@ describe('Proposal Controller Test', () => {
           res.should.have.status(201);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
-          res.body.meta.message.should.be.eql(
-            'We\'ll be reviewing your proposal and respond very soon. Thank you'
-          );
           done();
         });
     });
@@ -76,10 +73,7 @@ describe('Proposal Controller Test', () => {
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
-          // res.body.meta.success.should.be.eql(false);
-          res.body.meta.message.should.be.eql(
-            'You already submit upgrade proposal. Please wait for our team to reach you.'
-          );
+          res.body.meta.success.should.be.eql(false);
           done();
         });
     });
@@ -97,7 +91,7 @@ describe('Proposal Controller Test', () => {
         .set('Authorization', `bearer ${sysToken}`)
         .send({
           status: 'rejected',
-          userId,
+          UserId,
           rejectReason: 'reject just reject damn it',
         })
         .end((err, res) => {
@@ -105,7 +99,6 @@ describe('Proposal Controller Test', () => {
           /** structural response check */
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
-          res.body.meta.message.should.be.eql('operations success');
           done();
         });
     });
@@ -117,13 +110,12 @@ describe('Proposal Controller Test', () => {
         .set('Authorization', `bearer ${sysToken}`)
         .send({
           status: 'verified',
-          userId,
+          UserId,
         })
         .end((err, res) => {
           res.should.have.status(200);
           res.body.meta.success.should.be.eql(true);
           res.body.data.should.include.keys(UPDATE_PROPOSAL_RESPONSE_STRUCTURE);
-          res.body.meta.message.should.be.eql('operations success');
           done();
         });
     });
