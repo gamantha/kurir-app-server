@@ -18,7 +18,7 @@ module.exports = function(sequelize, DataTypes) {
     note: DataTypes.STRING,
     // @params status
     // firstDropsite,pickedByCourier,startDroppoint,onTravel,endDroppoint,ontheway,received,canceled
-    statusMsg: DataTypes.STRING,
+    status: DataTypes.STRING,
   });
   Item.associate = function(models) {
     Item.belongsTo(models.Sender, { foreignKey: 'senderId' });
