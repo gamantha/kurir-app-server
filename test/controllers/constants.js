@@ -8,6 +8,31 @@ export const RECEIVER_RESPONSE_STRUCTURE = [
   'createdAt',
 ];
 
+export const ITEM_RESPONSE_STRUCTURE = [
+  'id',
+  'ticketNumber',
+  'courierId',
+  'senderId',
+  'category',
+  'ReceiverId',
+  'from',
+  'to',
+  'country',
+  'city',
+  'address',
+  'type',
+  'weight',
+  'name',
+  'cost',
+  'reward',
+  'note',
+  'status',
+  'deadline',
+  'updatedAt',
+  'createdAt',
+];
+
+
 export const UPDATE_PROPOSAL_RESPONSE_STRUCTURE = ['userId', 'updated'];
 
 export const GET_PROPOSAL_RESPONSE_STRUCTURE = [
