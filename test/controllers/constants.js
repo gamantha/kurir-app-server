@@ -32,8 +32,7 @@ export const ITEM_RESPONSE_STRUCTURE = [
   'createdAt',
 ];
 
-
-export const UPDATE_PROPOSAL_RESPONSE_STRUCTURE = ['userId', 'updated'];
+export const UPDATE_PROPOSAL_RESPONSE_STRUCTURE = ['UserId', 'updated'];
 
 export const GET_PROPOSAL_RESPONSE_STRUCTURE = [
   'User',
