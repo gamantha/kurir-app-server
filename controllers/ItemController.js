@@ -13,14 +13,14 @@ export default class ItemController {
     const {
       address, ticketNumber, city, country, phone,
       courierId, from, to, ReceiverId,
-      name, note, reward, deadline,
+      name, note, reward,
       status, category, type, weight, cost
     } = req.body;
     const senderId = res.locals.user.id;
     const payload = {
       address, ticketNumber, city, country, phone,
       senderId, courierId, from, to, ReceiverId,
-      name, note, reward, deadline,
+      name, note, reward,
       status, category, type, weight, cost
     };
     try {
