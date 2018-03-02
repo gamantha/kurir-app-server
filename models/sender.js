@@ -10,6 +10,7 @@ module.exports = function(sequelize, DataTypes) {
     Sender.belongsTo(models.User);
     Sender.hasMany(models.Reputation, { foreignKey: 'senderId' });
     Sender.hasOne(models.Pickup, { foreignKey: 'senderId' });
+    Sender.hasMany(models.Item, { foreignKey: 'senderId' });
   };
   return Sender;
 };

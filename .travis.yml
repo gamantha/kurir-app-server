@@ -3,7 +3,7 @@ language: node_js
 node_js:
   - "9.3.0"
 
-services: mysql
+services: postgresql
 
 cache:
   directories:
@@ -15,7 +15,7 @@ env:
 
 before_install:
   - "cp config/config.travis.json config/config.json"
-  - "mysql -e 'CREATE DATABASE database_test;'"
+  - psql -c 'create database database_test;' -U postgres  
   - "npm install"
   - "sequelize --env test db:migrate"
   - "sequelize --env test db:seed --seed seeders/20180118112739-seed-test-user.js "
