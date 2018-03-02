@@ -11,12 +11,13 @@ export default class ItemController {
 
   async create(req, res) {
     const {
-      address, ticketNumber, city, country, phone,
+      address, city, country, phone,
       courierId, from, to, ReceiverId,
       name, note, reward,
       status, category, type, weight, cost
     } = req.body;
     const senderId = res.locals.user.id;
+    const ticketNumber = this.service.generateTicketNumber();
     const payload = {
       address, ticketNumber, city, country, phone,
       senderId, courierId, from, to, ReceiverId,
@@ -57,7 +58,7 @@ export default class ItemController {
   async find(req, res) {
     const { id } = req.params;
     try {
-      const response = await this.service.findOne({ id });
+      const response = await this.service.findOne({ ticketNumber: id });
       if (response !== null) {
         res.status(200).json(new ResponseBuilder().setData(response).build());
       } else {
