@@ -3,7 +3,7 @@ language: node_js
 node_js:
   - "9.3.0"
 
-services: mysql
+services: postgresql
 
 cache:
   directories:
@@ -12,6 +12,9 @@ cache:
 
 env:
   - SECRET=somesecretword
+
+before_script:
+  - psql -c 'create database database_test;' -U postgres
 
 before_install:
   - "cp config/config.travis.json config/config.json"
