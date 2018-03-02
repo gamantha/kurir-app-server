@@ -68,7 +68,7 @@ describe('Items', () => {
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
           res.body.data.should.include.keys(ITEM_RESPONSE_STRUCTURE);
-          postedId = res.body.data.id;
+          postedId = res.body.data.ticketNumber;
           res.body.meta.message.should.be.eql('operations success');
           done();
         });
