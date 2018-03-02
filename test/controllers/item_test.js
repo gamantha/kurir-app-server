@@ -60,7 +60,6 @@ describe('Items', () => {
           type: "sometype",
           weight: 10,
           cost: 10000,
-          deadline: "2018-03-01 19:13:56.565+07",
           reward: "some reward",
           note: "some note"
         })
@@ -167,7 +166,6 @@ describe('Items', () => {
           type: "sometype",
           weight: 10,
           cost: 10000,
-          deadline: "2018-03-01 19:13:56.565+07",
           reward: "some reward",
           note: "some note"
         })
@@ -199,7 +197,6 @@ describe('Items', () => {
           type: "sometype",
           weight: 10,
           cost: 10000,
-          deadline: "2018-03-01 19:13:56.565+07",
           reward: "some reward",
           note: "some note"
         })

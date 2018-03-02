@@ -27,7 +27,6 @@ export const ITEM_RESPONSE_STRUCTURE = [
   'reward',
   'note',
   'status',
-  'deadline',
   'updatedAt',
   'createdAt',
 ];
