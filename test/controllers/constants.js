@@ -24,3 +24,5 @@ export const GET_PROPOSAL_RESPONSE_STRUCTURE = [
   'status',
   'updatedAt',
 ];
+
+export const EDIT_PROFILE_RESPONSE_STRUCTURE = ['user', 'sender'];

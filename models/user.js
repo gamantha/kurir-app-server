@@ -45,9 +45,10 @@ module.exports = function(sequelize, DataTypes) {
     forgotPassVeriCode: DataTypes.STRING,
     role: DataTypes.STRING, // @param {String} sender, sender+kurir, sysadmin, siteadmin
     isEmailValidated: DataTypes.BOOLEAN,
+    photoLink: DataTypes.STRING,
   });
   User.associate = function(models) {
-    User.hasMany(models.Sender, { foreignKey: 'userId' });
+    User.hasOne(models.Sender);
     User.hasMany(models.Token, { foreignKey: 'userId' });
     User.hasOne(models.Courier, { foreignKey: 'userId' });
     User.hasOne(models.Droppoint, { foreignKey: 'userId' });
