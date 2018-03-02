@@ -17,7 +17,6 @@ module.exports = function (sequelize, DataTypes) {
     reward: DataTypes.STRING,
     note: DataTypes.STRING,
     status: DataTypes.STRING,
-    deadline: DataTypes.DATE,
   });
   Item.associate = function (models) {
     Item.belongsTo(models.Sender, { foreignKey: 'senderId' });
