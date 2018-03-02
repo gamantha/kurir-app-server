@@ -8,4 +8,8 @@ export default class ItemService extends BaseService {
   constructor() {
     super(models.Item);
   }
+
+  generateTicketNumber() {
+    return Date.now();
+  }
 }
