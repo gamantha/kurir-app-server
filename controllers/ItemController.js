@@ -80,7 +80,7 @@ export default class ItemController {
   async destroy(req, res) {
     const { id } = req.params;
     try {
-      await this.service.destroy({ id });
+      await this.service.destroy({ ticketNumber: id });
       res.status(200).json(new ResponseBuilder().setData({}).build());
     } catch (error) {
       res.status(404).json(new ResponseBuilder()
@@ -93,19 +93,19 @@ export default class ItemController {
   async update(req, res) {
     const { id } = req.params;
     const {
-      address, ticketNumber, city, country, phone,
+      address, city, country, phone,
       senderId, courierId, from, to, ReceiverId,
       name, note, reward, deadline,
       status, category, type, weight, cost
     } = req.body;
     const payload = {
-      address, ticketNumber, city, country, phone,
+      address, city, country, phone,
       senderId, courierId, from, to, ReceiverId,
       name, note, reward, deadline,
       status, category, type, weight, cost
     };
     try {
-      const response = await this.service.update(payload, { id });
+      const response = await this.service.update(payload, { ticketNumber: id });
       res.status(200).json(new ResponseBuilder().setData(response).build());
     } catch (error) {
       res.status(404).json(new ResponseBuilder()
