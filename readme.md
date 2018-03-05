@@ -68,3 +68,8 @@ sequelize db:migrate
 - run `sequelize --env test db:migrate:all` to run migration on you testing database.
 - run `sequelize --env test db:seed --seed seeders/20180118112739-seed-test-user.js` to seed the test user [run this just once.].
 - run `npm run test` to run all the test.
+
+
+### API Key and others
+- https://developers.google.com/maps/documentation/distance-matrix/get-api-key to get the distance matrix api key
+- set to .env
