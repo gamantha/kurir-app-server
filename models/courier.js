@@ -1,4 +1,4 @@
-module.exports = function (sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes) {
   const Courier = sequelize.define('Courier', {
     userId: DataTypes.INTEGER,
     idUrl: DataTypes.STRING,
@@ -8,7 +8,7 @@ module.exports = function (sequelize, DataTypes) {
     isBlocked: DataTypes.BOOLEAN,
     isEmployee: DataTypes.BOOLEAN,
   });
-  Courier.associate = function (models) {
+  Courier.associate = function(models) {
     Courier.hasMany(models.Trip, { foreignKey: 'courierId' });
     Courier.hasMany(models.Item, { foreignKey: 'courierId' });
     Courier.hasMany(models.Reputation, { foreignKey: 'courierId' });
