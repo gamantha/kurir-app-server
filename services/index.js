@@ -8,6 +8,7 @@ import FacebookService from './FacebookService';
 import DroppointService from './DroppointService';
 import S3Service from './S3Service';
 import CourierProposalService from './CourierProposalService';
+import ItemService from './ItemService';
 
 /**
  * Services export
@@ -23,4 +24,5 @@ export {
   DroppointService,
   S3Service,
   CourierProposalService,
+  ItemService,
 };
