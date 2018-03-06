@@ -8,6 +8,7 @@ import {
   SENDER_ITEM_RESPONSE_STRUCTURE,
   USER_ITEM_RESPONSE_STRUCTURE,
   CREATE_ITEM_RESPONSE_STRUCTURE,
+  EDIT_ITEM_RESPONSE_STRUCTURE,
 } from './constants';
 
 chai.use(chaiHttp);
@@ -21,20 +22,15 @@ describe('Items', () => {
    */
   let token = '';
   let postedId = null;
+  let userId = null;
+  let senderId = null;
+  let courierId = null;
 
   /**
    * Setup
    */
   before(done => {
     // clean up receiver table
-    models.Item.destroy({
-      where: {},
-      truncate: true,
-    });
-    models.Receiver.destroy({
-      where: {},
-      truncate: true,
-    });
     // login and receive token
     chai
       .request(app)
@@ -42,6 +38,18 @@ describe('Items', () => {
       .send({ username: user.email, password: user.password })
       .end((err, res) => {
         token = res.body.data.accessToken;
+        done();
+      });
+    chai
+      .request(app)
+      .post('/api/user/create')
+      .send({ username: user.email, password: user.password })
+      .end((err, res) => {
+        accessToken = res.body.data.accessToken;
+        userId = res.body.data.userId;
+        models.Sender.create({
+          UserId: userId,
+        });
         done();
       });
   });
@@ -62,7 +70,7 @@ describe('Items', () => {
           country: 'Indonesia',
           city: 'Jakarta Barat',
           address: 'some address',
-          ticketNumber: '3234322',
+          ticketNumber: Date.now(),
           itemName: 'xiaomi 4x',
           note: 'some note',
           reward: 'some reward',
@@ -71,7 +79,7 @@ describe('Items', () => {
           receiverName: 'Guy',
           email: 'guy@mail.com',
           cost: '2000',
-          ReceiverId: 3,
+          ReceiverId: 2,
           cost: '10000',
           type: 'sometype',
           status: 'stillWaitingCourier',
@@ -102,17 +110,16 @@ describe('Items', () => {
           // res.should.have.status(200);
           // res.body.should.be.a('object');
           /** structural response check */
-          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          // res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           // res.body.data[0].Sender.should.include.keys(
           //   SENDER_ITEM_RESPONSE_STRUCTURE
           // );
           // res.body.data[0].Sender.User.should.include.keys(
           //   USER_ITEM_RESPONSE_STRUCTURE
-          // );c
-          console.log('data1', res.body.data[0].Sender);
-          res.body.data[0].should.include.keys(GET_ITEM_RESPONSE_STRUCTURE);
+          // );
+          // res.body.data[0].should.include.keys(GET_ITEM_RESPONSE_STRUCTURE);
           // res.body.meta.success.should.be.eql(true);
-          // res.body.meta.message.should.be.eql('operations success2');
+          res.body.meta.message.should.be.eql('operations success');
           done();
         });
     });
@@ -143,7 +150,7 @@ describe('Items', () => {
           res.body.should.be.a('object');
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.data.should.be.a('object');
-          res.body.data.should.include.keys(ITEM_RESPONSE_STRUCTURE);
+          res.body.data.should.include.keys(GET_ITEM_RESPONSE_STRUCTURE);
           res.body.meta.success.should.eql(true);
           res.body.meta.message.should.be.eql('operations success');
           done();
@@ -174,27 +181,31 @@ describe('Items', () => {
         .put(`/api/item/${postedId}`)
         .set('Authorization', `bearer ${token}`)
         .send({
-          address: 'new address',
-          ticketNumber: 3234322,
-          city: 'Jakarta Utara',
-          country: 'Indonesia',
-          phone: '3482043240',
-          from: 'Jakarta',
-          to: 'Bandung',
-          ReceiverId: 3,
-          name: 'xiaomi 4x',
-          category: 'phone',
-          type: 'sometype',
-          weight: 10,
-          cost: 10000,
-          reward: 'some reward',
-          note: 'some note',
+          address: 'update',
+          city: 'update',
+          country: 'update',
+          senderId: 2,
+          courierId: 1,
+          from: 'update',
+          ReceiverId: 1,
+          itemName: 'update',
+          note: 'update',
+          reward: 'update',
+          status: 'update',
+          category: 'update',
+          type: 'update',
+          weight: 2,
+          cost: 'update',
+          receiverName: 'update',
+          email: 'update',
+          phone: 'update',
         })
         .end((err, res) => {
+          console.log('data1', res.body.data);
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
-          res.body.data.should.include.keys(ITEM_RESPONSE_STRUCTURE);
+          res.body.data.should.include.keys(EDIT_ITEM_RESPONSE_STRUCTURE);
           res.body.meta.message.should.be.eql('operations success');
           done();
         });
@@ -205,21 +216,24 @@ describe('Items', () => {
         .put(`/api/item/${postedId}1`)
         .set('Authorization', `bearer ${token}`)
         .send({
-          address: 'new address',
-          ticketNumber: 3234322,
-          city: 'Jakarta Utara',
-          country: 'Indonesia',
-          phone: '3482043240',
-          from: 'Jakarta',
-          to: 'Bandung',
-          ReceiverId: 3,
-          name: 'xiaomi 4x',
-          category: 'phone',
-          type: 'sometype',
-          weight: 10,
-          cost: 10000,
-          reward: 'some reward',
-          note: 'some note',
+          address: 'update',
+          city: 'update',
+          country: 'update',
+          senderId: 2,
+          courierId: 1,
+          from: 'update',
+          ReceiverId: 1,
+          itemName: 'update',
+          note: 'update',
+          reward: 'update',
+          status: 'update',
+          category: 'update',
+          type: 'update',
+          weight: 2,
+          cost: 'update',
+          receiverName: 'update',
+          email: 'update',
+          phone: 'update',
         })
         .end((err, res) => {
           res.should.have.status(404);
@@ -264,6 +278,14 @@ describe('Items', () => {
    * Teardown
    */
   after(done => {
-    done();
+    models.Receiver.destroy({
+      where: { name: 'Guy' },
+    }).then(() => {
+      // models.Item.destroy({
+      //   where: {},
+      //   truncate: true,
+      // });
+      done();
+    });
   });
 });
