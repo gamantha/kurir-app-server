@@ -1,5 +1,4 @@
 import { ItemService, ReceiverService } from '../services/index';
-import models from '../models';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 
 export default class ItemController {
@@ -73,19 +72,7 @@ export default class ItemController {
   async get(req, res) {
     try {
       const { page, limit, fields, order } = req.query;
-      const include = [
-        {
-          model: models.Sender,
-          include: [
-            {
-              model: models.User,
-              attributes: { exclude: ['password', 'forgotPassVeriCode'] },
-            },
-          ],
-        },
-        { model: models.Receiver },
-        { model: models.Courier },
-      ];
+      const include = this.service.returnInclude();
       const response = await this.service.paginate(
         req,
         page,
@@ -114,8 +101,12 @@ export default class ItemController {
 
   async find(req, res) {
     const { id } = req.params;
+    const include = this.service.returnInclude();
     try {
-      const response = await this.service.findOne({ ticketNumber: id });
+      const response = await this.service.findOne(
+        { ticketNumber: id },
+        include
+      );
       if (response !== null) {
         res.status(200).json(new ResponseBuilder().setData(response).build());
       } else {
@@ -157,45 +148,69 @@ export default class ItemController {
       address,
       city,
       country,
-      phone,
       senderId,
       courierId,
       from,
       to,
       ReceiverId,
-      name,
+      itemName,
       note,
       reward,
-      deadline,
       status,
       category,
       type,
       weight,
       cost,
+      // receiver
+      receiverName,
+      email,
+      phone,
     } = req.body;
-    const payload = {
-      address,
-      city,
-      country,
-      phone,
-      senderId,
-      courierId,
-      from,
-      to,
-      ReceiverId,
-      name,
-      note,
-      reward,
-      deadline,
-      status,
-      category,
-      type,
-      weight,
-      cost,
-    };
     try {
-      const response = await this.service.update(payload, { ticketNumber: id });
-      res.status(200).json(new ResponseBuilder().setData(response).build());
+      const receiverPayload = {
+        name: receiverName,
+        email,
+        phone,
+      };
+      const itemPayload = {
+        address,
+        city,
+        country,
+        senderId,
+        courierId,
+        status,
+        name: itemName,
+        from,
+        to,
+        note,
+        reward,
+        category,
+        type,
+        weight,
+        cost,
+        ReceiverId: ReceiverId,
+      };
+      const receiver = await this.receiverService.update(
+        receiverPayload,
+        {
+          id: ReceiverId,
+        },
+        {
+          returning: true,
+          plain: true,
+        }
+      );
+      const item = await this.service.update(
+        itemPayload,
+        { ticketNumber: id },
+        {
+          returning: true,
+          plain: true,
+        }
+      );
+      res
+        .status(200)
+        .json(new ResponseBuilder().setData({ item, receiver }).build());
     } catch (error) {
       res.status(404).json(
         new ResponseBuilder()
