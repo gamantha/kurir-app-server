@@ -12,4 +12,20 @@ export default class ItemService extends BaseService {
   generateTicketNumber() {
     return Date.now();
   }
+
+  returnInclude() {
+    return [
+      {
+        model: models.Sender,
+        include: [
+          {
+            model: models.User,
+            attributes: { exclude: ['password', 'forgotPassVeriCode'] },
+          },
+        ],
+      },
+      { model: models.Receiver },
+      { model: models.Courier },
+    ];
+  }
 }
