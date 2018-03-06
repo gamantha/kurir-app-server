@@ -11,12 +11,29 @@ export default class MapService {
    * Calculate Distance
    * @param {String} origin [origin coordinate]
    * @param {String} destination [destination coordinate]
-   * @param {Func} callback [callback function]
    */
-  calculateDistance(origin, destination, callback) {
+  async calculateDistance(origin, destination) {
     const url = `${this.baseUrl}origins=${origin}&destinations=${destination}`;
-    axios.post(`${url}&key=${this.apiKey}`)
-      .then((result) => callback(result))
-      .catch((err) => console.log('error', err));
+    try {
+      const result = await axios.post(`${url}&key=${this.apiKey}`);
+      return {
+        destination: result.data.destination_addresses[0],
+        origin: result.data.origin_addresses[0],
+        distance: result.data.rows[0].elements[0].distance,
+      };
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * Calculate the price
+   * @param {Float} weight 
+   */
+  calculatePrice(distance, weight) {
+    const unitPrice = 100;
+    const unitDistance = distance.distance.value / 1000;
+    distance.price = unitPrice * unitDistance * weight;
+    return distance;
   }
 }
