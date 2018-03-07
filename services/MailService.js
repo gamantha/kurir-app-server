@@ -78,7 +78,8 @@ export default class MailService extends BaseService {
       subject = 'Welcome to Kurir.id';
     }
     if (template === 'link') {
-      html = `Please verify your account by clicking on this link <u>${payload}</u>`;
+      html = `Please verify your account by clicking on this link <u>${payload}</u>
+      <strong>Note: this link will expire in 1 hour.</strong>`;
       subject = 'Email Verification for Newly Onboarding User';
     }
     if (template === 'change-password') {
@@ -99,8 +100,13 @@ export default class MailService extends BaseService {
     };
   }
 
-  decodeToken(token) {
-    return jwt.verify(token, process.env.SECRET).email;
+  async decodeToken(token) {
+    try {
+      const result = jwt.verify(token, process.env.SECRET).email;
+      return result;
+    } catch (error) {
+      return error.message;
+    }
   }
 
   /**
@@ -166,9 +172,9 @@ export default class MailService extends BaseService {
 
       await this.sendMailgunEmail(verificationMessage);
       return true;
+    } else {
+      return false;
     }
-
-    return false;
   }
 
   /**

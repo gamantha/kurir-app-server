@@ -8,13 +8,17 @@ export default class MailController {
 
   async checkEmail(req, res) {
     const token = req.params.token;
-    const email = this.service.decodeToken(token);
     try {
-      const result = await this.service.checkEmail(email);
-      if (result) {
-        res.sendFile('confirmed.html', { root: 'views/confirmation/' });
+      const email = await this.service.decodeToken(token);
+      if (email === 'jwt expired') {
+        res.sendFile('expired.html', { root: 'views/confirmation/' });
       } else {
-        res.sendFile('fail.html', { root: 'views/confirmation/' });
+        const result = await this.service.checkEmail(email);
+        if (result) {
+          res.sendFile('confirmed.html', { root: 'views/confirmation/' });
+        } else {
+          res.sendFile('fail.html', { root: 'views/confirmation/' });
+        }
       }
     } catch (error) {
       res.status(400).json(
