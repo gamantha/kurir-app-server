@@ -28,10 +28,6 @@ var _inherits2 = require('babel-runtime/helpers/inherits');
 
 var _inherits3 = _interopRequireDefault(_inherits2);
 
-var _axios = require('axios');
-
-var _axios2 = _interopRequireDefault(_axios);
-
 var _jsonwebtoken = require('jsonwebtoken');
 
 var _jsonwebtoken2 = _interopRequireDefault(_jsonwebtoken);
@@ -56,10 +52,9 @@ var _mailgunJs = require('mailgun-js');
 
 var _mailgunJs2 = _interopRequireDefault(_mailgunJs);
 
-var _constants = require('../helpers/constants');
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import axios from 'axios';
 var config = {
   development: {
     username: 'postgres',
@@ -84,6 +79,8 @@ var config = {
     base_url: 'https://kurirbackend-dev.herokuapp.com'
   }
 };
+
+// import { buildEmailValidationUri } from '../helpers/constants';
 
 var MailService = function (_BaseService) {
   (0, _inherits3.default)(MailService, _BaseService);
@@ -228,59 +225,54 @@ var MailService = function (_BaseService) {
     key: 'checkEmail',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(email) {
-        var userEmail, validateEmailUri, validEmail, updateValidEmail, welcomeMessage;
+        var userEmail, updateValidEmail, welcomeMessage;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _context2.next = 2;
+                _context2.prev = 0;
+                _context2.next = 3;
                 return this.findOne({ email: email });
 
-              case 2:
+              case 3:
                 userEmail = _context2.sent;
 
                 if (userEmail.dataValues.isEmailValidated) {
-                  _context2.next = 21;
+                  _context2.next = 16;
                   break;
                 }
 
-                validateEmailUri = (0, _constants.buildEmailValidationUri)(email);
                 _context2.next = 7;
-                return _axios2.default.get(validateEmailUri);
-
-              case 7:
-                validEmail = _context2.sent;
-
-                if (!(validEmail && validEmail.data && validEmail.data.is_valid)) {
-                  _context2.next = 18;
-                  break;
-                }
-
-                _context2.next = 11;
                 return this.update({ isEmailValidated: true }, { email: email });
 
-              case 11:
+              case 7:
                 updateValidEmail = _context2.sent;
 
                 if (!updateValidEmail) {
-                  _context2.next = 17;
+                  _context2.next = 13;
                   break;
                 }
 
                 welcomeMessage = this.setMailgunTemplate(email, 'welcome', null);
-                _context2.next = 16;
+                _context2.next = 12;
                 return this.sendMailgunEmail(welcomeMessage);
 
-              case 16:
+              case 12:
                 return _context2.abrupt('return', true);
 
+              case 13:
+                return _context2.abrupt('return', false);
+
+              case 16:
+                return _context2.abrupt('return', false);
+
               case 17:
-                return _context2.abrupt('return', false);
+                _context2.next = 22;
+                break;
 
-              case 18:
-                return _context2.abrupt('return', false);
-
-              case 21:
+              case 19:
+                _context2.prev = 19;
+                _context2.t0 = _context2['catch'](0);
                 return _context2.abrupt('return', false);
 
               case 22:
@@ -288,7 +280,7 @@ var MailService = function (_BaseService) {
                 return _context2.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee2, this, [[0, 19]]);
       }));
 
       function checkEmail(_x2) {

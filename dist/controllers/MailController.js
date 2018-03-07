@@ -46,30 +46,33 @@ var MailController = function () {
               case 0:
                 token = req.params.token;
                 email = this.service.decodeToken(token);
-                _context.next = 4;
+                _context.prev = 2;
+                _context.next = 5;
                 return this.service.checkEmail(email);
 
-              case 4:
+              case 5:
                 result = _context.sent;
 
-                if (!result) {
-                  _context.next = 8;
-                  break;
+                if (result) {
+                  res.sendFile('confirmed.html', { root: 'views/confirmation/' });
+                } else {
+                  res.sendFile('fail.html', { root: 'views/confirmation/' });
                 }
+                _context.next = 12;
+                break;
 
-                res.sendFile('confirmed.html', { root: 'views/confirmation/' });
-                return _context.abrupt('return');
+              case 9:
+                _context.prev = 9;
+                _context.t0 = _context['catch'](2);
 
-              case 8:
-                res.sendFile('fail.html', { root: 'views/confirmation/' });
-                return _context.abrupt('return');
+                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context.t0.message).setSuccess(false).build());
 
-              case 10:
+              case 12:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee, this, [[2, 9]]);
       }));
 
       function checkEmail(_x, _x2) {
