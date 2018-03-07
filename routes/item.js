@@ -2,7 +2,6 @@ import express from 'express';
 import { itemController } from '../controllers';
 import Auth from '../helpers/Auth';
 
-
 const router = express.Router();
 
 router.use(Auth);

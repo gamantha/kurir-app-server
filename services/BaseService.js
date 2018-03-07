@@ -32,10 +32,14 @@ export default class BaseService {
   /**
    * Get row by condition
    * @param {Object} payload
+   * @param {Array} options
    */
-  async findOne(payload) {
+  async findOne(payload, options) {
     try {
-      const response = await this.model.findOne({ where: payload });
+      const response = await this.model.findOne({
+        include: options,
+        where: payload,
+      });
       if (response) {
         return response;
       } else {
@@ -111,8 +115,9 @@ export default class BaseService {
    * @param {Integer} limit
    * @param {Array} orders
    * @param {Array} attributes
+   * @param {Array} options
    */
-  async paginate(req, page = 1, limit, orders, attributes) {
+  async paginate(req, page = 1, limit, orders, attributes, options) {
     limit = typeof limit !== 'undefined' ? parseInt(limit) : 10;
     attributes = typeof attributes !== 'undefined' ? attributes.split(',') : {};
     const order =
@@ -122,6 +127,7 @@ export default class BaseService {
     const offset = typeof page !== 'undefined' ? (page - 1) * limit : page;
     try {
       const response = await this.model.findAndCountAll({
+        include: options,
         attributes,
         limit,
         offset,

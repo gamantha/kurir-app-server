@@ -8,5 +8,12 @@
     "email": "sysadmin@development.com",
     "password": "sysadminpassword",
     "username": "sysadminguy"
+  },
+  "sender": {
+    "UserId": 1,
+    "city": "Bandung",
+    "name": "Guy",
+    "address": "Jalan Gagak",
+    "phone": "081228837"
   }
 }

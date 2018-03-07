@@ -6,7 +6,9 @@ module.exports = function (sequelize, DataTypes) {
     category: DataTypes.STRING,
     ReceiverId: DataTypes.INTEGER,
     from: DataTypes.STRING,
+    originCoord: DataTypes.STRING,
     to: DataTypes.STRING,
+    destinationCoord: DataTypes.STRING,
     country: DataTypes.STRING,
     city: DataTypes.STRING,
     address: DataTypes.STRING,
@@ -16,6 +18,8 @@ module.exports = function (sequelize, DataTypes) {
     cost: DataTypes.STRING,
     reward: DataTypes.STRING,
     note: DataTypes.STRING,
+    // @params status
+    // stillWaitingCourier,firstDropsite,pickedByCourier,startDroppoint,onTravel,endDroppoint,ontheway,received,canceled
     status: DataTypes.STRING,
   });
   Item.associate = function (models) {

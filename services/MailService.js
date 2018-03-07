@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
@@ -8,7 +8,7 @@ import models from '../models';
 import mailgun from 'mailgun-js';
 import config from '../config/config.json';
 
-import { buildEmailValidationUri } from '../helpers/constants';
+// import { buildEmailValidationUri } from '../helpers/constants';
 
 export default class MailService extends BaseService {
   constructor() {
@@ -78,7 +78,8 @@ export default class MailService extends BaseService {
       subject = 'Welcome to Kurir.id';
     }
     if (template === 'link') {
-      html = `Please verify your account by clicking on this link <u>${payload}</u>`;
+      html = `Please verify your account by clicking on this link <u>${payload}</u>
+      <strong>Note: this link will expire in 1 hour.</strong>`;
       subject = 'Email Verification for Newly Onboarding User';
     }
     if (template === 'change-password') {
@@ -99,8 +100,13 @@ export default class MailService extends BaseService {
     };
   }
 
-  decodeToken(token) {
-    return jwt.verify(token, process.env.SECRET).email;
+  async decodeToken(token) {
+    try {
+      const result = jwt.verify(token, process.env.SECRET).email;
+      return result;
+    } catch (error) {
+      return error.message;
+    }
   }
 
   /**
@@ -110,17 +116,17 @@ export default class MailService extends BaseService {
    * @return {Boolean}
    */
   async checkEmail(email) {
-    const userEmail = await this.findOne({ email });
-    if (!userEmail.dataValues.isEmailValidated) {
-      const validateEmailUri = buildEmailValidationUri(email);
-      const validEmail = await axios.get(validateEmailUri);
+    try {
+      const userEmail = await this.findOne({ email });
+      if (!userEmail.dataValues.isEmailValidated) {
+        // const validateEmailUri = buildEmailValidationUri(email);
+        // console.log(validateEmailUri);
+        // const validEmail = await axios.get(validateEmailUri);
 
-      if (validEmail && validEmail.data && validEmail.data.is_valid) {
         const updateValidEmail = await this.update(
           { isEmailValidated: true },
           { email: email }
         );
-
         if (updateValidEmail) {
           const welcomeMessage = this.setMailgunTemplate(
             email,
@@ -130,11 +136,12 @@ export default class MailService extends BaseService {
           await this.sendMailgunEmail(welcomeMessage);
           return true;
         }
+
+        return false;
+      } else {
         return false;
       }
-
-      return false;
-    } else {
+    } catch (error) {
       return false;
     }
   }
@@ -153,7 +160,9 @@ export default class MailService extends BaseService {
     });
     const userEmail = await this.findOne({ email });
     if (userEmail && !userEmail.dataValues.isEmailValidated) {
-      const verificationLink = `${config.domain.base_url}/api/mail/registration/check/${tokenifyEmail}`;
+      const verificationLink = `${
+        config.domain.base_url
+      }/api/mail/registration/check/${tokenifyEmail}`;
 
       const verificationMessage = this.setMailgunTemplate(
         email,
@@ -163,9 +172,9 @@ export default class MailService extends BaseService {
 
       await this.sendMailgunEmail(verificationMessage);
       return true;
+    } else {
+      return false;
     }
-
-    return false;
   }
 
   /**
@@ -184,7 +193,9 @@ export default class MailService extends BaseService {
     try {
       const userEmail = await this.findOne({ email });
       if (userEmail) {
-        const verificationLink = `${config.domain.base_url}/api/mail/tokens/${token}`;
+        const verificationLink = `${
+          config.domain.base_url
+        }/api/mail/tokens/${token}`;
 
         const verificationMessage = this.setMailgunTemplate(
           email,

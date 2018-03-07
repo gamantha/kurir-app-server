@@ -6,15 +6,11 @@ module.exports = {
       queryInterface.removeColumn('Items', 'statusMsg'),
       queryInterface.removeColumn('Items', 'categoryId'),
       queryInterface.dropTable('Categories'),
-      queryInterface.removeColumn('Items', 'CourierId'),
       queryInterface.addColumn('Items', 'status', {
         type: Sequelize.STRING,
       }),
       queryInterface.addColumn('Items', 'category', {
         type: Sequelize.STRING,
-      }),
-      queryInterface.addColumn('Items', 'courierId', {
-        type: Sequelize.INTEGER,
       }),
     ];
   },
@@ -30,11 +26,6 @@ module.exports = {
       queryInterface.removeColumn('Items', 'status'),
       queryInterface.removeColumn('Items', 'category'),
 
-      queryInterface.removeColumn('Items', 'courierId'),
-
-      queryInterface.addColumn('Items', 'CourierId', {
-        type: Sequelize.INTEGER,
-      }),
       queryInterface.createTable('Categories', {
         id: {
           allowNull: false,
@@ -53,7 +44,7 @@ module.exports = {
           allowNull: false,
           type: Sequelize.DATE,
         },
-      })
+      }),
     ];
-  }
+  },
 };
