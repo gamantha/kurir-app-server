@@ -5,6 +5,7 @@ import GoogleController from './GoogleController';
 import FacebookController from './FacebookController';
 import ProposalController from './ProposalController';
 import ItemController from './ItemController';
+import MapController from './MapController';
 
 /**
  * Controller singleton initialization
@@ -16,3 +17,4 @@ export const receiverController = new ReceiverController();
 export const mailController = new MailController();
 export const proposalController = new ProposalController();
 export const itemController = new ItemController();
+export const mapController = new MapController();
