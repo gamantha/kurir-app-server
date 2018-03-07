@@ -3,7 +3,7 @@ module.exports = function(sequelize, DataTypes) {
     ticketNumber: DataTypes.STRING,
     courierId: DataTypes.INTEGER,
     senderId: DataTypes.INTEGER,
-    categoryId: DataTypes.INTEGER,
+    category: DataTypes.STRING,
     ReceiverId: DataTypes.INTEGER,
     from: DataTypes.STRING,
     to: DataTypes.STRING,
@@ -17,14 +17,13 @@ module.exports = function(sequelize, DataTypes) {
     reward: DataTypes.STRING,
     note: DataTypes.STRING,
     // @params status
-    // firstDropsite,pickedByCourier,startDroppoint,onTravel,endDroppoint,ontheway,received,canceled
-    statusMsg: DataTypes.STRING,
+    // stillWaitingCourier,firstDropsite,pickedByCourier,startDroppoint,onTravel,endDroppoint,ontheway,received,canceled
+    status: DataTypes.STRING,
   });
   Item.associate = function(models) {
     Item.belongsTo(models.Sender, { foreignKey: 'senderId' });
     Item.belongsTo(models.Receiver);
     Item.belongsTo(models.Courier, { foreignKey: 'courierId' });
-    Item.belongsTo(models.Category, { foreignKey: 'categoryId' });
     Item.hasMany(models.Droppoint, { foreignKey: 'itemId' });
     Item.hasOne(models.Pickup, { foreignKey: 'itemId' });
   };
