@@ -45,12 +45,27 @@ var MailController = function () {
             switch (_context.prev = _context.next) {
               case 0:
                 token = req.params.token;
-                email = this.service.decodeToken(token);
-                _context.prev = 2;
-                _context.next = 5;
+                _context.prev = 1;
+                _context.next = 4;
+                return this.service.decodeToken(token);
+
+              case 4:
+                email = _context.sent;
+
+                if (!(email === 'jwt expired')) {
+                  _context.next = 9;
+                  break;
+                }
+
+                res.sendFile('expired.html', { root: 'views/confirmation/' });
+                _context.next = 13;
+                break;
+
+              case 9:
+                _context.next = 11;
                 return this.service.checkEmail(email);
 
-              case 5:
+              case 11:
                 result = _context.sent;
 
                 if (result) {
@@ -58,21 +73,23 @@ var MailController = function () {
                 } else {
                   res.sendFile('fail.html', { root: 'views/confirmation/' });
                 }
-                _context.next = 12;
+
+              case 13:
+                _context.next = 18;
                 break;
 
-              case 9:
-                _context.prev = 9;
-                _context.t0 = _context['catch'](2);
+              case 15:
+                _context.prev = 15;
+                _context.t0 = _context['catch'](1);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context.t0.message).setSuccess(false).build());
 
-              case 12:
+              case 18:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[2, 9]]);
+        }, _callee, this, [[1, 15]]);
       }));
 
       function checkEmail(_x, _x2) {

@@ -190,7 +190,7 @@ var MailService = function (_BaseService) {
         subject = 'Welcome to Kurir.id';
       }
       if (template === 'link') {
-        html = 'Please verify your account by clicking on this link <u>' + payload + '</u>';
+        html = 'Please verify your account by clicking on this link <u>' + payload + '</u>\n      <strong>Note: this link will expire in 1 hour.</strong>';
         subject = 'Email Verification for Newly Onboarding User';
       }
       if (template === 'change-password') {
@@ -210,9 +210,36 @@ var MailService = function (_BaseService) {
     }
   }, {
     key: 'decodeToken',
-    value: function decodeToken(token) {
-      return _jsonwebtoken2.default.verify(token, process.env.SECRET).email;
-    }
+    value: function () {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(token) {
+        var result;
+        return _regenerator2.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _context2.prev = 0;
+                result = _jsonwebtoken2.default.verify(token, process.env.SECRET).email;
+                return _context2.abrupt('return', result);
+
+              case 5:
+                _context2.prev = 5;
+                _context2.t0 = _context2['catch'](0);
+                return _context2.abrupt('return', _context2.t0.message);
+
+              case 8:
+              case 'end':
+                return _context2.stop();
+            }
+          }
+        }, _callee2, this, [[0, 5]]);
+      }));
+
+      function decodeToken(_x2) {
+        return _ref2.apply(this, arguments);
+      }
+
+      return decodeToken;
+    }()
 
     /**
      * Check whether email is valid or not using mailgun services.
@@ -224,67 +251,67 @@ var MailService = function (_BaseService) {
   }, {
     key: 'checkEmail',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(email) {
+      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(email) {
         var userEmail, updateValidEmail, welcomeMessage;
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
+        return _regenerator2.default.wrap(function _callee3$(_context3) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context3.prev = _context3.next) {
               case 0:
-                _context2.prev = 0;
-                _context2.next = 3;
+                _context3.prev = 0;
+                _context3.next = 3;
                 return this.findOne({ email: email });
 
               case 3:
-                userEmail = _context2.sent;
+                userEmail = _context3.sent;
 
                 if (userEmail.dataValues.isEmailValidated) {
-                  _context2.next = 16;
+                  _context3.next = 16;
                   break;
                 }
 
-                _context2.next = 7;
+                _context3.next = 7;
                 return this.update({ isEmailValidated: true }, { email: email });
 
               case 7:
-                updateValidEmail = _context2.sent;
+                updateValidEmail = _context3.sent;
 
                 if (!updateValidEmail) {
-                  _context2.next = 13;
+                  _context3.next = 13;
                   break;
                 }
 
                 welcomeMessage = this.setMailgunTemplate(email, 'welcome', null);
-                _context2.next = 12;
+                _context3.next = 12;
                 return this.sendMailgunEmail(welcomeMessage);
 
               case 12:
-                return _context2.abrupt('return', true);
+                return _context3.abrupt('return', true);
 
               case 13:
-                return _context2.abrupt('return', false);
+                return _context3.abrupt('return', false);
 
               case 16:
-                return _context2.abrupt('return', false);
+                return _context3.abrupt('return', false);
 
               case 17:
-                _context2.next = 22;
+                _context3.next = 22;
                 break;
 
               case 19:
-                _context2.prev = 19;
-                _context2.t0 = _context2['catch'](0);
-                return _context2.abrupt('return', false);
+                _context3.prev = 19;
+                _context3.t0 = _context3['catch'](0);
+                return _context3.abrupt('return', false);
 
               case 22:
               case 'end':
-                return _context2.stop();
+                return _context3.stop();
             }
           }
-        }, _callee2, this, [[0, 19]]);
+        }, _callee3, this, [[0, 19]]);
       }));
 
-      function checkEmail(_x2) {
-        return _ref2.apply(this, arguments);
+      function checkEmail(_x3) {
+        return _ref3.apply(this, arguments);
       }
 
       return checkEmail;
@@ -300,49 +327,49 @@ var MailService = function (_BaseService) {
   }, {
     key: 'sendRegisValidationLink',
     value: function () {
-      var _ref3 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee3(email) {
+      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(email) {
         var tokenifyEmail, userEmail, verificationLink, verificationMessage;
-        return _regenerator2.default.wrap(function _callee3$(_context3) {
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context4.prev = _context4.next) {
               case 0:
                 tokenifyEmail = _jsonwebtoken2.default.sign({ email: email }, process.env.SECRET, {
                   expiresIn: '1h',
                   issuer: 'kurir-id-backend',
                   subject: 'email-validation'
                 });
-                _context3.next = 3;
+                _context4.next = 3;
                 return this.findOne({ email: email });
 
               case 3:
-                userEmail = _context3.sent;
+                userEmail = _context4.sent;
 
                 if (!(userEmail && !userEmail.dataValues.isEmailValidated)) {
-                  _context3.next = 10;
+                  _context4.next = 12;
                   break;
                 }
 
                 verificationLink = config.domain.base_url + '/api/mail/registration/check/' + tokenifyEmail;
                 verificationMessage = this.setMailgunTemplate(email, 'link', verificationLink);
-                _context3.next = 9;
+                _context4.next = 9;
                 return this.sendMailgunEmail(verificationMessage);
 
               case 9:
-                return _context3.abrupt('return', true);
+                return _context4.abrupt('return', true);
 
-              case 10:
-                return _context3.abrupt('return', false);
+              case 12:
+                return _context4.abrupt('return', false);
 
-              case 11:
+              case 13:
               case 'end':
-                return _context3.stop();
+                return _context4.stop();
             }
           }
-        }, _callee3, this);
+        }, _callee4, this);
       }));
 
-      function sendRegisValidationLink(_x3) {
-        return _ref3.apply(this, arguments);
+      function sendRegisValidationLink(_x4) {
+        return _ref4.apply(this, arguments);
       }
 
       return sendRegisValidationLink;
@@ -358,11 +385,11 @@ var MailService = function (_BaseService) {
   }, {
     key: 'sendReactivateAccountLink',
     value: function () {
-      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(email) {
+      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(email) {
         var token, userEmail, verificationLink, verificationMessage;
-        return _regenerator2.default.wrap(function _callee4$(_context4) {
+        return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
                 token = _jsonwebtoken2.default.sign({ email: email }, process.env.SECRET, {
                   expiresIn: '1h',
@@ -370,58 +397,58 @@ var MailService = function (_BaseService) {
                   jwtid: 'courier.user',
                   subject: 'reactivate-account'
                 });
-                _context4.prev = 1;
-                _context4.next = 4;
+                _context5.prev = 1;
+                _context5.next = 4;
                 return this.findOne({ email: email });
 
               case 4:
-                userEmail = _context4.sent;
+                userEmail = _context5.sent;
 
                 if (!userEmail) {
-                  _context4.next = 19;
+                  _context5.next = 19;
                   break;
                 }
 
                 verificationLink = config.domain.base_url + '/api/mail/tokens/' + token;
                 verificationMessage = this.setMailgunTemplate(email, 'reactivate-account', verificationLink);
-                _context4.prev = 8;
-                _context4.next = 11;
+                _context5.prev = 8;
+                _context5.next = 11;
                 return this.sendMailgunEmail(verificationMessage);
 
               case 11:
-                return _context4.abrupt('return', true);
+                return _context5.abrupt('return', true);
 
               case 14:
-                _context4.prev = 14;
-                _context4.t0 = _context4['catch'](8);
-                throw Error(_context4.t0);
+                _context5.prev = 14;
+                _context5.t0 = _context5['catch'](8);
+                throw Error(_context5.t0);
 
               case 17:
-                _context4.next = 20;
+                _context5.next = 20;
                 break;
 
               case 19:
-                return _context4.abrupt('return', false);
+                return _context5.abrupt('return', false);
 
               case 20:
-                _context4.next = 25;
+                _context5.next = 25;
                 break;
 
               case 22:
-                _context4.prev = 22;
-                _context4.t1 = _context4['catch'](1);
-                throw Error(_context4.t1);
+                _context5.prev = 22;
+                _context5.t1 = _context5['catch'](1);
+                throw Error(_context5.t1);
 
               case 25:
               case 'end':
-                return _context4.stop();
+                return _context5.stop();
             }
           }
-        }, _callee4, this, [[1, 22], [8, 14]]);
+        }, _callee5, this, [[1, 22], [8, 14]]);
       }));
 
-      function sendReactivateAccountLink(_x4) {
-        return _ref4.apply(this, arguments);
+      function sendReactivateAccountLink(_x5) {
+        return _ref5.apply(this, arguments);
       }
 
       return sendReactivateAccountLink;
@@ -437,58 +464,58 @@ var MailService = function (_BaseService) {
   }, {
     key: 'sendVerificationCode',
     value: function () {
-      var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(email) {
+      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(email) {
         var userEmail, verificationCode, updatedEmail, verifCodeMsg;
-        return _regenerator2.default.wrap(function _callee5$(_context5) {
+        return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context5.prev = _context5.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                _context5.next = 2;
+                _context6.next = 2;
                 return this.findOne({ email: email });
 
               case 2:
-                userEmail = _context5.sent;
+                userEmail = _context6.sent;
 
                 if (!userEmail) {
-                  _context5.next = 14;
+                  _context6.next = 14;
                   break;
                 }
 
                 verificationCode = this.verificationCodeGenerator();
-                _context5.next = 7;
+                _context6.next = 7;
                 return this.update({ forgotPassVeriCode: verificationCode }, { email: email });
 
               case 7:
-                updatedEmail = _context5.sent;
+                updatedEmail = _context6.sent;
 
                 if (!updatedEmail) {
-                  _context5.next = 13;
+                  _context6.next = 13;
                   break;
                 }
 
                 verifCodeMsg = this.setMailgunTemplate(email, 'code', verificationCode);
-                _context5.next = 12;
+                _context6.next = 12;
                 return this.sendMailgunEmail(verifCodeMsg);
 
               case 12:
-                return _context5.abrupt('return', true);
+                return _context6.abrupt('return', true);
 
               case 13:
-                return _context5.abrupt('return', false);
+                return _context6.abrupt('return', false);
 
               case 14:
-                return _context5.abrupt('return', false);
+                return _context6.abrupt('return', false);
 
               case 15:
               case 'end':
-                return _context5.stop();
+                return _context6.stop();
             }
           }
-        }, _callee5, this);
+        }, _callee6, this);
       }));
 
-      function sendVerificationCode(_x5) {
-        return _ref5.apply(this, arguments);
+      function sendVerificationCode(_x6) {
+        return _ref6.apply(this, arguments);
       }
 
       return sendVerificationCode;
@@ -505,59 +532,59 @@ var MailService = function (_BaseService) {
   }, {
     key: 'changePassword',
     value: function () {
-      var _ref6 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee6(email, password) {
+      var _ref7 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee7(email, password) {
         var saltRounds, hash, userEmail, updatedPassword, passwordUpdatedMessage;
-        return _regenerator2.default.wrap(function _callee6$(_context6) {
+        return _regenerator2.default.wrap(function _callee7$(_context7) {
           while (1) {
-            switch (_context6.prev = _context6.next) {
+            switch (_context7.prev = _context7.next) {
               case 0:
                 saltRounds = 10;
                 hash = _bcrypt2.default.hashSync(password, saltRounds);
-                _context6.next = 4;
+                _context7.next = 4;
                 return this.findOne({ email: email });
 
               case 4:
-                userEmail = _context6.sent;
+                userEmail = _context7.sent;
 
                 if (!userEmail) {
-                  _context6.next = 15;
+                  _context7.next = 15;
                   break;
                 }
 
-                _context6.next = 8;
+                _context7.next = 8;
                 return this.update({ password: hash }, { email: email });
 
               case 8:
-                updatedPassword = _context6.sent;
+                updatedPassword = _context7.sent;
 
                 if (!updatedPassword) {
-                  _context6.next = 14;
+                  _context7.next = 14;
                   break;
                 }
 
                 passwordUpdatedMessage = this.setMailgunTemplate(email, 'change-password', password);
-                _context6.next = 13;
+                _context7.next = 13;
                 return this.sendMailgunEmail(passwordUpdatedMessage);
 
               case 13:
-                return _context6.abrupt('return', true);
+                return _context7.abrupt('return', true);
 
               case 14:
-                return _context6.abrupt('return', false);
+                return _context7.abrupt('return', false);
 
               case 15:
-                return _context6.abrupt('return', false);
+                return _context7.abrupt('return', false);
 
               case 16:
               case 'end':
-                return _context6.stop();
+                return _context7.stop();
             }
           }
-        }, _callee6, this);
+        }, _callee7, this);
       }));
 
-      function changePassword(_x6, _x7) {
-        return _ref6.apply(this, arguments);
+      function changePassword(_x7, _x8) {
+        return _ref7.apply(this, arguments);
       }
 
       return changePassword;
