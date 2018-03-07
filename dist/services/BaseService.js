@@ -32,11 +32,12 @@ var config = {
     dialect: 'postgres'
   },
   test: {
-    username: 'root',
-    password: '123456',
-    database: 'database_test',
+    username: 'postgres',
+    password: '12345',
+    database: 'kurir_test',
     host: '127.0.0.1',
-    dialect: 'mysql'
+    port: 5432,
+    dialect: 'postgres'
   },
   production: {
     use_env_variable: 'DATABASE_URL'
@@ -118,12 +119,13 @@ var BaseService = function () {
     /**
      * Get row by condition
      * @param {Object} payload
+     * @param {Array} options
      */
 
   }, {
     key: 'findOne',
     value: function () {
-      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(payload) {
+      var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(payload, options) {
         var response;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
@@ -131,7 +133,10 @@ var BaseService = function () {
               case 0:
                 _context2.prev = 0;
                 _context2.next = 3;
-                return this.model.findOne({ where: payload });
+                return this.model.findOne({
+                  include: options,
+                  where: payload
+                });
 
               case 3:
                 response = _context2.sent;
@@ -163,7 +168,7 @@ var BaseService = function () {
         }, _callee2, this, [[0, 11]]);
       }));
 
-      function findOne(_x3) {
+      function findOne(_x3, _x4) {
         return _ref2.apply(this, arguments);
       }
 
@@ -214,7 +219,7 @@ var BaseService = function () {
         }, _callee3, this, [[0, 9]]);
       }));
 
-      function create(_x4) {
+      function create(_x5) {
         return _ref3.apply(this, arguments);
       }
 
@@ -265,7 +270,7 @@ var BaseService = function () {
         }, _callee4, this, [[0, 9]]);
       }));
 
-      function destroy(_x5) {
+      function destroy(_x6) {
         return _ref4.apply(this, arguments);
       }
 
@@ -333,7 +338,7 @@ var BaseService = function () {
         }, _callee5, this, [[0, 17], [5, 12]]);
       }));
 
-      function update(_x6, _x7, _x8) {
+      function update(_x7, _x8, _x9) {
         return _ref5.apply(this, arguments);
       }
 
@@ -346,6 +351,7 @@ var BaseService = function () {
      * @param {Integer} limit
      * @param {Array} orders
      * @param {Array} attributes
+     * @param {Array} options
      */
 
   }, {
@@ -356,6 +362,7 @@ var BaseService = function () {
         var limit = arguments[2];
         var orders = arguments[3];
         var attributes = arguments[4];
+        var options = arguments[5];
         var order, offset, response, lastPage, links;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
@@ -368,6 +375,7 @@ var BaseService = function () {
                 _context6.prev = 4;
                 _context6.next = 7;
                 return this.model.findAndCountAll({
+                  include: options,
                   attributes: attributes,
                   limit: limit,
                   offset: offset,
@@ -425,7 +433,7 @@ var BaseService = function () {
         }, _callee6, this, [[4, 22], [8, 17]]);
       }));
 
-      function paginate(_x10) {
+      function paginate(_x11) {
         return _ref6.apply(this, arguments);
       }
 

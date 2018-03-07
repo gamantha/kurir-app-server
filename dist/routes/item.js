@@ -1,18 +1,39 @@
 'use strict';
 
+var _express = require('express');
+
+var _express2 = _interopRequireDefault(_express);
+
+var _controllers = require('../controllers');
+
 var _Auth = require('../helpers/Auth');
 
 var _Auth2 = _interopRequireDefault(_Auth);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var express = require('express');
+var router = _express2.default.Router();
 
-var router = express.Router();
-var item = require('../controllers/item');
+router.use(_Auth2.default);
 
+router.get('/', function (req, res) {
+  _controllers.itemController.get(req, res);
+});
 
-router.post('/create', _Auth2.default, item.create);
-// router.put('/custom-address/:itemId/', item.itemHasCustomPickupAddress);
+router.get('/:id', function (req, res) {
+  _controllers.itemController.find(req, res);
+});
+
+router.post('/', function (req, res) {
+  _controllers.itemController.create(req, res);
+});
+
+router.delete('/:id', function (req, res) {
+  _controllers.itemController.destroy(req, res);
+});
+
+router.put('/:id', function (req, res) {
+  _controllers.itemController.update(req, res);
+});
 
 module.exports = router;

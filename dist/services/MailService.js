@@ -70,11 +70,12 @@ var config = {
     dialect: 'postgres'
   },
   test: {
-    username: 'root',
-    password: '123456',
-    database: 'database_test',
+    username: 'postgres',
+    password: '12345',
+    database: 'kurir_test',
     host: '127.0.0.1',
-    dialect: 'mysql'
+    port: 5432,
+    dialect: 'postgres'
   },
   production: {
     use_env_variable: 'DATABASE_URL'
