@@ -1,13 +1,17 @@
 'use strict';
 
-// import rawConfig from '../config/config.json';
+import rawConfig from '../config/config.json';
 var fs = require('fs');
 var path = require('path');
 var Sequelize = require('sequelize');
 var basename = path.basename(module.filename);
 var env = process.env.NODE_ENV || 'development';
-var config = require(__dirname + '/../config/config.json')[env];
-// var config = rawConfig[env];
+console.log(env);
+var config =
+  env === 'development' || env === 'test'
+    ? require(__dirname + '/../config/config.json')[env]
+    : rawConfig[env];
+
 var db = {};
 
 if (config.use_env_variable) {
