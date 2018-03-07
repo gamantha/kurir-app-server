@@ -13,7 +13,8 @@
     "serve": "nodemon dist/app.js",
     "clean": "rm -rf ./dist && npm run build",
     "coverage":
-      "NODE_ENV=test nyc mocha ./test/**/*_test.js --exit --timeout 5000"
+      "NODE_ENV=test nyc mocha ./test/**/*_test.js --exit --timeout 5000",
+    "cp": "node -e \"require('ncp').ncp('./views', './dist/views')\""
   },
   "engines": {
     "node": "8.9.4",
@@ -58,6 +59,7 @@
     "eslint-plugin-import": "^2.8.0",
     "mocha": "^5.0.0",
     "mysql2": "^1.5.1",
+    "ncp": "^2.0.0",
     "nyc": "^11.4.1",
     "sinon": "^4.2.1"
   },
