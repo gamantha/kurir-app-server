@@ -29,7 +29,7 @@ export default class ItemController {
       email,
       phone,
     } = req.body;
-    const senderId = res.locals.user.id;
+    const userId = res.locals.user.id;
     const ticketNumber = this.service.generateTicketNumber();
     const status = 'stillWaitingCourier';
     try {
@@ -38,6 +38,7 @@ export default class ItemController {
         email,
         phone,
       };
+      const senderId = await this.service.returnSenderId(userId);
       const receiver = await this.receiverService.create(receiverPayload);
       const itemPayload = {
         address,

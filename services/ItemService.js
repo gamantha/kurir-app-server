@@ -25,7 +25,24 @@ export default class ItemService extends BaseService {
         ],
       },
       { model: models.Receiver },
-      { model: models.Courier },
+      {
+        model: models.Courier,
+        include: [
+          {
+            model: models.User,
+            attributes: { exclude: ['password', 'forgotPassVeriCode'] },
+          },
+        ],
+      },
     ];
+  }
+
+  async returnSenderId(userId) {
+    try {
+      const sender = await models.Sender.findOne({ where: { UserId: userId } });
+      return sender.dataValues.id;
+    } catch (error) {
+      return error.message;
+    }
   }
 }
