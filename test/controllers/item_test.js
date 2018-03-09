@@ -77,9 +77,6 @@ describe('Items', () => {
           note: 'some note',
           reward: 'some reward',
           category: 'phone',
-          phone: '3482043240',
-          receiverName: 'Guy',
-          email: 'guy@mail.com',
           cost: '2000',
           ReceiverId: 2,
           cost: '10000',
@@ -234,9 +231,7 @@ describe('Items', () => {
           type: 'update',
           weight: 2,
           cost: 'update',
-          receiverName: 'update',
-          email: 'update',
-          phone: 'update',
+          ReceiverId: 1,
         })
         .end((err, res) => {
           res.should.have.status(404);
