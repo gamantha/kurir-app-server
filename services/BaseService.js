@@ -118,7 +118,6 @@ export default class BaseService {
    * @param {Array} options
    */
   async paginate(req, page = 1, limit, orders, attributes, options, condition = '') {
-    console.log(options, 'optiosn')
     limit = typeof limit !== 'undefined' ? parseInt(limit) : 10;
     attributes = typeof attributes !== 'undefined' ? attributes.split(',') : {};
     const order =
