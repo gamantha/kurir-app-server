@@ -117,7 +117,7 @@ export default class BaseService {
    * @param {Array} attributes
    * @param {Array} options
    */
-  async paginate(req, page = 1, limit, orders, attributes, options) {
+  async paginate(req, page = 1, limit, orders, attributes, options, condition = '') {
     limit = typeof limit !== 'undefined' ? parseInt(limit) : 10;
     attributes = typeof attributes !== 'undefined' ? attributes.split(',') : {};
     const order =
@@ -127,6 +127,7 @@ export default class BaseService {
     const offset = typeof page !== 'undefined' ? (page - 1) * limit : page;
     try {
       const response = await this.model.findAndCountAll({
+        where: condition,
         include: options,
         attributes,
         limit,
