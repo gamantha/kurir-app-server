@@ -1,4 +1,5 @@
 import { AirportService } from '../services/index';
+import Sequelize from 'sequelize';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 
 export default class AirportController {
@@ -12,9 +13,24 @@ export default class AirportController {
   async get(req, res) {
     try {
       const {
-        page, limit, fields, order,
+        page, limit, fields, order
       } = req.query;
-      const response = await this.service.paginate(req, page, limit, order, fields);
+      let response = null
+
+      const name = typeof req.query.name === 'undefined' ? ''
+        : req.query.name
+      const iso_country = typeof req.query.iso_country === 'undefined' ? 'ID'
+        : req.query.iso_country
+
+      response = await this.service.paginate(req, page, limit, order, fields,
+        undefined,
+        {
+          name: {
+            ilike: `%${name}%`,
+          },
+          iso_country
+        }
+      );
       res.status(200).json(new ResponseBuilder()
         .setData(response.data)
         .setTotal(response.total)
