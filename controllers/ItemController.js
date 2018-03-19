@@ -26,13 +26,20 @@ export default class ItemController {
       category,
       type,
       cost,
-      ReceiverId,
+      // ReceiverId,
     } = req.body;
-    const userId = res.locals.user.id;
     const ticketNumber = this.service.generateTicketNumber();
     const status = 'stillWaitingCourier';
     try {
-      const senderId = await this.service.returnSenderId(userId);
+      // const senderId = await this.service.returnSenderId(userId);
+      // const receiverPayload = {
+      //   name: receiverName,
+      //   email,
+      //   phone,
+      // };
+      const senderId = res.locals.user.senderId;
+
+      // const receiver = await this.receiverService.create(receiverPayload);
       const itemPayload = {
         address,
         ticketNumber,
@@ -51,7 +58,7 @@ export default class ItemController {
         type,
         weight,
         cost,
-        ReceiverId,
+        // ReceiverId,
       };
       const item = await this.service.create(itemPayload);
       res.status(201).json(new ResponseBuilder().setData(item).build());
