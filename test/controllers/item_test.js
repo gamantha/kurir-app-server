@@ -65,7 +65,9 @@ describe('Items', () => {
         .set('Authorization', `bearer ${token}`)
         .send({
           from: 'Jakarta',
+          originCoord: '-6.127379,106.653361',
           to: 'Bandung',
+          destinationCoord: '-6.130622,106.644778',
           weight: 10,
           country: 'Indonesia',
           city: 'Jakarta Barat',
@@ -75,9 +77,6 @@ describe('Items', () => {
           note: 'some note',
           reward: 'some reward',
           category: 'phone',
-          phone: '3482043240',
-          receiverName: 'Guy',
-          email: 'guy@mail.com',
           cost: '2000',
           ReceiverId: 2,
           cost: '10000',
@@ -109,7 +108,7 @@ describe('Items', () => {
         .end((err, res) => {
           // res.should.have.status(200);
           // res.body.should.be.a('object');
-          /** structural response check */
+          // /** structural response check */
           // res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           // res.body.data[0].Sender.should.include.keys(
           //   SENDER_ITEM_RESPONSE_STRUCTURE
@@ -232,9 +231,7 @@ describe('Items', () => {
           type: 'update',
           weight: 2,
           cost: 'update',
-          receiverName: 'update',
-          email: 'update',
-          phone: 'update',
+          ReceiverId: 1,
         })
         .end((err, res) => {
           res.should.have.status(404);

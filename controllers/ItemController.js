@@ -13,7 +13,9 @@ export default class ItemController {
   async create(req, res) {
     const {
       from,
+      originCoord,
       to,
+      destinationCoord,
       weight,
       country,
       city,
@@ -24,22 +26,13 @@ export default class ItemController {
       category,
       type,
       cost,
-      // receiver
-      receiverName,
-      email,
-      phone,
+      ReceiverId,
     } = req.body;
     const userId = res.locals.user.id;
     const ticketNumber = this.service.generateTicketNumber();
     const status = 'stillWaitingCourier';
     try {
-      const receiverPayload = {
-        name: receiverName,
-        email,
-        phone,
-      };
       const senderId = await this.service.returnSenderId(userId);
-      const receiver = await this.receiverService.create(receiverPayload);
       const itemPayload = {
         address,
         ticketNumber,
@@ -49,14 +42,16 @@ export default class ItemController {
         status,
         name: itemName,
         from,
+        originCoord,
         to,
+        destinationCoord,
         note,
         reward,
         category,
         type,
         weight,
         cost,
-        ReceiverId: receiver.id,
+        ReceiverId,
       };
       const item = await this.service.create(itemPayload);
       res.status(201).json(new ResponseBuilder().setData(item).build());
@@ -152,7 +147,9 @@ export default class ItemController {
       senderId,
       courierId,
       from,
+      originCoord,
       to,
+      destinationCoord,
       ReceiverId,
       itemName,
       note,
@@ -182,7 +179,9 @@ export default class ItemController {
         status,
         name: itemName,
         from,
+        originCoord,
         to,
+        destinationCoord,
         note,
         reward,
         category,
