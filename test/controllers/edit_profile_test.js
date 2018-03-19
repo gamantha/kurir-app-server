@@ -29,9 +29,9 @@ describe('Proposal Controller Test', () => {
       .end((err, res) => {
         accessToken = res.body.data.accessToken;
         userId = res.body.data.userId;
-        models.Sender.create({
-          UserId: userId,
-        });
+        // models.Sender.create({
+        //   UserId: userId,
+        // });
         done();
       });
   });
@@ -68,11 +68,11 @@ describe('Proposal Controller Test', () => {
       { email: 'test@development.com' },
       { where: { email: 'someedit@gmail.com' } }
     ).then(() => {
-      models.Sender.destroy({
-        where: {
-          UserId: userId,
-        },
-      });
+      // models.Sender.destroy({
+      //   where: {
+      //     UserId: userId,
+      //   },
+      // });
       done();
     });
   });
