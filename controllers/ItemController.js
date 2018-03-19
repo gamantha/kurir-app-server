@@ -163,16 +163,16 @@ export default class ItemController {
       weight,
       cost,
       // receiver
-      receiverName,
-      email,
-      phone,
+      // receiverName,
+      // email,
+      // phone,
     } = req.body;
     try {
-      const receiverPayload = {
-        name: receiverName,
-        email,
-        phone,
-      };
+      // const receiverPayload = {
+      //   name: receiverName,
+      //   email,
+      //   phone,
+      // };
       const itemPayload = {
         address,
         city,
@@ -191,16 +191,16 @@ export default class ItemController {
         cost,
         ReceiverId: ReceiverId,
       };
-      const receiver = await this.receiverService.update(
-        receiverPayload,
-        {
-          id: ReceiverId,
-        },
-        {
-          returning: true,
-          plain: true,
-        }
-      );
+      // const receiver = await this.receiverService.update(
+      //   receiverPayload,
+      //   {
+      //     id: ReceiverId,
+      //   },
+      //   {
+      //     returning: true,
+      //     plain: true,
+      //   }
+      // );
       const item = await this.service.update(
         itemPayload,
         { ticketNumber: id },
@@ -209,9 +209,7 @@ export default class ItemController {
           plain: true,
         }
       );
-      res
-        .status(200)
-        .json(new ResponseBuilder().setData({ item, receiver }).build());
+      res.status(200).json(new ResponseBuilder().setData({ item }).build());
     } catch (error) {
       res.status(404).json(
         new ResponseBuilder()
