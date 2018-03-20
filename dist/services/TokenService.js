@@ -89,7 +89,8 @@ var TokenService = function (_BaseService) {
                   include: [{
                     model: _models2.default.User,
                     attributes: { exclude: ['password'] },
-                    required: true
+                    required: true,
+                    include: [{ model: _models2.default.Sender }]
                   }]
                 });
 
@@ -131,7 +132,8 @@ var TokenService = function (_BaseService) {
                   include: [{
                     model: _models2.default.User,
                     attributes: { exclude: ['password'] },
-                    required: true
+                    required: true,
+                    include: [{ model: _models2.default.Sender }]
                   }]
                 });
 

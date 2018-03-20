@@ -51,7 +51,10 @@ exports.default = function () {
             tokenService = new _index.TokenService();
             _context.prev = 10;
             _context.next = 13;
-            return tokenService.findOne({ accessToken: token, userAgent: req.headers['user-agent'] });
+            return tokenService.findOne({
+              accessToken: token,
+              userAgent: req.headers['user-agent']
+            });
 
           case 13:
             accessToken = _context.sent;
@@ -67,7 +70,8 @@ exports.default = function () {
           case 17:
             res.locals.user = {
               email: result.email,
-              id: result.id
+              id: result.id,
+              senderId: result.senderId
             };
             _context.next = 23;
             break;

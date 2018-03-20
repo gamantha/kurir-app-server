@@ -363,6 +363,7 @@ var BaseService = function () {
         var orders = arguments[3];
         var attributes = arguments[4];
         var options = arguments[5];
+        var condition = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : '';
         var order, offset, response, lastPage, links;
         return _regenerator2.default.wrap(function _callee6$(_context6) {
           while (1) {
@@ -375,6 +376,7 @@ var BaseService = function () {
                 _context6.prev = 4;
                 _context6.next = 7;
                 return this.model.findAndCountAll({
+                  where: condition,
                   include: options,
                   attributes: attributes,
                   limit: limit,
@@ -433,7 +435,7 @@ var BaseService = function () {
         }, _callee6, this, [[4, 22], [8, 17]]);
       }));
 
-      function paginate(_x11) {
+      function paginate(_x12) {
         return _ref6.apply(this, arguments);
       }
 

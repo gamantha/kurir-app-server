@@ -43,27 +43,27 @@ var ItemController = function () {
     key: 'create',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(req, res) {
-        var _req$body, from, to, weight, country, city, address, itemName, note, reward, category, type, cost, receiverName, email, phone, senderId, ticketNumber, status, receiverPayload, receiver, itemPayload, item;
+        var _req$body, from, originCoord, to, destinationCoord, weight, country, city, address, itemName, note, reward, category, type, cost, ticketNumber, status, senderId, itemPayload, item;
 
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _req$body = req.body, from = _req$body.from, to = _req$body.to, weight = _req$body.weight, country = _req$body.country, city = _req$body.city, address = _req$body.address, itemName = _req$body.itemName, note = _req$body.note, reward = _req$body.reward, category = _req$body.category, type = _req$body.type, cost = _req$body.cost, receiverName = _req$body.receiverName, email = _req$body.email, phone = _req$body.phone;
-                senderId = res.locals.user.id;
+                _req$body = req.body, from = _req$body.from, originCoord = _req$body.originCoord, to = _req$body.to, destinationCoord = _req$body.destinationCoord, weight = _req$body.weight, country = _req$body.country, city = _req$body.city, address = _req$body.address, itemName = _req$body.itemName, note = _req$body.note, reward = _req$body.reward, category = _req$body.category, type = _req$body.type, cost = _req$body.cost;
                 ticketNumber = this.service.generateTicketNumber();
                 status = 'stillWaitingCourier';
-                _context.prev = 4;
-                receiverPayload = {
-                  name: receiverName,
-                  email: email,
-                  phone: phone
-                };
-                _context.next = 8;
-                return this.receiverService.create(receiverPayload);
+                _context.prev = 3;
 
-              case 8:
-                receiver = _context.sent;
+                // const senderId = await this.service.returnSenderId(userId);
+                // const receiverPayload = {
+                //   name: receiverName,
+                //   email,
+                //   phone,
+                // };
+                senderId = res.locals.user.senderId;
+
+                // const receiver = await this.receiverService.create(receiverPayload);
+
                 itemPayload = {
                   address: address,
                   ticketNumber: ticketNumber,
@@ -73,37 +73,39 @@ var ItemController = function () {
                   status: status,
                   name: itemName,
                   from: from,
+                  originCoord: originCoord,
                   to: to,
+                  destinationCoord: destinationCoord,
                   note: note,
                   reward: reward,
                   category: category,
                   type: type,
                   weight: weight,
-                  cost: cost,
-                  ReceiverId: receiver.id
+                  cost: cost
+                  // ReceiverId,
                 };
-                _context.next = 12;
+                _context.next = 8;
                 return this.service.create(itemPayload);
 
-              case 12:
+              case 8:
                 item = _context.sent;
 
                 res.status(201).json(new _ResponseBuilder2.default().setData(item).build());
-                _context.next = 19;
+                _context.next = 15;
                 break;
 
-              case 16:
-                _context.prev = 16;
-                _context.t0 = _context['catch'](4);
+              case 12:
+                _context.prev = 12;
+                _context.t0 = _context['catch'](3);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context.t0.message).setSuccess(false).build());
 
-              case 19:
+              case 15:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[4, 16]]);
+        }, _callee, this, [[3, 12]]);
       }));
 
       function create(_x, _x2) {
@@ -244,20 +246,21 @@ var ItemController = function () {
     key: 'update',
     value: function () {
       var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(req, res) {
-        var id, _req$body2, address, city, country, senderId, courierId, from, to, ReceiverId, itemName, note, reward, status, category, type, weight, cost, receiverName, email, phone, receiverPayload, itemPayload, receiver, item;
+        var id, _req$body2, address, city, country, senderId, courierId, from, originCoord, to, destinationCoord, ReceiverId, itemName, note, reward, status, category, type, weight, cost, itemPayload, item;
 
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
             switch (_context5.prev = _context5.next) {
               case 0:
                 id = req.params.id;
-                _req$body2 = req.body, address = _req$body2.address, city = _req$body2.city, country = _req$body2.country, senderId = _req$body2.senderId, courierId = _req$body2.courierId, from = _req$body2.from, to = _req$body2.to, ReceiverId = _req$body2.ReceiverId, itemName = _req$body2.itemName, note = _req$body2.note, reward = _req$body2.reward, status = _req$body2.status, category = _req$body2.category, type = _req$body2.type, weight = _req$body2.weight, cost = _req$body2.cost, receiverName = _req$body2.receiverName, email = _req$body2.email, phone = _req$body2.phone;
+                _req$body2 = req.body, address = _req$body2.address, city = _req$body2.city, country = _req$body2.country, senderId = _req$body2.senderId, courierId = _req$body2.courierId, from = _req$body2.from, originCoord = _req$body2.originCoord, to = _req$body2.to, destinationCoord = _req$body2.destinationCoord, ReceiverId = _req$body2.ReceiverId, itemName = _req$body2.itemName, note = _req$body2.note, reward = _req$body2.reward, status = _req$body2.status, category = _req$body2.category, type = _req$body2.type, weight = _req$body2.weight, cost = _req$body2.cost;
                 _context5.prev = 2;
-                receiverPayload = {
-                  name: receiverName,
-                  email: email,
-                  phone: phone
-                };
+
+                // const receiverPayload = {
+                //   name: receiverName,
+                //   email,
+                //   phone,
+                // };
                 itemPayload = {
                   address: address,
                   city: city,
@@ -267,7 +270,9 @@ var ItemController = function () {
                   status: status,
                   name: itemName,
                   from: from,
+                  originCoord: originCoord,
                   to: to,
+                  destinationCoord: destinationCoord,
                   note: note,
                   reward: reward,
                   category: category,
@@ -276,41 +281,42 @@ var ItemController = function () {
                   cost: cost,
                   ReceiverId: ReceiverId
                 };
-                _context5.next = 7;
-                return this.receiverService.update(receiverPayload, {
-                  id: ReceiverId
-                }, {
-                  returning: true,
-                  plain: true
-                });
+                // const receiver = await this.receiverService.update(
+                //   receiverPayload,
+                //   {
+                //     id: ReceiverId,
+                //   },
+                //   {
+                //     returning: true,
+                //     plain: true,
+                //   }
+                // );
 
-              case 7:
-                receiver = _context5.sent;
-                _context5.next = 10;
+                _context5.next = 6;
                 return this.service.update(itemPayload, { ticketNumber: id }, {
                   returning: true,
                   plain: true
                 });
 
-              case 10:
+              case 6:
                 item = _context5.sent;
 
-                res.status(200).json(new _ResponseBuilder2.default().setData({ item: item, receiver: receiver }).build());
-                _context5.next = 17;
+                res.status(200).json(new _ResponseBuilder2.default().setData({ item: item }).build());
+                _context5.next = 13;
                 break;
 
-              case 14:
-                _context5.prev = 14;
+              case 10:
+                _context5.prev = 10;
                 _context5.t0 = _context5['catch'](2);
 
                 res.status(404).json(new _ResponseBuilder2.default().setMessage(_context5.t0.message).setSuccess(false).build());
 
-              case 17:
+              case 13:
               case 'end':
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[2, 14]]);
+        }, _callee5, this, [[2, 10]]);
       }));
 
       function update(_x9, _x10) {

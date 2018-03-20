@@ -4,6 +4,14 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _regenerator = require('babel-runtime/regenerator');
+
+var _regenerator2 = _interopRequireDefault(_regenerator);
+
+var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
+
+var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
+
 var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
 
 var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
@@ -55,8 +63,50 @@ var ItemService = function (_BaseService) {
           model: _models2.default.User,
           attributes: { exclude: ['password', 'forgotPassVeriCode'] }
         }]
-      }, { model: _models2.default.Receiver }, { model: _models2.default.Courier }];
+      }, { model: _models2.default.Receiver }, {
+        model: _models2.default.Courier,
+        include: [{
+          model: _models2.default.User,
+          attributes: { exclude: ['password', 'forgotPassVeriCode'] }
+        }]
+      }];
     }
+  }, {
+    key: 'returnSenderId',
+    value: function () {
+      var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(userId) {
+        var sender;
+        return _regenerator2.default.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.prev = 0;
+                _context.next = 3;
+                return _models2.default.Sender.findOne({ where: { UserId: userId } });
+
+              case 3:
+                sender = _context.sent;
+                return _context.abrupt('return', sender.dataValues.id);
+
+              case 7:
+                _context.prev = 7;
+                _context.t0 = _context['catch'](0);
+                return _context.abrupt('return', _context.t0.message);
+
+              case 10:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this, [[0, 7]]);
+      }));
+
+      function returnSenderId(_x) {
+        return _ref.apply(this, arguments);
+      }
+
+      return returnSenderId;
+    }()
   }]);
   return ItemService;
 }(_BaseService3.default);

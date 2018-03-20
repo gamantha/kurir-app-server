@@ -40,6 +40,10 @@ var _ResponseBuilder = require('../helpers/ResponseBuilder');
 
 var _ResponseBuilder2 = _interopRequireDefault(_ResponseBuilder);
 
+var _models = require('../models');
+
+var _models2 = _interopRequireDefault(_models);
+
 var _index = require('../services/index');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -457,7 +461,7 @@ var UserController = function () {
     key: 'login',
     value: function () {
       var _ref5 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee5(req, res) {
-        var _req$body2, username, password, Op, user, userData, token, accessToken;
+        var _req$body2, username, password, Op, user, userData, token, accessToken, _user, _userData, _token, _accessToken;
 
         return _regenerator2.default.wrap(function _callee5$(_context5) {
           while (1) {
@@ -466,7 +470,7 @@ var UserController = function () {
                 _req$body2 = req.body, username = _req$body2.username, password = _req$body2.password;
 
                 if (!(username && password)) {
-                  _context5.next = 35;
+                  _context5.next = 69;
                   break;
                 }
 
@@ -479,7 +483,7 @@ var UserController = function () {
                   email: username
                 }, {
                   username: username
-                }]));
+                }]), [{ model: _models2.default.Sender }]);
 
               case 6:
                 user = _context5.sent;
@@ -501,7 +505,8 @@ var UserController = function () {
                 userData = Object.assign({
                   email: user.email,
                   id: user.id,
-                  role: user.role
+                  role: user.role,
+                  senderId: user.Sender.id
                 });
                 token = _helpers2.default.createJWT(userData);
                 _context5.prev = 13;
@@ -530,26 +535,102 @@ var UserController = function () {
                 return _context5.abrupt('return');
 
               case 29:
-                _context5.next = 35;
+                _context5.next = 69;
                 break;
 
               case 31:
                 _context5.prev = 31;
                 _context5.t1 = _context5['catch'](3);
 
+                if (!(_context5.t1.message === 'Cannot read property \'id\' of null')) {
+                  _context5.next = 68;
+                  break;
+                }
+
+                _context5.prev = 34;
+                _context5.next = 37;
+                return this.service.findOne((0, _defineProperty3.default)({}, Op.or, [{
+                  email: username
+                }, {
+                  username: username
+                }]));
+
+              case 37:
+                _user = _context5.sent;
+
+                if (!(_user === null)) {
+                  _context5.next = 41;
+                  break;
+                }
+
                 res.status(404).json(new _ResponseBuilder2.default().setMessage('username or email not found').setSuccess(false).build());
                 return _context5.abrupt('return');
 
-              case 35:
+              case 41:
+                if (!_bcrypt2.default.compareSync(password, _user.password)) {
+                  _context5.next = 58;
+                  break;
+                }
+
+                _userData = Object.assign({
+                  email: _user.email,
+                  id: _user.id,
+                  role: _user.role
+                });
+                _token = _helpers2.default.createJWT(_userData);
+                _context5.prev = 44;
+                _context5.next = 47;
+                return this.tokenService.saveToken(_token, req.headers['user-agent']);
+
+              case 47:
+                _accessToken = _context5.sent;
+
+                res.status(200).json(new _ResponseBuilder2.default().setData(_accessToken).setMessage('Logged in successfully').build());
+                return _context5.abrupt('return');
+
+              case 52:
+                _context5.prev = 52;
+                _context5.t2 = _context5['catch'](44);
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context5.t2.message).setSuccess(false).build());
+                return _context5.abrupt('return');
+
+              case 56:
+                _context5.next = 60;
+                break;
+
+              case 58:
+                res.status(200).json(new _ResponseBuilder2.default().setMessage('Invalid password').setSuccess(false).build());
+                return _context5.abrupt('return');
+
+              case 60:
+                _context5.next = 66;
+                break;
+
+              case 62:
+                _context5.prev = 62;
+                _context5.t3 = _context5['catch'](34);
+
+                res.status(404).json(new _ResponseBuilder2.default().setMessage(_context5.t3.message).setSuccess(false).build());
+                return _context5.abrupt('return');
+
+              case 66:
+                _context5.next = 69;
+                break;
+
+              case 68:
+                res.status(404).json(new _ResponseBuilder2.default().setMessage('error at login').setSuccess(false).build());
+
+              case 69:
                 res.status(400).json(new _ResponseBuilder2.default().setMessage('invalid payload').setSuccess(false).build());
                 return _context5.abrupt('return');
 
-              case 37:
+              case 71:
               case 'end':
                 return _context5.stop();
             }
           }
-        }, _callee5, this, [[3, 31], [13, 21]]);
+        }, _callee5, this, [[3, 31], [13, 21], [34, 62], [44, 52]]);
       }));
 
       function login(_x9, _x10) {

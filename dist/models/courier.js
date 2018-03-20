@@ -11,6 +11,7 @@ module.exports = function (sequelize, DataTypes) {
     isEmployee: DataTypes.BOOLEAN
   });
   Courier.associate = function (models) {
+    Courier.belongsTo(models.User, { foreignKey: 'userId' });
     Courier.hasMany(models.Trip, { foreignKey: 'courierId' });
     Courier.hasMany(models.Item, { foreignKey: 'courierId' });
     Courier.hasMany(models.Reputation, { foreignKey: 'courierId' });

@@ -54,6 +54,14 @@ var _proposal = require('./routes/proposal');
 
 var _proposal2 = _interopRequireDefault(_proposal);
 
+var _map = require('./routes/map');
+
+var _map2 = _interopRequireDefault(_map);
+
+var _airport = require('./routes/airport');
+
+var _airport2 = _interopRequireDefault(_airport);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 // import Http from 'http';
@@ -90,6 +98,8 @@ app.use('/api/mail', _mail2.default);
 app.use('/api/google', _google2.default);
 app.use('/api/facebook', _facebook2.default);
 app.use('/api/proposal', _proposal2.default);
+app.use('/api/map', _map2.default);
+app.use('/api/airport', _airport2.default);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
