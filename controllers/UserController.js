@@ -138,7 +138,18 @@ export default class UserController {
         return;
       }
       const token = helpers.parseToken(authorization);
-      const parsed = helpers.verifyJwt(token);
+      let parsed = null;
+      try {
+        parsed = helpers.verifyJwt(token);
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+        return;
+      }
       if (parsed.role === 'sysadmin') {
         try {
           response = await this.service.create(payload);
