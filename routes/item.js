@@ -10,6 +10,10 @@ router.get('/', (req, res) => {
   itemController.get(req, res);
 });
 
+router.post('/current_trip', (req, res) => {
+  itemController.get_current_trip(req, res);
+});
+
 router.get('/:id', (req, res) => {
   itemController.find(req, res);
 });
