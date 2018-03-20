@@ -99,6 +99,7 @@ describe('Proposal Controller Test', () => {
           /** structural response check */
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(true);
+          res.body.meta.message.should.be.eql('operations success');
           done();
         });
     });
@@ -116,6 +117,7 @@ describe('Proposal Controller Test', () => {
           res.should.have.status(200);
           res.body.meta.success.should.be.eql(true);
           res.body.data.should.include.keys(UPDATE_PROPOSAL_RESPONSE_STRUCTURE);
+          res.body.meta.message.should.be.eql('operations success');
           done();
         });
     });

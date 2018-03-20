@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import Sequelize from 'sequelize';
 import helpers from '../helpers';
 import ResponseBuilder from '../helpers/ResponseBuilder';
+import models from '../models';
 import {
   UserService,
   SenderService,
@@ -284,16 +285,19 @@ export default class UserController {
       const Op = Sequelize.Op;
       // find with username or email
       try {
-        const user = await this.service.findOne({
-          [Op.or]: [
-            {
-              email: username,
-            },
-            {
-              username,
-            },
-          ],
-        });
+        const user = await this.service.findOne(
+          {
+            [Op.or]: [
+              {
+                email: username,
+              },
+              {
+                username,
+              },
+            ],
+          },
+          [{ model: models.Sender }]
+        );
         if (user === null) {
           res.status(404).json(
             new ResponseBuilder()
@@ -308,6 +312,7 @@ export default class UserController {
             email: user.email,
             id: user.id,
             role: user.role,
+            senderId: user.Sender.id,
           });
           const token = helpers.createJWT(userData);
           try {
@@ -341,13 +346,82 @@ export default class UserController {
           return;
         }
       } catch (error) {
-        res.status(404).json(
-          new ResponseBuilder()
-            .setMessage('username or email not found')
-            .setSuccess(false)
-            .build()
-        );
-        return;
+        // sysadmin & siteadmin login
+        if (error.message === 'Cannot read property \'id\' of null') {
+          try {
+            const user = await this.service.findOne({
+              [Op.or]: [
+                {
+                  email: username,
+                },
+                {
+                  username,
+                },
+              ],
+            });
+            if (user === null) {
+              res.status(404).json(
+                new ResponseBuilder()
+                  .setMessage('username or email not found')
+                  .setSuccess(false)
+                  .build()
+              );
+              return;
+            }
+            if (bcrypt.compareSync(password, user.password)) {
+              const userData = Object.assign({
+                email: user.email,
+                id: user.id,
+                role: user.role,
+              });
+              const token = helpers.createJWT(userData);
+              try {
+                const accessToken = await this.tokenService.saveToken(
+                  token,
+                  req.headers['user-agent']
+                );
+                res.status(200).json(
+                  new ResponseBuilder()
+                    .setData(accessToken)
+                    .setMessage('Logged in successfully')
+                    .build()
+                );
+                return;
+              } catch (error) {
+                res.status(400).json(
+                  new ResponseBuilder()
+                    .setMessage(error.message)
+                    .setSuccess(false)
+                    .build()
+                );
+                return;
+              }
+            } else {
+              res.status(200).json(
+                new ResponseBuilder()
+                  .setMessage('Invalid password')
+                  .setSuccess(false)
+                  .build()
+              );
+              return;
+            }
+          } catch (error) {
+            res.status(404).json(
+              new ResponseBuilder()
+                .setMessage(error.message)
+                .setSuccess(false)
+                .build()
+            );
+            return;
+          }
+        } else {
+          res.status(404).json(
+            new ResponseBuilder()
+              .setMessage('error at login')
+              .setSuccess(false)
+              .build()
+          );
+        }
       }
     }
     res.status(400).json(
