@@ -97,7 +97,6 @@ export default class ItemController {
   async get_current_trip(req, res) {
     const { page, limit, fields, order } = req.query;
     const { from, to } = req.body;
-    console.log(from, to)
     if (typeof from === 'undefined' || typeof to === 'undefined') {
       res.status(422).json(
         new ResponseBuilder()
@@ -105,7 +104,7 @@ export default class ItemController {
           .setSuccess(false)
           .build()
       );
-      return
+      return;
     }
     try {
       const response = await this.service.paginate(
