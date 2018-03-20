@@ -92,6 +92,7 @@ sequelize db:migrate
   **If you have new migration files**
 
 * run the migration on heroku database `heroku run sequelize db:migrate`
+
   **Base URL**
 
 * https://kurirbackend-dev.herokuapp.com/
