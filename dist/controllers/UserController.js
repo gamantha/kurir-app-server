@@ -222,12 +222,12 @@ var UserController = function () {
                 return _context2.abrupt('return');
 
               case 52:
-                _context2.next = 97;
+                _context2.next = 105;
                 break;
 
               case 54:
                 if (!(role === 'siteadmin' && validation)) {
-                  _context2.next = 81;
+                  _context2.next = 89;
                   break;
                 }
 
@@ -242,86 +242,99 @@ var UserController = function () {
 
               case 58:
                 token = _helpers2.default.parseToken(authorization);
-                parsed = _helpers2.default.verifyJwt(token);
+                parsed = null;
+                _context2.prev = 60;
 
+                parsed = _helpers2.default.verifyJwt(token);
+                _context2.next = 68;
+                break;
+
+              case 64:
+                _context2.prev = 64;
+                _context2.t2 = _context2['catch'](60);
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t2.message).setSuccess(false).build());
+                return _context2.abrupt('return');
+
+              case 68:
                 if (!(parsed.role === 'sysadmin')) {
-                  _context2.next = 77;
+                  _context2.next = 85;
                   break;
                 }
 
-                _context2.prev = 61;
-                _context2.next = 64;
+                _context2.prev = 69;
+                _context2.next = 72;
                 return this.service.create(payload);
 
-              case 64:
+              case 72:
                 response = _context2.sent;
                 siteadminPayload = {
                   userId: response.id
                 };
                 // tambah payload lain yg dibutuhkan model droppoint
 
-                _context2.next = 68;
+                _context2.next = 76;
                 return this.droppointService.create(siteadminPayload);
 
-              case 68:
+              case 76:
                 res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('successfully created new site admin').build());
-                _context2.next = 75;
+                _context2.next = 83;
                 break;
-
-              case 71:
-                _context2.prev = 71;
-                _context2.t2 = _context2['catch'](61);
-
-                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t2.message).setSuccess(false).build());
-                return _context2.abrupt('return');
-
-              case 75:
-                _context2.next = 79;
-                break;
-
-              case 77:
-                res.status(400).json(new _ResponseBuilder2.default().setMessage('only sysadmin can create site admin').setSuccess(false).build());
-                return _context2.abrupt('return');
 
               case 79:
-                _context2.next = 97;
-                break;
-
-              case 81:
-                _context2.prev = 81;
-                _context2.next = 84;
-                return this.service.create(payload);
-
-              case 84:
-                response = _context2.sent;
-                senderPayload = {
-                  UserId: response.id
-                };
-                _context2.next = 88;
-                return this.senderService.create(senderPayload);
-
-              case 88:
-                _context2.next = 90;
-                return this.mailService.sendRegisValidationLink(email);
-
-              case 90:
-                res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('successfully created new sender').build());
-                _context2.next = 97;
-                break;
-
-              case 93:
-                _context2.prev = 93;
-                _context2.t3 = _context2['catch'](81);
+                _context2.prev = 79;
+                _context2.t3 = _context2['catch'](69);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t3.message).setSuccess(false).build());
                 return _context2.abrupt('return');
 
-              case 97:
+              case 83:
+                _context2.next = 87;
+                break;
+
+              case 85:
+                res.status(400).json(new _ResponseBuilder2.default().setMessage('only sysadmin can create site admin').setSuccess(false).build());
+                return _context2.abrupt('return');
+
+              case 87:
+                _context2.next = 105;
+                break;
+
+              case 89:
+                _context2.prev = 89;
+                _context2.next = 92;
+                return this.service.create(payload);
+
+              case 92:
+                response = _context2.sent;
+                senderPayload = {
+                  UserId: response.id
+                };
+                _context2.next = 96;
+                return this.senderService.create(senderPayload);
+
+              case 96:
+                _context2.next = 98;
+                return this.mailService.sendRegisValidationLink(email);
+
+              case 98:
+                res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('successfully created new sender').build());
+                _context2.next = 105;
+                break;
+
+              case 101:
+                _context2.prev = 101;
+                _context2.t4 = _context2['catch'](89);
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t4.message).setSuccess(false).build());
+                return _context2.abrupt('return');
+
+              case 105:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[10, 31], [41, 48], [61, 71], [81, 93]]);
+        }, _callee2, this, [[10, 31], [41, 48], [60, 64], [69, 79], [89, 101]]);
       }));
 
       function create(_x3, _x4) {
