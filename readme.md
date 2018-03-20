@@ -82,7 +82,7 @@ sequelize db:migrate
 
 * please pass all the test first, with `npm run test`
 * make sure you're on the `heroku` branch using `git checkout heroku`
-* make sure folder `config/config.json` has value of `"BASE_URL"` in the `domain.base_url` property
+* make sure folder `config/config.json` has value of `https://kurirbackend-dev.herokuapp.com/` in the `domain.base_url` property
 * run `npm run clean` in the project root directory
 * run `npm run cp` in the same directory
 * add the changes with `git add .`
