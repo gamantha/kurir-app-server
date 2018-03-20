@@ -76,7 +76,7 @@ var config = {
     use_env_variable: 'DATABASE_URL'
   },
   domain: {
-    base_url: 'BASE_URL'
+    base_url: 'https://kurirbackend-dev.herokuapp.com'
   }
 };
 
