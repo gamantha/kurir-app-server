@@ -19,6 +19,7 @@ before_install:
   - "npm install"
   - "sequelize --env test db:migrate"
   - "sequelize --env test db:seed --seed seeders/20180118112739-seed-test-user.js "
+  - "sequelize --env test db:seed --seed seeders/20180305092818-create_sender.js "
 
 script:
   - "npm run test"

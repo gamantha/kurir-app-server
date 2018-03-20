@@ -13,7 +13,9 @@ export default class ItemController {
   async create(req, res) {
     const {
       from,
+      originCoord,
       to,
+      destinationCoord,
       weight,
       country,
       city,
@@ -24,21 +26,20 @@ export default class ItemController {
       category,
       type,
       cost,
-      // receiver
-      receiverName,
-      email,
-      phone,
+      // ReceiverId,
     } = req.body;
-    const senderId = res.locals.user.id;
     const ticketNumber = this.service.generateTicketNumber();
     const status = 'stillWaitingCourier';
     try {
-      const receiverPayload = {
-        name: receiverName,
-        email,
-        phone,
-      };
-      const receiver = await this.receiverService.create(receiverPayload);
+      // const senderId = await this.service.returnSenderId(userId);
+      // const receiverPayload = {
+      //   name: receiverName,
+      //   email,
+      //   phone,
+      // };
+      const senderId = res.locals.user.senderId;
+
+      // const receiver = await this.receiverService.create(receiverPayload);
       const itemPayload = {
         address,
         ticketNumber,
@@ -48,14 +49,16 @@ export default class ItemController {
         status,
         name: itemName,
         from,
+        originCoord,
         to,
+        destinationCoord,
         note,
         reward,
         category,
         type,
         weight,
         cost,
-        ReceiverId: receiver.id,
+        // ReceiverId,
       };
       const item = await this.service.create(itemPayload);
       res.status(201).json(new ResponseBuilder().setData(item).build());
@@ -151,7 +154,9 @@ export default class ItemController {
       senderId,
       courierId,
       from,
+      originCoord,
       to,
+      destinationCoord,
       ReceiverId,
       itemName,
       note,
@@ -162,16 +167,16 @@ export default class ItemController {
       weight,
       cost,
       // receiver
-      receiverName,
-      email,
-      phone,
+      // receiverName,
+      // email,
+      // phone,
     } = req.body;
     try {
-      const receiverPayload = {
-        name: receiverName,
-        email,
-        phone,
-      };
+      // const receiverPayload = {
+      //   name: receiverName,
+      //   email,
+      //   phone,
+      // };
       const itemPayload = {
         address,
         city,
@@ -181,7 +186,9 @@ export default class ItemController {
         status,
         name: itemName,
         from,
+        originCoord,
         to,
+        destinationCoord,
         note,
         reward,
         category,
@@ -190,16 +197,16 @@ export default class ItemController {
         cost,
         ReceiverId: ReceiverId,
       };
-      const receiver = await this.receiverService.update(
-        receiverPayload,
-        {
-          id: ReceiverId,
-        },
-        {
-          returning: true,
-          plain: true,
-        }
-      );
+      // const receiver = await this.receiverService.update(
+      //   receiverPayload,
+      //   {
+      //     id: ReceiverId,
+      //   },
+      //   {
+      //     returning: true,
+      //     plain: true,
+      //   }
+      // );
       const item = await this.service.update(
         itemPayload,
         { ticketNumber: id },
@@ -208,9 +215,7 @@ export default class ItemController {
           plain: true,
         }
       );
-      res
-        .status(200)
-        .json(new ResponseBuilder().setData({ item, receiver }).build());
+      res.status(200).json(new ResponseBuilder().setData({ item }).build());
     } catch (error) {
       res.status(404).json(
         new ResponseBuilder()

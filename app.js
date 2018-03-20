@@ -16,6 +16,8 @@ import mail from './routes/mail';
 import google from './routes/google';
 import facebook from './routes/facebook';
 import proposal from './routes/proposal';
+import map from './routes/map';
+import airport from './routes/airport';
 
 const app = express();
 // const http = Http.Server(app);
@@ -53,6 +55,8 @@ app.use('/api/mail', mail);
 app.use('/api/google', google);
 app.use('/api/facebook', facebook);
 app.use('/api/proposal', proposal);
+app.use('/api/map', map);
+app.use('/api/airport', airport);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

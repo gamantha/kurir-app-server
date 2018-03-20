@@ -97,4 +97,4 @@ export const GET_PROPOSAL_RESPONSE_STRUCTURE = [
 
 export const EDIT_PROFILE_RESPONSE_STRUCTURE = ['user', 'sender'];
 
-export const EDIT_ITEM_RESPONSE_STRUCTURE = ['item', 'receiver'];
+export const EDIT_ITEM_RESPONSE_STRUCTURE = ['item'];

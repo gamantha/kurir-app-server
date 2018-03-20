@@ -37,21 +37,11 @@ describe('Items', () => {
       .post('/api/user/login')
       .send({ username: user.email, password: user.password })
       .end((err, res) => {
+        userId = res.body.data.userId;
+        senderId = res.body.data.User.Sender.id;
         token = res.body.data.accessToken;
         done();
       });
-    // chai
-    //   .request(app)
-    //   .post('/api/user/create')
-    //   .send({ username: user.email, password: user.password })
-    //   .end((err, res) => {
-    //     accessToken = res.body.data.accessToken;
-    //     userId = res.body.data.userId;
-    //     models.Sender.create({
-    //       UserId: userId,
-    //     });
-    //     done();
-    //   });
   });
 
   /**
@@ -65,7 +55,9 @@ describe('Items', () => {
         .set('Authorization', `bearer ${token}`)
         .send({
           from: 'Jakarta',
+          originCoord: '-6.127379,106.653361',
           to: 'Bandung',
+          destinationCoord: '-6.130622,106.644778',
           weight: 10,
           country: 'Indonesia',
           city: 'Jakarta Barat',
@@ -75,15 +67,12 @@ describe('Items', () => {
           note: 'some note',
           reward: 'some reward',
           category: 'phone',
-          phone: '3482043240',
-          receiverName: 'Guy',
-          email: 'guy@mail.com',
           cost: '2000',
           ReceiverId: 2,
           cost: '10000',
           type: 'sometype',
           status: 'stillWaitingCourier',
-          senderId: 1,
+          senderId: senderId,
         })
         .end((err, res) => {
           res.should.have.status(201);
@@ -107,18 +96,18 @@ describe('Items', () => {
         .get('/api/item')
         .set('Authorization', `bearer ${token}`)
         .end((err, res) => {
-          // res.should.have.status(200);
-          // res.body.should.be.a('object');
+          res.should.have.status(200);
+          res.body.should.be.a('object');
           /** structural response check */
-          // res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
-          // res.body.data[0].Sender.should.include.keys(
-          //   SENDER_ITEM_RESPONSE_STRUCTURE
-          // );
-          // res.body.data[0].Sender.User.should.include.keys(
-          //   USER_ITEM_RESPONSE_STRUCTURE
-          // );
-          // res.body.data[0].should.include.keys(GET_ITEM_RESPONSE_STRUCTURE);
-          // res.body.meta.success.should.be.eql(true);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.data[0].Sender.should.include.keys(
+            SENDER_ITEM_RESPONSE_STRUCTURE
+          );
+          res.body.data[0].Sender.User.should.include.keys(
+            USER_ITEM_RESPONSE_STRUCTURE
+          );
+          res.body.data[0].should.include.keys(GET_ITEM_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(true);
           res.body.meta.message.should.be.eql('operations success');
           done();
         });
@@ -175,42 +164,40 @@ describe('Items', () => {
    * Test put item endpoint
    */
   describe('/PUT item', () => {
-    // it('should update a item', done => {
-    //   chai
-    //     .request(app)
-    //     .put(`/api/item/${postedId}`)
-    //     .set('Authorization', `bearer ${token}`)
-    //     .send({
-    //       address: 'update',
-    //       city: 'update',
-    //       country: 'update',
-    //       // senderId: 2,
-    //       // courierId: 1,
-    //       from: 'update',
-    //       // ReceiverId: 1,
-    //       itemName: 'update',
-    //       note: 'update',
-    //       reward: 'update',
-    //       status: 'update',
-    //       category: 'update',
-    //       type: 'update',
-    //       weight: 2,
-    //       cost: 'update',
-    //       receiverName: 'update',
-    //       email: 'update',
-    //       phone: 'update',
-    //     })
-    //     .end((err, res) => {
-    //       console.log('postedId', postedId);
-    //       console.log('data1', res.body.data);
-    //       // res.should.have.status(200);
-    //       // res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
-    //       // res.body.meta.success.should.be.eql(true);
-    //       // res.body.data.should.include.keys(EDIT_ITEM_RESPONSE_STRUCTURE);
-    //       res.body.meta.message.should.be.eql('operations success');
-    //       done();
-    //     });
-    // });
+    it('should update a item', done => {
+      chai
+        .request(app)
+        .put(`/api/item/${postedId}`)
+        .set('Authorization', `bearer ${token}`)
+        .send({
+          address: 'update',
+          city: 'update',
+          country: 'update',
+          senderId: 2,
+          // courierId: 1,
+          from: 'update',
+          // ReceiverId: 1,
+          itemName: 'update',
+          note: 'update',
+          reward: 'update',
+          status: 'update',
+          category: 'update',
+          type: 'update',
+          weight: 2,
+          cost: 'update',
+          // receiverName: 'update',
+          // email: 'update',
+          // phone: 'update',
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
+          res.body.meta.success.should.be.eql(true);
+          res.body.data.should.include.keys(EDIT_ITEM_RESPONSE_STRUCTURE);
+          res.body.meta.message.should.be.eql('operations success');
+          done();
+        });
+    });
     it('should return 404 not found', done => {
       chai
         .request(app)
@@ -220,7 +207,7 @@ describe('Items', () => {
           address: 'update',
           city: 'update',
           country: 'update',
-          senderId: 2,
+          // senderId: 2,
           courierId: 1,
           from: 'update',
           ReceiverId: 1,
@@ -232,9 +219,7 @@ describe('Items', () => {
           type: 'update',
           weight: 2,
           cost: 'update',
-          receiverName: 'update',
-          email: 'update',
-          phone: 'update',
+          ReceiverId: 1,
         })
         .end((err, res) => {
           res.should.have.status(404);

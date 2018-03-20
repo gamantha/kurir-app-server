@@ -25,7 +25,10 @@ export default async (req, res, next) => {
        * Pass token payload to next function
        * it'll be accessible through res.locals.user
        * */
-      const accessToken = await tokenService.findOne({ accessToken: token, userAgent: req.headers['user-agent'] });
+      const accessToken = await tokenService.findOne({
+        accessToken: token,
+        userAgent: req.headers['user-agent'],
+      });
       if (accessToken === null) {
         res.status(401).json(
           new ResponseBuilder()
@@ -38,6 +41,7 @@ export default async (req, res, next) => {
       res.locals.user = {
         email: result.email,
         id: result.id,
+        senderId: result.senderId,
       };
     } catch (error) {
       throw Error(error);

@@ -36,6 +36,7 @@ export default class TokenService extends BaseService {
               model: models.User,
               attributes: { exclude: ['password'] },
               required: true,
+              include: [{ model: models.Sender }],
             },
           ],
         });
@@ -66,6 +67,7 @@ export default class TokenService extends BaseService {
                 model: models.User,
                 attributes: { exclude: ['password'] },
                 required: true,
+                include: [{ model: models.Sender }],
               },
             ],
           });
