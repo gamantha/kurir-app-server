@@ -1,3 +1,4 @@
+import moment from 'moment'
 import { ItemService, ReceiverService } from '../services/index';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 
@@ -8,6 +9,7 @@ export default class ItemController {
   constructor() {
     this.service = new ItemService();
     this.receiverService = new ReceiverService();
+    this.reservetime = 30;
   }
 
   async create(req, res) {
@@ -82,7 +84,22 @@ export default class ItemController {
         limit,
         order,
         fields,
-        include
+        include,
+        {
+          $or: [
+            {
+              reserved: {
+                $lt: moment().subtract(this.reservetime,
+                  'minutes').toDate()
+              },
+            },
+            {
+              reserved: {
+                $eq: null,
+              },
+            }
+          ]
+        }
       );
       res.status(200).json(
         new ResponseBuilder()
@@ -125,6 +142,18 @@ export default class ItemController {
         {
           from,
           to,
+          $or: [
+            {
+              reserved: {
+                $lt: moment().subtract(this.reservetime, 'minutes').toDate()
+              },
+            },
+            {
+              reserved: {
+                $eq: null,
+              },
+            }
+          ]
         }
       );
       res.status(200).json(
@@ -150,7 +179,21 @@ export default class ItemController {
     const include = this.service.returnInclude();
     try {
       const response = await this.service.findOne(
-        { ticketNumber: id },
+        {
+          ticketNumber: id,
+          $or: [
+            {
+              reserved: {
+                $lt: moment().subtract(this.reservetime, 'minutes').toDate()
+              },
+            },
+            {
+              reserved: {
+                $eq: null,
+              },
+            }
+          ]
+        },
         include
       );
       if (response !== null) {
@@ -178,6 +221,34 @@ export default class ItemController {
     try {
       await this.service.destroy({ ticketNumber: id });
       res.status(200).json(new ResponseBuilder().setData({}).build());
+    } catch (error) {
+      res.status(404).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+
+
+  }
+
+  async reserve(req, res) {
+    const { id } = req.params;
+    try {
+      const itemPayload = {
+        courierId: res.locals.user.id,
+        reserved: Date.now(),
+      };
+      const item = await this.service.update(
+        itemPayload,
+        { ticketNumber: id },
+        {
+          returning: true,
+          plain: true,
+        }
+      );
+      res.status(200).json(new ResponseBuilder().setData({ item }).build());
     } catch (error) {
       res.status(404).json(
         new ResponseBuilder()
