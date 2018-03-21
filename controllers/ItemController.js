@@ -102,6 +102,49 @@ export default class ItemController {
     }
   }
 
+  async get_current_trip(req, res) {
+    const { page, limit, fields, order } = req.query;
+    const { from, to } = req.body;
+    if (typeof from === 'undefined' || typeof to === 'undefined') {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+      return;
+    }
+    try {
+      const response = await this.service.paginate(
+        req,
+        page,
+        limit,
+        order,
+        fields,
+        undefined,
+        {
+          from,
+          to,
+        }
+      );
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData(response.data)
+          .setTotal(response.total)
+          .setCount(response.count)
+          .setLinks(response.links)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
   async find(req, res) {
     const { id } = req.params;
     const include = this.service.returnInclude();
