@@ -1,4 +1,4 @@
-const advTemplate = (buttonText, headerMsg, bodyMsg, link, imgLink) => {
+export const advTemplate = (buttonText, headerMsg, bodyMsg, link, imgLink) => {
   return `<!DOCTYPE html>
   <html lang="en">
   <head>
@@ -266,7 +266,7 @@ const advTemplate = (buttonText, headerMsg, bodyMsg, link, imgLink) => {
   </html>`;
 };
 
-const simpleTemplate = (headerMsg, bodyMsg) => {
+export const simpleTemplate = (headerMsg, bodyMsg) => {
   return `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -478,5 +478,3 @@ const simpleTemplate = (headerMsg, bodyMsg) => {
     </body>
     </html>`;
 };
-
-export default { advTemplate, simpleTemplate };
