@@ -195,7 +195,7 @@ var MailService = function (_BaseService) {
       }
       if (template === 'link') {
         html = (0, _email.advTemplate)('Activate', 'Welcome to Kurir.id!', 'We pleased and happy to be able to giving you an easy and cheap service for your package and courier needs. We want you to have the best experience for using Kurir.id, so please activate your account by clicking the button below. <i>Note: this link will expire in 1 hour</i>', payload, 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/welcome.gif');
-        subject = 'Email Verification for New User';
+        subject = 'Email Verification for new user';
       }
       if (template === 'change-password') {
         html = '<div>This email inform you that you have successfully change your password.\n       Here are your new password: <b>' + payload + '</b>\n       Please keep it in safe place. </div>';
