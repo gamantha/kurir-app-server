@@ -2,7 +2,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import emailTemplate from '../helpers/email';
+import { advTemplate, simpleTemplate } from '../helpers/email';
 import BaseService from './BaseService';
 import randtoken from 'rand-token';
 import models from '../models';
@@ -70,22 +70,29 @@ export default class MailService extends BaseService {
   setMailgunTemplate(email, template, payload) {
     let html, subject;
     if (template === 'code') {
-      html = `<b>This is your verification code number. Do not share it with anyone.</b> ${payload}`;
+      html = simpleTemplate(payload, 'Don\'t share this code with anyone.');
       subject = 'Your verification code for Kurir.id forgot password';
     }
     if (template === 'welcome') {
-      html =
-        '<h1>Your email has been verified! Thank your for being awesome and being part of Kurir.id</h1>';
+      html = advTemplate(
+        'Curious?',
+        'How Kurir.id works',
+        'Thank you! You had successfully activate your email. Now you can use our service. Wondering why you will be happy using Kurir.id? You can take a look at our detailed information by clicking the link below.',
+        payload,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/thumbsup.gif'
+      );
+      // '<h1>Your email has been verified! Thank your for being awesome and being part of Kurir.id</h1>';
       subject = 'Welcome to Kurir.id';
     }
     if (template === 'link') {
-      html = emailTemplate(
+      html = advTemplate(
         'Activate',
-        'Welcome to kurir.id!',
-        'We pleased to have you as our user and would like to welcome you here. We want you to have the best experience in using kurir.id, so please activate your account by clicking the button below. <i>Note: this link will expire in 1 hour.</i>;',
-        payload
+        'Welcome to Kurir.id!',
+        'We pleased and happy to be able to giving you an easy and cheap service for your package and courier needs. We want you to have the best experience for using Kurir.id, so please activate your account by clicking the button below. <i>Note: this link will expire in 1 hour</i>',
+        payload,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/welcome.gif'
       );
-      subject = 'Email Verification for Newly Onboarding User';
+      subject = 'Email Verification for New User';
     }
     if (template === 'change-password') {
       html = `<div>This email inform you that you have successfully change your password.
