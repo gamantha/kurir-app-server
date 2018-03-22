@@ -143,7 +143,7 @@ export default class MailService extends BaseService {
           const welcomeMessage = this.setMailgunTemplate(
             email,
             'welcome',
-            null
+            `${config.domain.base_url}/api/mail/article/how-kuririd-works/`
           );
           await this.sendMailgunEmail(welcomeMessage);
           return true;
