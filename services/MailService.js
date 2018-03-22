@@ -92,7 +92,7 @@ export default class MailService extends BaseService {
         payload,
         'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/welcome.gif'
       );
-      subject = 'Email Verification for New User';
+      subject = 'Email Verification for new user';
     }
     if (template === 'change-password') {
       html = `<div>This email inform you that you have successfully change your password.

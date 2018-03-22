@@ -3,7 +3,7 @@ export const advTemplate = (buttonText, headerMsg, bodyMsg, link, imgLink) => {
   <html lang="en">
   <head>
   <title>Kurir.id | A Responsive Email Template</title>
-    /*
+    <!--
     SALTED | A RESPONSIVE EMAIL TEMPLATE
     =====================================
 
@@ -16,7 +16,7 @@ export const advTemplate = (buttonText, headerMsg, bodyMsg, link, imgLink) => {
     It's highly recommended that you test using a service like Litmus and your own devices.
 
     Enjoy!
-    */
+    -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <style type="text/css">
