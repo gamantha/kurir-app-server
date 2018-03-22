@@ -19,4 +19,8 @@ router.post('/registration/link', function (req, res) {
   _controllers.mailController.sendRegisValidationLink(req, res);
 });
 
+router.get('/article/how-kuririd-works/', function (req, res) {
+  _controllers.mailController.sendWorksPage(req, res);
+});
+
 module.exports = router;
