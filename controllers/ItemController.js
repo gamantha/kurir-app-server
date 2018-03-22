@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment';
 import { ItemService, ReceiverService } from '../services/index';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 
