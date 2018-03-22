@@ -18,6 +18,10 @@ router.get('/:id', (req, res) => {
   itemController.find(req, res);
 });
 
+router.put('/:id/reserve', (req, res) => {
+  itemController.reserve(req, res);
+});
+
 router.post('/', (req, res) => {
   itemController.create(req, res);
 });

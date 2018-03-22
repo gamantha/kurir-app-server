@@ -18,6 +18,7 @@ module.exports = function (sequelize, DataTypes) {
     cost: DataTypes.STRING,
     reward: DataTypes.STRING,
     note: DataTypes.STRING,
+    reserved: DataTypes.DATE,
     // @params status
     // stillWaitingCourier,firstDropsite,pickedByCourier,startDroppoint,onTravel,endDroppoint,ontheway,received,canceled
     status: DataTypes.STRING,
