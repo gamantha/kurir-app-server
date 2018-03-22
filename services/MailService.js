@@ -2,6 +2,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
+import emailTemplate from '../helpers/email';
 import BaseService from './BaseService';
 import randtoken from 'rand-token';
 import models from '../models';
@@ -78,8 +79,12 @@ export default class MailService extends BaseService {
       subject = 'Welcome to Kurir.id';
     }
     if (template === 'link') {
-      html = `Please verify your account by clicking on this link <u>${payload}</u>
-      <strong>Note: this link will expire in 1 hour.</strong>`;
+      html = emailTemplate(
+        'Activate',
+        'Welcome to kurir.id!',
+        'We pleased to have you as our user and would like to welcome you here. We want you to have the best experience in using kurir.id, so please activate your account by clicking the button below. <i>Note: this link will expire in 1 hour.</i>;',
+        payload
+      );
       subject = 'Email Verification for Newly Onboarding User';
     }
     if (template === 'change-password') {
@@ -274,4 +279,12 @@ export default class MailService extends BaseService {
     }
     return false;
   }
+
+  /**
+   * Send email on item status update.
+   *
+   * @param  {String}  email
+   * @return {Boolean}
+   */
+  // async onUpdateItemStatus(email) {}
 }
