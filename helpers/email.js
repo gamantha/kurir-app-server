@@ -126,7 +126,7 @@ const template = (buttonText, HeaderMsg, bodyMsg, link) => {
                                   <tr>
                                       <td bgcolor="#ffffff" width="100" align="left">
                                       <a href="https://kurirbackend-dev.herokuapp.com" target="_blank">
-                                        <img alt="Logo" src="../assets/kurir-logo.png" width="52" height="78" style="display: block; font-family: Helvetica, Arial, sans-serif; color: #666666; font-size: 16px;" border="0">
+                                        <img alt="Logo" src="https://s3-ap-southeast-1.amazonaws.com/kurir-assets/kurir-logo.png" width="52" height="78" style="display: block; font-family: Helvetica, Arial, sans-serif; color: #666666; font-size: 16px;" border="0">
                                       </a>
                                       </td>
                                       <td bgcolor="#ffffff" width="400" align="right" class="mobile-hide">
@@ -167,7 +167,7 @@ const template = (buttonText, HeaderMsg, bodyMsg, link) => {
                                                             <tr>
                                                                 <td>
                                                                     <a href="https://kurirbackend-dev.herokuapp.com" target="_blank">
-                                                                      <img src="../assets/welcome.gif" width="500" height="200" border="0" alt="welcome" style="display: block; padding: 0; color: #666666; text-decoration: none; font-family: Helvetica, arial, sans-serif; font-size: 16px; width: 500px; height: 200px;" class="img-max">
+                                                                      <img src="https://s3-ap-southeast-1.amazonaws.com/kurir-assets/welcome.gif" width="500" height="200" border="0" alt="welcome" style="display: block; padding: 0; color: #666666; text-decoration: none; font-family: Helvetica, arial, sans-serif; font-size: 16px; width: 500px; height: 200px;" class="img-max">
                                                                     </a>
                                                                 </td>
                                                               </tr>
@@ -204,7 +204,7 @@ const template = (buttonText, HeaderMsg, bodyMsg, link) => {
                                                   <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
                                                       <tr>
                                                           <td align="center">
-                                                          <a href="${link}" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #d8283b; border-top: 15px solid #5D9CEC; border-bottom: 15px solid #5D9CEC; border-left: 25px solid #5D9CEC; border-right: 25px solid #5D9CEC; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">
+                                                          <a href="${link}" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #d8283b; border-top: 15px solid #d8283b; border-bottom: 15px solid #d8283b; border-left: 25px solid #d8283b; border-right: 25px solid #d8283b; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">
                                                           ${buttonText} &rarr;</a>
                                                           </td>
                                                       </tr>
