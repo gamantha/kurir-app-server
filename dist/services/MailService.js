@@ -36,6 +36,10 @@ var _bcrypt = require('bcrypt');
 
 var _bcrypt2 = _interopRequireDefault(_bcrypt);
 
+var _email = require('../helpers/email');
+
+var _email2 = _interopRequireDefault(_email);
+
 var _BaseService2 = require('./BaseService');
 
 var _BaseService3 = _interopRequireDefault(_BaseService2);
@@ -54,7 +58,6 @@ var _mailgunJs2 = _interopRequireDefault(_mailgunJs);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import axios from 'axios';
 var config = {
   development: {
     username: 'postgres',
@@ -81,6 +84,8 @@ var config = {
 };
 
 // import { buildEmailValidationUri } from '../helpers/constants';
+
+// import axios from 'axios';
 
 var MailService = function (_BaseService) {
   (0, _inherits3.default)(MailService, _BaseService);
@@ -190,7 +195,7 @@ var MailService = function (_BaseService) {
         subject = 'Welcome to Kurir.id';
       }
       if (template === 'link') {
-        html = 'Please verify your account by clicking on this link <u>' + payload + '</u>\n      <strong>Note: this link will expire in 1 hour.</strong>';
+        html = (0, _email2.default)('Activate', 'Welcome to kurir.id!', 'We pleased to have you as our user and would like to welcome you here. We want you to have the best experience in using kurir.id, so please activate your account by clicking the button below. <i>Note: this link will expire in 1 hour.</i>;', payload);
         subject = 'Email Verification for Newly Onboarding User';
       }
       if (template === 'change-password') {
@@ -589,6 +594,15 @@ var MailService = function (_BaseService) {
 
       return changePassword;
     }()
+
+    /**
+     * Send email on item status update.
+     *
+     * @param  {String}  email
+     * @return {Boolean}
+     */
+    // async onUpdateItemStatus(email) {}
+
   }]);
   return MailService;
 }(_BaseService3.default);
