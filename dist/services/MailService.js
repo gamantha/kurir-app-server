@@ -38,8 +38,6 @@ var _bcrypt2 = _interopRequireDefault(_bcrypt);
 
 var _email = require('../helpers/email');
 
-var _email2 = _interopRequireDefault(_email);
-
 var _BaseService2 = require('./BaseService');
 
 var _BaseService3 = _interopRequireDefault(_BaseService2);
@@ -187,16 +185,17 @@ var MailService = function (_BaseService) {
       var html = void 0,
           subject = void 0;
       if (template === 'code') {
-        html = '<b>This is your verification code number. Do not share it with anyone.</b> ' + payload;
+        html = (0, _email.simpleTemplate)(payload, 'Don\'t share this code with anyone.');
         subject = 'Your verification code for Kurir.id forgot password';
       }
       if (template === 'welcome') {
-        html = '<h1>Your email has been verified! Thank your for being awesome and being part of Kurir.id</h1>';
+        html = (0, _email.advTemplate)('Curious?', 'How Kurir.id works', 'Thank you! You had successfully activate your email. Now you can use our service. Wondering why you will be happy using Kurir.id? You can take a look at our detailed information by clicking the link below.', payload, 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/thumbsup.gif');
+        // '<h1>Your email has been verified! Thank your for being awesome and being part of Kurir.id</h1>';
         subject = 'Welcome to Kurir.id';
       }
       if (template === 'link') {
-        html = (0, _email2.default)('Activate', 'Welcome to kurir.id!', 'We pleased to have you as our user and would like to welcome you here. We want you to have the best experience in using kurir.id, so please activate your account by clicking the button below. <i>Note: this link will expire in 1 hour.</i>;', payload);
-        subject = 'Email Verification for Newly Onboarding User';
+        html = (0, _email.advTemplate)('Activate', 'Welcome to Kurir.id!', 'We pleased and happy to be able to giving you an easy and cheap service for your package and courier needs. We want you to have the best experience for using Kurir.id, so please activate your account by clicking the button below. <i>Note: this link will expire in 1 hour</i>', payload, 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/welcome.gif');
+        subject = 'Email Verification for New User';
       }
       if (template === 'change-password') {
         html = '<div>This email inform you that you have successfully change your password.\n       Here are your new password: <b>' + payload + '</b>\n       Please keep it in safe place. </div>';
