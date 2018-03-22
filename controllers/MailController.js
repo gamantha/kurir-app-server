@@ -47,8 +47,4 @@ export default class MailController {
       .status(response[0])
       .json(new ResponseBuilder().setMessage(response[1]).build());
   }
-
-  sendWorksPage(req, res) {
-    res.sendFile('how-works.html', { root: 'views/articles/' });
-  }
 }
