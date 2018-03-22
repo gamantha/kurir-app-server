@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.airportController = exports.mapController = exports.itemController = exports.proposalController = exports.mailController = exports.receiverController = exports.facebookController = exports.googleController = exports.userController = undefined;
+exports.homepageController = exports.airportController = exports.mapController = exports.itemController = exports.proposalController = exports.mailController = exports.receiverController = exports.facebookController = exports.googleController = exports.userController = undefined;
 
 var _UserController = require('./UserController');
 
@@ -41,6 +41,10 @@ var _AirportController = require('./AirportController');
 
 var _AirportController2 = _interopRequireDefault(_AirportController);
 
+var _HomepageController = require('./HomepageController');
+
+var _HomepageController2 = _interopRequireDefault(_HomepageController);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -55,3 +59,4 @@ var proposalController = exports.proposalController = new _ProposalController2.d
 var itemController = exports.itemController = new _ItemController2.default();
 var mapController = exports.mapController = new _MapController2.default();
 var airportController = exports.airportController = new _AirportController2.default();
+var homepageController = exports.homepageController = new _HomepageController2.default();

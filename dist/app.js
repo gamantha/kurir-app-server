@@ -62,16 +62,20 @@ var _airport = require('./routes/airport');
 
 var _airport2 = _interopRequireDefault(_airport);
 
+var _homepage = require('./routes/homepage');
+
+var _homepage2 = _interopRequireDefault(_homepage);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import Http from 'http';
-// import Io from 'socket.io';
-
+// routes import
 var app = (0, _express2.default)();
 // const http = Http.Server(app);
 // const io = Io(http);
 
-// routes import
+// import Http from 'http';
+// import Io from 'socket.io';
+
 require('dotenv').config();
 
 app.use((0, _cors2.default)());
@@ -91,6 +95,7 @@ app.use(_bodyParser2.default.urlencoded({
   parameterLimit: 50000
 }));
 
+app.use('/', _homepage2.default);
 app.use('/api/item', _item2.default);
 app.use('/api/user', _user2.default);
 app.use('/api/receiver', _receiver2.default);

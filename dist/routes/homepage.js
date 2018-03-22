@@ -11,12 +11,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var router = _express2.default.Router();
 
 
-router.get('/registration/check/:token', function (req, res) {
-  _controllers.mailController.checkEmail(req, res);
-});
-
-router.post('/registration/link', function (req, res) {
-  _controllers.mailController.sendRegisValidationLink(req, res);
+router.get('article/how-kuririd-works/', function (req, res) {
+  _controllers.homepageController.sendWorksPage(req, res);
 });
 
 module.exports = router;

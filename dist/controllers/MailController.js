@@ -132,11 +132,6 @@ var MailController = function () {
 
       return sendRegisValidationLink;
     }()
-  }, {
-    key: 'sendWorksPage',
-    value: function sendWorksPage(req, res) {
-      res.sendFile('how-works.html', { root: 'views/articles/' });
-    }
   }]);
   return MailController;
 }();

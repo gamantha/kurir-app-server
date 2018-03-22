@@ -77,7 +77,7 @@ var config = {
     use_env_variable: 'DATABASE_URL'
   },
   domain: {
-    base_url: 'http://localhost:3000'
+    base_url: 'https://kurirbackend-dev.herokuapp.com'
   }
 };
 
@@ -284,7 +284,7 @@ var MailService = function (_BaseService) {
                   break;
                 }
 
-                welcomeMessage = this.setMailgunTemplate(email, 'welcome', config.domain.base_url + '/api/mail/article/how-kuririd-works/');
+                welcomeMessage = this.setMailgunTemplate(email, 'welcome', config.domain.base_url + '/article/how-kuririd-works/');
                 _context3.next = 12;
                 return this.sendMailgunEmail(welcomeMessage);
 

@@ -21,7 +21,7 @@ var rawConfig = {
     use_env_variable: 'DATABASE_URL'
   },
   domain: {
-    base_url: 'http://localhost:3000'
+    base_url: 'https://kurirbackend-dev.herokuapp.com'
   }
 };
 
