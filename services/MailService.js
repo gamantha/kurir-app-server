@@ -100,8 +100,13 @@ export default class MailService extends BaseService {
        Please keep it in safe place. </div>`;
       subject = 'Change password information';
     }
-    if (template == 'reactivate-account') {
+    if (template === 'reactivate-account') {
       html = `Please reactivate your account by clicking on this link <u>${payload}</u>`;
+      subject = 'Reactivate account';
+    }
+    if (template === 'again') {
+      html = simpleTemplate('Your new email verification link', payload);
+      subject = 'Your new email verification link';
     }
 
     return {
@@ -294,4 +299,35 @@ export default class MailService extends BaseService {
    * @return {Boolean}
    */
   // async onUpdateItemStatus(email) {}
+
+  /**
+   * Send an email verification again to registered user.
+   *
+   * @param  {String}  email
+   * @return {Boolean}
+   */
+  async sendRegisValidationLinkAgain(email) {
+    const tokenifyEmail = jwt.sign({ email }, process.env.SECRET, {
+      expiresIn: '1h',
+      issuer: 'kurir-id-backend',
+      subject: 'email-validation',
+    });
+    const userEmail = await this.findOne({ email });
+    if (userEmail && !userEmail.dataValues.isEmailValidated) {
+      const verificationLink = `${
+        config.domain.base_url
+      }/api/mail/registration/check/${tokenifyEmail}`;
+
+      const verificationMessage = this.setMailgunTemplate(
+        email,
+        'again',
+        verificationLink
+      );
+
+      await this.sendMailgunEmail(verificationMessage);
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

@@ -63,8 +63,13 @@
     "sinon": "^4.2.1"
   },
   "nyc": {
-    "require": ["babel-register"],
-    "reporter": ["lcov", "text"],
+    "require": [
+      "babel-register"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
     "sourceMap": false,
     "instrument": false
   }
