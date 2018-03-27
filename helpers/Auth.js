@@ -42,6 +42,7 @@ export default async (req, res, next) => {
         email: result.email,
         id: result.id,
         senderId: result.senderId,
+        role: result.role,
       };
     } catch (error) {
       throw Error(error);

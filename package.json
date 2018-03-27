@@ -7,13 +7,10 @@
     "test": "NODE_ENV=test mocha --compilers js:babel-core/register ./test/**/*_test.js --exit --timeout 5000",
     "babel-node": "babel-node",
     "start": "nodemon --exec npm run babel-node -- ./app.js",
-    "build": "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./test,./seeders,./coverage",
+    "build": "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./test,./seeders",
     "serve": "nodemon dist/app.js",
     "clean": "rm -rf ./dist && npm run build",
-    "coverage": "NODE_ENV=test nyc mocha ./test/**/*_test.js --exit --timeout 5000",
-    "cp:views": "node -e \"require('ncp').ncp('./views', './dist/views')\"",
-    "cp": "npm run cp:views",
-    "heroku": "npm run clean && npm run cp"
+    "coverage": "NODE_ENV=test nyc mocha ./test/**/*_test.js --exit --timeout 5000"
   },
   "engines": {
     "node": "8.9.4",
@@ -35,6 +32,7 @@
     "google-auth-library": "^1.1.0",
     "jsonwebtoken": "^8.1.0",
     "mailgun-js": "^0.14.1",
+    "moment": "^2.21.0",
     "morgan": "^1.9.0",
     "nodemon": "^1.14.12",
     "passport": "^0.4.0",

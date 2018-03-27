@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { ItemService, ReceiverService } from '../services/index';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 
@@ -8,6 +9,63 @@ export default class ItemController {
   constructor() {
     this.service = new ItemService();
     this.receiverService = new ReceiverService();
+    this.reservetime = 30;
+  }
+
+  async get_history(req, res) {
+    const { page, limit, fields, order } = req.query;
+    if (res.locals.user.role !== 'sender') {
+      try {
+        const result = await this.service.getCourierHistory(
+          req,
+          page,
+          limit,
+          fields,
+          order,
+          res.locals.user.id, res.locals.user.senderId
+        );
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('history retrieved')
+            .setData(result)
+            .build()
+        );
+      } catch (error) {
+
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+      }
+      return;
+    } else {
+      try {
+        const result = await this.service.getSenderHistory(
+          req,
+          page,
+          limit,
+          fields,
+          order,
+          res.locals.user.senderId,
+        );
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('history retrieved')
+            .setData(result)
+            .build()
+        );
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+      }
+      return;
+    }
   }
 
   async create(req, res) {
@@ -82,7 +140,77 @@ export default class ItemController {
         limit,
         order,
         fields,
-        include
+        include,
+        {
+          $or: [
+            {
+              reserved: {
+                $lt: moment().subtract(this.reservetime,
+                  'minutes').toDate()
+              },
+            },
+            {
+              reserved: {
+                $eq: null,
+              },
+            }
+          ]
+        }
+      );
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData(response.data)
+          .setTotal(response.total)
+          .setCount(response.count)
+          .setLinks(response.links)
+          .build()
+      );
+    } catch (error) {
+      res.status(400).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async get_current_trip(req, res) {
+    const { page, limit, fields, order } = req.query;
+    const { from, to } = req.body;
+    if (typeof from === 'undefined' || typeof to === 'undefined') {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+      return;
+    }
+    try {
+      const response = await this.service.paginate(
+        req,
+        page,
+        limit,
+        order,
+        fields,
+        undefined,
+        {
+          from,
+          to,
+          $or: [
+            {
+              reserved: {
+                $lt: moment().subtract(this.reservetime, 'minutes').toDate()
+              },
+            },
+            {
+              reserved: {
+                $eq: null,
+              },
+            }
+          ]
+        }
       );
       res.status(200).json(
         new ResponseBuilder()
@@ -107,7 +235,21 @@ export default class ItemController {
     const include = this.service.returnInclude();
     try {
       const response = await this.service.findOne(
-        { ticketNumber: id },
+        {
+          ticketNumber: id,
+          $or: [
+            {
+              reserved: {
+                $lt: moment().subtract(this.reservetime, 'minutes').toDate()
+              },
+            },
+            {
+              reserved: {
+                $eq: null,
+              },
+            }
+          ]
+        },
         include
       );
       if (response !== null) {
@@ -135,6 +277,34 @@ export default class ItemController {
     try {
       await this.service.destroy({ ticketNumber: id });
       res.status(200).json(new ResponseBuilder().setData({}).build());
+    } catch (error) {
+      res.status(404).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+
+
+  }
+
+  async reserve(req, res) {
+    const { id } = req.params;
+    try {
+      const itemPayload = {
+        courierId: res.locals.user.id,
+        reserved: Date.now(),
+      };
+      const item = await this.service.update(
+        itemPayload,
+        { ticketNumber: id },
+        {
+          returning: true,
+          plain: true,
+        }
+      );
+      res.status(200).json(new ResponseBuilder().setData({ item }).build());
     } catch (error) {
       res.status(404).json(
         new ResponseBuilder()

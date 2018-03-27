@@ -10,8 +10,20 @@ router.get('/', (req, res) => {
   itemController.get(req, res);
 });
 
+router.post('/current_trip', (req, res) => {
+  itemController.get_current_trip(req, res);
+});
+
+router.get('/history', (req, res) => {
+  itemController.get_history(req, res);
+});
+
 router.get('/:id', (req, res) => {
   itemController.find(req, res);
+});
+
+router.put('/:id/reserve', (req, res) => {
+  itemController.reserve(req, res);
 });
 
 router.post('/', (req, res) => {
