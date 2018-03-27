@@ -12,6 +12,62 @@ export default class ItemController {
     this.reservetime = 30;
   }
 
+  async get_history(req, res) {
+    const { page, limit, fields, order } = req.query;
+    if (res.locals.user.role !== 'sender') {
+      try {
+        const result = await this.service.getCourierHistory(
+          req,
+          page,
+          limit,
+          fields,
+          order,
+          res.locals.user.id, res.locals.user.senderId
+        );
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('history retrieved')
+            .setData(result)
+            .build()
+        );
+      } catch (error) {
+
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+      }
+      return;
+    } else {
+      try {
+        const result = await this.service.getSenderHistory(
+          req,
+          page,
+          limit,
+          fields,
+          order,
+          res.locals.user.senderId,
+        );
+        res.status(200).json(
+          new ResponseBuilder()
+            .setMessage('history retrieved')
+            .setData(result)
+            .build()
+        );
+      } catch (error) {
+        res.status(400).json(
+          new ResponseBuilder()
+            .setMessage(error.message)
+            .setSuccess(false)
+            .build()
+        );
+      }
+      return;
+    }
+  }
+
   async create(req, res) {
     const {
       from,
