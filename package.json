@@ -4,13 +4,19 @@
   "description": "server untuk kurir-app",
   "main": "app.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --compilers js:babel-core/register ./test/**/*_test.js --exit --timeout 5000",
+    "test":
+      "NODE_ENV=test mocha --compilers js:babel-core/register ./test/**/*_test.js --exit --timeout 5000",
     "babel-node": "babel-node",
     "start": "nodemon --exec npm run babel-node -- ./app.js",
-    "build": "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./test,./seeders",
+    "build":
+      "babel ./ -d dist --ignore ./node_modules,./.babelrc,./package.json,./npm-debug.log,./test,./seeders,./coverage",
     "serve": "nodemon dist/app.js",
     "clean": "rm -rf ./dist && npm run build",
-    "coverage": "NODE_ENV=test nyc mocha ./test/**/*_test.js --exit --timeout 5000"
+    "coverage":
+      "NODE_ENV=test nyc mocha ./test/**/*_test.js --exit --timeout 5000",
+    "cp:views": "node -e \"require('ncp').ncp('./views', './dist/views')\"",
+    "cp": "npm run cp:views",
+    "heroku": "npm run clean && npm run cp"
   },
   "engines": {
     "node": "8.9.4",
@@ -61,13 +67,8 @@
     "sinon": "^4.2.1"
   },
   "nyc": {
-    "require": [
-      "babel-register"
-    ],
-    "reporter": [
-      "lcov",
-      "text"
-    ],
+    "require": ["babel-register"],
+    "reporter": ["lcov", "text"],
     "sourceMap": false,
     "instrument": false
   }
