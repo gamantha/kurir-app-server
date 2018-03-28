@@ -28,8 +28,10 @@ export default class ProposalController {
         res.status(201).json(
           new ResponseBuilder()
             .setData(response)
-            .setMessage('We\'ll be reviewing your proposal \
-              and respond very soon. Thank you')
+            .setMessage(
+              'We\'ll be reviewing your proposal \
+              and respond very soon. Thank you'
+            )
             .setSuccess(true)
             .build()
         );
@@ -47,7 +49,8 @@ export default class ProposalController {
         res.status(200).json(
           new ResponseBuilder()
             .setSuccess(true)
-            .setMessage('We\'ll be reviewing your proposal and \
+            .setMessage(
+              'We\'ll be reviewing your proposal and \
               respond very soon. Thank you'
             )
             .build()
@@ -62,7 +65,8 @@ export default class ProposalController {
       } else {
         res.status(200).json(
           new ResponseBuilder()
-            .setMessage('You already submit upgrade proposal.\
+            .setMessage(
+              'You already submit upgrade proposal.\
               Please wait for our team to reach you.'
             )
             .setSuccess(false)
@@ -107,7 +111,7 @@ export default class ProposalController {
           const updated = await this.service.proposalRejected(
             status,
             rejectReason,
-            UserId,
+            UserId
           );
           res.status(200).json(
             new ResponseBuilder()
