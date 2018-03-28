@@ -38,4 +38,8 @@ router.put('/:id', (req, res) => {
   itemController.update(req, res);
 });
 
+router.put('/assign/:ticketNumber', (req, res) => {
+  itemController.assignItemToCourier(req, res);
+});
+
 module.exports = router;
