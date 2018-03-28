@@ -8,6 +8,7 @@ export default class CourierProposalService extends BaseService {
   constructor() {
     super(models.CourierProposal);
     this.userModel = models.User;
+    this.courierModel = models.Courier;
   }
 
   async proposalRejected(status, rejectReason, userId) {
@@ -65,6 +66,7 @@ export default class CourierProposalService extends BaseService {
         },
       }
     );
+    await this.courierModel.create({ userId });
     return updated;
   }
 
