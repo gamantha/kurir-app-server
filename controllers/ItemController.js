@@ -11,6 +11,7 @@ export default class ItemController {
     this.receiverService = new ReceiverService();
     this.reservetime = 30;
     this.mailService = new MailService();
+    this.env = process.env.NODE_ENV;
   }
 
   async get_history(req, res) {
@@ -121,13 +122,15 @@ export default class ItemController {
         // ReceiverId,
       };
       const item = await this.service.create(itemPayload);
-      await this.mailService.onUpdateItemStatus(
-        {
-          senderEmail,
-          ticketNumber: item.dataValues.ticketNumber,
-        },
-        'stillWaitingCourier'
-      );
+      if (this.env !== 'test') {
+        await this.mailService.onUpdateItemStatus(
+          {
+            senderEmail,
+            ticketNumber: item.dataValues.ticketNumber,
+          },
+          'stillWaitingCourier'
+        );
+      }
       res.status(201).json(new ResponseBuilder().setData(item).build());
     } catch (error) {
       res.status(400).json(
@@ -417,10 +420,12 @@ export default class ItemController {
         userId,
         ticketNumber
       );
-      await this.mailService.onUpdateItemStatus(
-        { senderEmail, ticketNumber },
-        'pickedByCourier'
-      );
+      if (this.env !== 'test') {
+        await this.mailService.onUpdateItemStatus(
+          { senderEmail, ticketNumber },
+          'pickedByCourier'
+        );
+      }
       res.status(200).json(
         new ResponseBuilder()
           .setData({ assignedItem: result })
