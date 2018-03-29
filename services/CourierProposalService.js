@@ -66,7 +66,7 @@ export default class CourierProposalService extends BaseService {
         },
       }
     );
-    await this.courierModel.create({ userId });
+    // await this.courierModel.create({ userId });
     return updated;
   }
 

@@ -1,6 +1,7 @@
 import BaseService from './BaseService';
-import CourierService from './CourierService';
+// import CourierService from './CourierService';
 import models from '../models';
+import UserService from './UserService';
 
 export default class ItemService extends BaseService {
   /**
@@ -8,7 +9,8 @@ export default class ItemService extends BaseService {
    */
   constructor() {
     super(models.Item);
-    this.courierService = new CourierService();
+    this.userService = new UserService();
+    // this.courierService = new CourierService();
   }
 
   generateTicketNumber() {
@@ -92,15 +94,17 @@ export default class ItemService extends BaseService {
    */
   async assignItemToCourier(userId, ticketNumber) {
     try {
-      const foundCourier = await this.courierService.findOne(
-        { userId },
+      const foundCourier = await this.userService.findOne(
+        { id: userId },
         undefined
       );
       const foundTicketNumber = await this.findOne({ ticketNumber }, undefined);
       if (foundTicketNumber === null) {
         throw Error('Ticket number doesn\'t exist');
       } else if (foundCourier === null) {
-        throw Error('You\'re not a courier');
+        throw Error('There is no user available');
+      } else if (foundCourier.dataValues.role !== 'sender+kurir') {
+        throw Error('This user is not a courier');
       } else {
         const updatedItem = await this.update(
           { courierId: foundCourier.id },
