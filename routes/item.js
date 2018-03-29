@@ -34,7 +34,7 @@ router.delete('/:id', (req, res) => {
   itemController.destroy(req, res);
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id/:senderEmail', (req, res) => {
   itemController.update(req, res);
 });
 

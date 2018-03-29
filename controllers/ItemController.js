@@ -330,8 +330,13 @@ export default class ItemController {
     }
   }
 
+  /* For updating item, mainly used for item status update
+  /* required params:
+  /* id: ticketNumber
+  /* senderEmail: sender email
+  */
   async update(req, res) {
-    const { id } = req.params;
+    const { id, senderEmail } = req.params;
     const {
       address,
       city,
@@ -400,6 +405,34 @@ export default class ItemController {
           plain: true,
         }
       );
+      if (this.env !== 'test') {
+        if (status === 'startDroppoint') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'startDroppoint'
+          );
+        } else if (status === 'onTravel') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'onTravel'
+          );
+        } else if (status === 'endDroppoint') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'endDroppoint'
+          );
+        } else if (status === 'ontheway') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'ontheway'
+          );
+        } else if (status === 'received') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'received'
+          );
+        }
+      }
       res.status(200).json(new ResponseBuilder().setData({ item }).build());
     } catch (error) {
       res.status(404).json(
