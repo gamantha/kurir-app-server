@@ -91,7 +91,6 @@ export default class ProposalController {
       status === 'rejected' ||
       status === 'waiting'
     ) {
-      // res.json({ userId });
       try {
         if (status === 'verified') {
           // TODO: send email to user to inform
