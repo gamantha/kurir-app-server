@@ -7,10 +7,13 @@ module.exports = (sequelize, DataTypes) => {
     rejectDate: DataTypes.DATE,
     acceptDate: DataTypes.DATE,
     rejectReason: DataTypes.STRING,
+    bankAccount: DataTypes.STRING,
+    address: DataTypes.STRING,
+    phone: DataTypes.STRING,
     idLink: DataTypes.STRING,
     photoLink: DataTypes.STRING,
   });
-  CourierProposal.associate = function(models) {
+  CourierProposal.associate = function (models) {
     CourierProposal.belongsTo(models.User);
   };
   return CourierProposal;
