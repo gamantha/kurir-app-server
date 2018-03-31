@@ -58,6 +58,13 @@ describe('Proposal Controller Test', () => {
         .request(app)
         .post('/api/proposal')
         .set('Authorization', `bearer ${userToken}`)
+        .send(
+          {
+            phone: "0893427832",
+            bankAccount: "1666030950",
+            address: "fuck town, fuck nation"
+          }
+        )
         .end((err, res) => {
           res.should.have.status(201);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
@@ -70,6 +77,13 @@ describe('Proposal Controller Test', () => {
         .request(app)
         .post('/api/proposal')
         .set('Authorization', `bearer ${userToken}`)
+        .send(
+          {
+            phone: "0893427832",
+            bankAccount: "1666030950",
+            address: "fuck town, fuck nation"
+          }
+        )
         .end((err, res) => {
           res.should.have.status(200);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
