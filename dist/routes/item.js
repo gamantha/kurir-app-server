@@ -44,8 +44,12 @@ router.delete('/:id', function (req, res) {
   _controllers.itemController.destroy(req, res);
 });
 
-router.put('/:id', function (req, res) {
+router.put('/:id/:senderEmail', function (req, res) {
   _controllers.itemController.update(req, res);
+});
+
+router.put('/assign/:ticketNumber', function (req, res) {
+  _controllers.itemController.assignItemToCourier(req, res);
 });
 
 module.exports = router;

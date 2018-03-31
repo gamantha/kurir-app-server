@@ -42,6 +42,8 @@ var ItemController = function () {
     this.service = new _index.ItemService();
     this.receiverService = new _index.ReceiverService();
     this.reservetime = 30;
+    this.mailService = new _index.MailService();
+    this.env = process.env.NODE_ENV;
   }
 
   (0, _createClass3.default)(ItemController, [{
@@ -75,7 +77,6 @@ var ItemController = function () {
               case 9:
                 _context.prev = 9;
                 _context.t0 = _context['catch'](2);
-
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context.t0.message).setSuccess(false).build());
 
@@ -121,7 +122,7 @@ var ItemController = function () {
     key: 'create',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(req, res) {
-        var _req$body, from, originCoord, to, destinationCoord, weight, country, city, address, itemName, note, reward, category, type, cost, ticketNumber, status, senderId, itemPayload, item;
+        var _req$body, from, originCoord, to, destinationCoord, weight, country, city, address, itemName, note, reward, category, type, cost, ticketNumber, status, senderEmail, senderId, itemPayload, item;
 
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
@@ -130,7 +131,8 @@ var ItemController = function () {
                 _req$body = req.body, from = _req$body.from, originCoord = _req$body.originCoord, to = _req$body.to, destinationCoord = _req$body.destinationCoord, weight = _req$body.weight, country = _req$body.country, city = _req$body.city, address = _req$body.address, itemName = _req$body.itemName, note = _req$body.note, reward = _req$body.reward, category = _req$body.category, type = _req$body.type, cost = _req$body.cost;
                 ticketNumber = this.service.generateTicketNumber();
                 status = 'stillWaitingCourier';
-                _context2.prev = 3;
+                senderEmail = res.locals.user.email;
+                _context2.prev = 4;
 
                 // const senderId = await this.service.returnSenderId(userId);
                 // const receiverPayload = {
@@ -162,28 +164,40 @@ var ItemController = function () {
                   cost: cost
                   // ReceiverId,
                 };
-                _context2.next = 8;
+                _context2.next = 9;
                 return this.service.create(itemPayload);
 
-              case 8:
+              case 9:
                 item = _context2.sent;
 
+                if (!(this.env !== 'test')) {
+                  _context2.next = 13;
+                  break;
+                }
+
+                _context2.next = 13;
+                return this.mailService.onUpdateItemStatus({
+                  senderEmail: senderEmail,
+                  ticketNumber: item.dataValues.ticketNumber
+                }, 'stillWaitingCourier');
+
+              case 13:
                 res.status(201).json(new _ResponseBuilder2.default().setData(item).build());
-                _context2.next = 15;
+                _context2.next = 19;
                 break;
 
-              case 12:
-                _context2.prev = 12;
-                _context2.t0 = _context2['catch'](3);
+              case 16:
+                _context2.prev = 16;
+                _context2.t0 = _context2['catch'](4);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context2.t0.message).setSuccess(false).build());
 
-              case 15:
+              case 19:
               case 'end':
                 return _context2.stop();
             }
           }
-        }, _callee2, this, [[3, 12]]);
+        }, _callee2, this, [[4, 16]]);
       }));
 
       function create(_x3, _x4) {
@@ -454,17 +468,24 @@ var ItemController = function () {
 
       return reserve;
     }()
+
+    /* For updating item, mainly used for item status update
+    /* required params:
+    /* id: ticketNumber
+    /* senderEmail: sender email
+    */
+
   }, {
     key: 'update',
     value: function () {
       var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(req, res) {
-        var id, _req$body3, address, city, country, senderId, courierId, from, originCoord, to, destinationCoord, ReceiverId, itemName, note, reward, status, category, type, weight, cost, itemPayload, item;
+        var _req$params, id, senderEmail, _req$body3, address, city, country, senderId, courierId, from, originCoord, to, destinationCoord, ReceiverId, itemName, note, reward, status, category, type, weight, cost, itemPayload, item;
 
         return _regenerator2.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
-                id = req.params.id;
+                _req$params = req.params, id = _req$params.id, senderEmail = _req$params.senderEmail;
                 _req$body3 = req.body, address = _req$body3.address, city = _req$body3.city, country = _req$body3.country, senderId = _req$body3.senderId, courierId = _req$body3.courierId, from = _req$body3.from, originCoord = _req$body3.originCoord, to = _req$body3.to, destinationCoord = _req$body3.destinationCoord, ReceiverId = _req$body3.ReceiverId, itemName = _req$body3.itemName, note = _req$body3.note, reward = _req$body3.reward, status = _req$body3.status, category = _req$body3.category, type = _req$body3.type, weight = _req$body3.weight, cost = _req$body3.cost;
                 _context8.prev = 2;
 
@@ -513,22 +534,88 @@ var ItemController = function () {
               case 6:
                 item = _context8.sent;
 
-                res.status(200).json(new _ResponseBuilder2.default().setData({ item: item }).build());
-                _context8.next = 13;
+                if (!(this.env !== 'test')) {
+                  _context8.next = 31;
+                  break;
+                }
+
+                if (!(status === 'startDroppoint')) {
+                  _context8.next = 13;
+                  break;
+                }
+
+                _context8.next = 11;
+                return this.mailService.onUpdateItemStatus({ senderEmail: senderEmail, ticketNumber: id }, 'startDroppoint');
+
+              case 11:
+                _context8.next = 31;
                 break;
 
-              case 10:
-                _context8.prev = 10;
+              case 13:
+                if (!(status === 'onTravel')) {
+                  _context8.next = 18;
+                  break;
+                }
+
+                _context8.next = 16;
+                return this.mailService.onUpdateItemStatus({ senderEmail: senderEmail, ticketNumber: id }, 'onTravel');
+
+              case 16:
+                _context8.next = 31;
+                break;
+
+              case 18:
+                if (!(status === 'endDroppoint')) {
+                  _context8.next = 23;
+                  break;
+                }
+
+                _context8.next = 21;
+                return this.mailService.onUpdateItemStatus({ senderEmail: senderEmail, ticketNumber: id }, 'endDroppoint');
+
+              case 21:
+                _context8.next = 31;
+                break;
+
+              case 23:
+                if (!(status === 'ontheway')) {
+                  _context8.next = 28;
+                  break;
+                }
+
+                _context8.next = 26;
+                return this.mailService.onUpdateItemStatus({ senderEmail: senderEmail, ticketNumber: id }, 'ontheway');
+
+              case 26:
+                _context8.next = 31;
+                break;
+
+              case 28:
+                if (!(status === 'received')) {
+                  _context8.next = 31;
+                  break;
+                }
+
+                _context8.next = 31;
+                return this.mailService.onUpdateItemStatus({ senderEmail: senderEmail, ticketNumber: id }, 'received');
+
+              case 31:
+                res.status(200).json(new _ResponseBuilder2.default().setData({ item: item }).build());
+                _context8.next = 37;
+                break;
+
+              case 34:
+                _context8.prev = 34;
                 _context8.t0 = _context8['catch'](2);
 
                 res.status(404).json(new _ResponseBuilder2.default().setMessage(_context8.t0.message).setSuccess(false).build());
 
-              case 13:
+              case 37:
               case 'end':
                 return _context8.stop();
             }
           }
-        }, _callee8, this, [[2, 10]]);
+        }, _callee8, this, [[2, 34]]);
       }));
 
       function update(_x15, _x16) {
@@ -536,6 +623,58 @@ var ItemController = function () {
       }
 
       return update;
+    }()
+  }, {
+    key: 'assignItemToCourier',
+    value: function () {
+      var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(req, res) {
+        var ticketNumber, userId, senderEmail, result;
+        return _regenerator2.default.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                ticketNumber = req.params.ticketNumber;
+                userId = res.locals.user.id;
+                senderEmail = res.locals.user.email;
+                _context9.prev = 3;
+                _context9.next = 6;
+                return this.service.assignItemToCourier(userId, ticketNumber);
+
+              case 6:
+                result = _context9.sent;
+
+                if (!(this.env !== 'test')) {
+                  _context9.next = 10;
+                  break;
+                }
+
+                _context9.next = 10;
+                return this.mailService.onUpdateItemStatus({ senderEmail: senderEmail, ticketNumber: ticketNumber }, 'pickedByCourier');
+
+              case 10:
+                res.status(200).json(new _ResponseBuilder2.default().setData({ assignedItem: result }).setMessage('Item with ticket number of ' + ticketNumber + ' successfully assigned to this courier.').build());
+                _context9.next = 16;
+                break;
+
+              case 13:
+                _context9.prev = 13;
+                _context9.t0 = _context9['catch'](3);
+
+                res.status(404).json(new _ResponseBuilder2.default().setMessage(_context9.t0.message).setSuccess(false).build());
+
+              case 16:
+              case 'end':
+                return _context9.stop();
+            }
+          }
+        }, _callee9, this, [[3, 13]]);
+      }));
+
+      function assignItemToCourier(_x17, _x18) {
+        return _ref9.apply(this, arguments);
+      }
+
+      return assignItemToCourier;
     }()
   }]);
   return ItemController;

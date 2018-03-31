@@ -209,6 +209,34 @@ var MailService = function (_BaseService) {
         html = (0, _email.simpleTemplate)('Your new email verification link', payload);
         subject = 'Your new email verification link';
       }
+      if (template === 'stillWaitingCourier') {
+        html = (0, _email.mediumTemplate)('Package Status Updated', 'Thank you for sending your item with Kurir.id! Please keep the ticket number of this package: <strong> ' + payload + '.</strong> The status of this package is: <strong>still waiting for a courier to pick it up.</strong> You will receive another update soon.', 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png');
+        subject = 'Package status for ' + payload;
+      }
+      if (template === 'pickedByCourier') {
+        html = (0, _email.mediumTemplate)('Package Status Updated', 'We inform you that the package status with ticket number of ' + payload + ' is: <strong>Has been picked up by a courier.</strong> You will receive another update soon.', 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png');
+        subject = 'Package status for ' + payload;
+      }
+      if (template === 'startDroppoint') {
+        html = (0, _email.mediumTemplate)('Package Status Updated', 'We inform you that the package status with ticket number of ' + payload + ' is: <strong>Arrived at origin airport droppoint.</strong> You will receive another update soon.', 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png');
+        subject = 'Package status for ' + payload;
+      }
+      if (template === 'onTravel') {
+        html = (0, _email.mediumTemplate)('Package Status Updated', 'We inform you that the package status with ticket number of ' + payload + ' is: <strong>On the way to arrival airport droppoint.</strong> You will receive another update soon.', 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png');
+        subject = 'Package status for ' + payload;
+      }
+      if (template === 'endDroppoint') {
+        html = (0, _email.mediumTemplate)('Package Status Updated', 'We inform you that the package status with ticket number of ' + payload + ' is: <strong>Arrived at destination airport droppoint.</strong> You will receive another update soon.', 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png');
+        subject = 'Package status for ' + payload;
+      }
+      if (template === 'ontheway') {
+        html = (0, _email.mediumTemplate)('Package Status Updated', 'We inform you that the package status with ticket number of ' + payload + ' is: <strong>On the way to receiver address.</strong> You will receive another update soon.', 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png');
+        subject = 'Package status for ' + payload;
+      }
+      if (template === 'received') {
+        html = (0, _email.mediumTemplate)('Package Status Updated', 'We inform you that the package status with ticket number of ' + payload + ' is: <strong>Package successfully received by the receiver.</strong> You will receive another update soon.', 'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png');
+        subject = 'Package status for ' + payload;
+      }
 
       return {
         from: 'Kurir.id <noreply@kurir.id>',
@@ -602,10 +630,47 @@ var MailService = function (_BaseService) {
     /**
      * Send email on item status update.
      *
-     * @param  {String}  email
+     * @param  {Object} senderEmail, ticketNumber
+     * @param  {String} type
      * @return {Boolean}
      */
-    // async onUpdateItemStatus(email) {}
+
+  }, {
+    key: 'onUpdateItemStatus',
+    value: function () {
+      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(payload, type) {
+        var message;
+        return _regenerator2.default.wrap(function _callee8$(_context8) {
+          while (1) {
+            switch (_context8.prev = _context8.next) {
+              case 0:
+                _context8.prev = 0;
+                message = this.setMailgunTemplate(payload.senderEmail, type, payload.ticketNumber);
+                _context8.next = 4;
+                return this.sendMailgunEmail(message);
+
+              case 4:
+                return _context8.abrupt('return', true);
+
+              case 7:
+                _context8.prev = 7;
+                _context8.t0 = _context8['catch'](0);
+                throw Error(_context8.t0.message);
+
+              case 10:
+              case 'end':
+                return _context8.stop();
+            }
+          }
+        }, _callee8, this, [[0, 7]]);
+      }));
+
+      function onUpdateItemStatus(_x9, _x10) {
+        return _ref8.apply(this, arguments);
+      }
+
+      return onUpdateItemStatus;
+    }()
 
     /**
      * Send an email verification again to registered user.
@@ -617,49 +682,49 @@ var MailService = function (_BaseService) {
   }, {
     key: 'sendRegisValidationLinkAgain',
     value: function () {
-      var _ref8 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee8(email) {
+      var _ref9 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee9(email) {
         var tokenifyEmail, userEmail, verificationLink, verificationMessage;
-        return _regenerator2.default.wrap(function _callee8$(_context8) {
+        return _regenerator2.default.wrap(function _callee9$(_context9) {
           while (1) {
-            switch (_context8.prev = _context8.next) {
+            switch (_context9.prev = _context9.next) {
               case 0:
                 tokenifyEmail = _jsonwebtoken2.default.sign({ email: email }, process.env.SECRET, {
                   expiresIn: '1h',
                   issuer: 'kurir-id-backend',
                   subject: 'email-validation'
                 });
-                _context8.next = 3;
+                _context9.next = 3;
                 return this.findOne({ email: email });
 
               case 3:
-                userEmail = _context8.sent;
+                userEmail = _context9.sent;
 
                 if (!(userEmail && !userEmail.dataValues.isEmailValidated)) {
-                  _context8.next = 12;
+                  _context9.next = 12;
                   break;
                 }
 
                 verificationLink = config.domain.base_url + '/api/mail/registration/check/' + tokenifyEmail;
                 verificationMessage = this.setMailgunTemplate(email, 'again', verificationLink);
-                _context8.next = 9;
+                _context9.next = 9;
                 return this.sendMailgunEmail(verificationMessage);
 
               case 9:
-                return _context8.abrupt('return', true);
+                return _context9.abrupt('return', true);
 
               case 12:
-                return _context8.abrupt('return', false);
+                return _context9.abrupt('return', false);
 
               case 13:
               case 'end':
-                return _context8.stop();
+                return _context9.stop();
             }
           }
-        }, _callee8, this);
+        }, _callee9, this);
       }));
 
-      function sendRegisValidationLinkAgain(_x9) {
-        return _ref8.apply(this, arguments);
+      function sendRegisValidationLinkAgain(_x11) {
+        return _ref9.apply(this, arguments);
       }
 
       return sendRegisValidationLinkAgain;

@@ -36,8 +36,13 @@ var _models = require('../models');
 
 var _models2 = _interopRequireDefault(_models);
 
+var _UserService = require('./UserService');
+
+var _UserService2 = _interopRequireDefault(_UserService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// import CourierService from './CourierService';
 var ItemService = function (_BaseService) {
   (0, _inherits3.default)(ItemService, _BaseService);
 
@@ -46,7 +51,12 @@ var ItemService = function (_BaseService) {
    */
   function ItemService() {
     (0, _classCallCheck3.default)(this, ItemService);
-    return (0, _possibleConstructorReturn3.default)(this, (ItemService.__proto__ || Object.getPrototypeOf(ItemService)).call(this, _models2.default.Item));
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, (ItemService.__proto__ || Object.getPrototypeOf(ItemService)).call(this, _models2.default.Item));
+
+    _this.userService = new _UserService2.default();
+    // this.courierService = new CourierService();
+    return _this;
   }
 
   (0, _createClass3.default)(ItemService, [{
@@ -110,12 +120,12 @@ var ItemService = function (_BaseService) {
 
     /**
      * Get courier item history
-     * @param {Request} req 
-     * @param {Integer} page 
-     * @param {Integer} limit 
-     * @param {Array} fields 
-     * @param {String} order 
-     * @param {Integer} courierId 
+     * @param {Request} req
+     * @param {Integer} page
+     * @param {Integer} limit
+     * @param {Array} fields
+     * @param {String} order
+     * @param {Integer} courierId
      */
 
   }, {
@@ -156,10 +166,10 @@ var ItemService = function (_BaseService) {
     /**
      * Get sender item history
      * @param {Request} req
-     * @param {Integer} page 
-     * @param {Integer} limit 
-     * @param {Array} fields 
-     * @param {String} order 
+     * @param {Integer} page
+     * @param {Integer} limit
+     * @param {Array} fields
+     * @param {String} order
      * @param {Integer} senderId
      */
 
@@ -192,6 +202,91 @@ var ItemService = function (_BaseService) {
       }
 
       return getSenderHistory;
+    }()
+
+    /**
+     * Assign item to courier
+     * @param {integer} userId
+     * @param {string} ticketNumber
+     */
+
+  }, {
+    key: 'assignItemToCourier',
+    value: function () {
+      var _ref4 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee4(userId, ticketNumber) {
+        var foundCourier, foundTicketNumber, updatedItem;
+        return _regenerator2.default.wrap(function _callee4$(_context4) {
+          while (1) {
+            switch (_context4.prev = _context4.next) {
+              case 0:
+                _context4.prev = 0;
+                _context4.next = 3;
+                return this.userService.findOne({ id: userId }, undefined);
+
+              case 3:
+                foundCourier = _context4.sent;
+                _context4.next = 6;
+                return this.findOne({ ticketNumber: ticketNumber }, undefined);
+
+              case 6:
+                foundTicketNumber = _context4.sent;
+
+                if (!(foundTicketNumber === null)) {
+                  _context4.next = 11;
+                  break;
+                }
+
+                throw Error('Ticket number doesn\'t exist');
+
+              case 11:
+                if (!(foundCourier === null)) {
+                  _context4.next = 15;
+                  break;
+                }
+
+                throw Error('There is no user available');
+
+              case 15:
+                if (!(foundCourier.dataValues.role !== 'sender+kurir')) {
+                  _context4.next = 19;
+                  break;
+                }
+
+                throw Error('This user is not a courier');
+
+              case 19:
+                _context4.next = 21;
+                return this.update({ courierId: foundCourier.id }, { ticketNumber: ticketNumber }, {
+                  returning: true,
+                  plain: true
+                });
+
+              case 21:
+                updatedItem = _context4.sent;
+                return _context4.abrupt('return', updatedItem.dataValues);
+
+              case 23:
+                _context4.next = 28;
+                break;
+
+              case 25:
+                _context4.prev = 25;
+                _context4.t0 = _context4['catch'](0);
+                throw Error(_context4.t0.message);
+
+              case 28:
+              case 'end':
+                return _context4.stop();
+            }
+          }
+        }, _callee4, this, [[0, 25]]);
+      }));
+
+      function assignItemToCourier(_x15, _x16) {
+        return _ref4.apply(this, arguments);
+      }
+
+      return assignItemToCourier;
     }()
   }]);
   return ItemService;

@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.AirportService = exports.MapService = exports.ItemService = exports.CourierProposalService = exports.S3Service = exports.DroppointService = exports.MailService = exports.FacebookService = exports.GoogleService = exports.TokenService = exports.ReceiverService = exports.SenderService = exports.UserService = undefined;
+exports.CourierService = exports.AirportService = exports.MapService = exports.ItemService = exports.CourierProposalService = exports.S3Service = exports.DroppointService = exports.MailService = exports.FacebookService = exports.GoogleService = exports.TokenService = exports.ReceiverService = exports.SenderService = exports.UserService = undefined;
 
 var _UserService = require('./UserService');
 
@@ -57,6 +57,10 @@ var _AirportService = require('./AirportService');
 
 var _AirportService2 = _interopRequireDefault(_AirportService);
 
+var _CourierService = require('./CourierService');
+
+var _CourierService2 = _interopRequireDefault(_CourierService);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
@@ -75,3 +79,4 @@ exports.CourierProposalService = _CourierProposalService2.default;
 exports.ItemService = _ItemService2.default;
 exports.MapService = _MapService2.default;
 exports.AirportService = _AirportService2.default;
+exports.CourierService = _CourierService2.default;

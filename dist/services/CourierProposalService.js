@@ -54,6 +54,7 @@ var CourierProposalService = function (_BaseService) {
     var _this = (0, _possibleConstructorReturn3.default)(this, (CourierProposalService.__proto__ || Object.getPrototypeOf(CourierProposalService)).call(this, _models2.default.CourierProposal));
 
     _this.userModel = _models2.default.User;
+    _this.courierModel = _models2.default.Courier;
     return _this;
   }
 
