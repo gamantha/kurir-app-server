@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { ItemService, ReceiverService } from '../services/index';
+import { ItemService, ReceiverService, MailService } from '../services/index';
 import ResponseBuilder from '../helpers/ResponseBuilder';
 
 export default class ItemController {
@@ -10,6 +10,8 @@ export default class ItemController {
     this.service = new ItemService();
     this.receiverService = new ReceiverService();
     this.reservetime = 30;
+    this.mailService = new MailService();
+    this.env = process.env.NODE_ENV;
   }
 
   async get_history(req, res) {
@@ -22,7 +24,8 @@ export default class ItemController {
           limit,
           fields,
           order,
-          res.locals.user.id, res.locals.user.senderId
+          res.locals.user.id,
+          res.locals.user.senderId
         );
         res.status(200).json(
           new ResponseBuilder()
@@ -31,7 +34,6 @@ export default class ItemController {
             .build()
         );
       } catch (error) {
-
         res.status(400).json(
           new ResponseBuilder()
             .setMessage(error.message)
@@ -48,7 +50,7 @@ export default class ItemController {
           limit,
           fields,
           order,
-          res.locals.user.senderId,
+          res.locals.user.senderId
         );
         res.status(200).json(
           new ResponseBuilder()
@@ -88,6 +90,7 @@ export default class ItemController {
     } = req.body;
     const ticketNumber = this.service.generateTicketNumber();
     const status = 'stillWaitingCourier';
+    const senderEmail = res.locals.user.email;
     try {
       // const senderId = await this.service.returnSenderId(userId);
       // const receiverPayload = {
@@ -119,6 +122,15 @@ export default class ItemController {
         // ReceiverId,
       };
       const item = await this.service.create(itemPayload);
+      if (this.env !== 'test') {
+        await this.mailService.onUpdateItemStatus(
+          {
+            senderEmail,
+            ticketNumber: item.dataValues.ticketNumber,
+          },
+          'stillWaitingCourier'
+        );
+      }
       res.status(201).json(new ResponseBuilder().setData(item).build());
     } catch (error) {
       res.status(400).json(
@@ -145,16 +157,17 @@ export default class ItemController {
           $or: [
             {
               reserved: {
-                $lt: moment().subtract(this.reservetime,
-                  'minutes').toDate()
+                $lt: moment()
+                  .subtract(this.reservetime, 'minutes')
+                  .toDate(),
               },
             },
             {
               reserved: {
                 $eq: null,
               },
-            }
-          ]
+            },
+          ],
         }
       );
       res.status(200).json(
@@ -201,15 +214,17 @@ export default class ItemController {
           $or: [
             {
               reserved: {
-                $lt: moment().subtract(this.reservetime, 'minutes').toDate()
+                $lt: moment()
+                  .subtract(this.reservetime, 'minutes')
+                  .toDate(),
               },
             },
             {
               reserved: {
                 $eq: null,
               },
-            }
-          ]
+            },
+          ],
         }
       );
       res.status(200).json(
@@ -240,15 +255,17 @@ export default class ItemController {
           $or: [
             {
               reserved: {
-                $lt: moment().subtract(this.reservetime, 'minutes').toDate()
+                $lt: moment()
+                  .subtract(this.reservetime, 'minutes')
+                  .toDate(),
               },
             },
             {
               reserved: {
                 $eq: null,
               },
-            }
-          ]
+            },
+          ],
         },
         include
       );
@@ -285,8 +302,6 @@ export default class ItemController {
           .build()
       );
     }
-
-
   }
 
   async reserve(req, res) {
@@ -315,8 +330,13 @@ export default class ItemController {
     }
   }
 
+  /* For updating item, mainly used for item status update
+  /* required params:
+  /* id: ticketNumber
+  /* senderEmail: sender email
+  */
   async update(req, res) {
-    const { id } = req.params;
+    const { id, senderEmail } = req.params;
     const {
       address,
       city,
@@ -385,7 +405,68 @@ export default class ItemController {
           plain: true,
         }
       );
+      if (this.env !== 'test') {
+        if (status === 'startDroppoint') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'startDroppoint'
+          );
+        } else if (status === 'onTravel') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'onTravel'
+          );
+        } else if (status === 'endDroppoint') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'endDroppoint'
+          );
+        } else if (status === 'ontheway') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'ontheway'
+          );
+        } else if (status === 'received') {
+          await this.mailService.onUpdateItemStatus(
+            { senderEmail, ticketNumber: id },
+            'received'
+          );
+        }
+      }
       res.status(200).json(new ResponseBuilder().setData({ item }).build());
+    } catch (error) {
+      res.status(404).json(
+        new ResponseBuilder()
+          .setMessage(error.message)
+          .setSuccess(false)
+          .build()
+      );
+    }
+  }
+
+  async assignItemToCourier(req, res) {
+    const { ticketNumber } = req.params;
+    const userId = res.locals.user.id;
+    const senderEmail = res.locals.user.email;
+    try {
+      const result = await this.service.assignItemToCourier(
+        userId,
+        ticketNumber
+      );
+      if (this.env !== 'test') {
+        await this.mailService.onUpdateItemStatus(
+          { senderEmail, ticketNumber },
+          'pickedByCourier'
+        );
+      }
+      res.status(200).json(
+        new ResponseBuilder()
+          .setData({ assignedItem: result })
+          .setMessage(
+            `Item with ticket number of ${ticketNumber} successfully assigned to this courier.`
+          )
+          .build()
+      );
     } catch (error) {
       res.status(404).json(
         new ResponseBuilder()

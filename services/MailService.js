@@ -2,7 +2,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import { advTemplate, simpleTemplate } from '../helpers/email';
+import { advTemplate, simpleTemplate, mediumTemplate } from '../helpers/email';
 import BaseService from './BaseService';
 import randtoken from 'rand-token';
 import models from '../models';
@@ -107,6 +107,62 @@ export default class MailService extends BaseService {
     if (template === 'again') {
       html = simpleTemplate('Your new email verification link', payload);
       subject = 'Your new email verification link';
+    }
+    if (template === 'stillWaitingCourier') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `Thank you for sending your item with Kurir.id! Please keep the ticket number of this package: <strong> ${payload}.</strong> The status of this package is: <strong>still waiting for a courier to pick it up.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'pickedByCourier') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>Has been picked up by a courier.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'startDroppoint') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>Arrived at origin airport droppoint.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'onTravel') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>On the way to arrival airport droppoint.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'endDroppoint') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>Arrived at destination airport droppoint.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'ontheway') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>On the way to receiver address.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'received') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>Package successfully received by the receiver.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
     }
 
     return {
@@ -295,10 +351,23 @@ export default class MailService extends BaseService {
   /**
    * Send email on item status update.
    *
-   * @param  {String}  email
+   * @param  {Object} senderEmail, ticketNumber
+   * @param  {String} type
    * @return {Boolean}
    */
-  // async onUpdateItemStatus(email) {}
+  async onUpdateItemStatus(payload, type) {
+    try {
+      const message = this.setMailgunTemplate(
+        payload.senderEmail,
+        type,
+        payload.ticketNumber
+      );
+      await this.sendMailgunEmail(message);
+      return true;
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
 
   /**
    * Send an email verification again to registered user.

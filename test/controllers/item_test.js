@@ -167,7 +167,7 @@ describe('Items', () => {
     it('should update a item', done => {
       chai
         .request(app)
-        .put(`/api/item/${postedId}`)
+        .put(`/api/item/${postedId}/${user.email}`)
         .set('Authorization', `bearer ${token}`)
         .send({
           address: 'update',
@@ -201,7 +201,7 @@ describe('Items', () => {
     it('should return 404 not found', done => {
       chai
         .request(app)
-        .put(`/api/item/${postedId}1`)
+        .put(`/api/item/${postedId}1/${user.email}`)
         .set('Authorization', `bearer ${token}`)
         .send({
           address: 'update',
@@ -248,13 +248,13 @@ describe('Items', () => {
     it('should return 404 not found', done => {
       chai
         .request(app)
-        .put(`/api/item/${postedId}1`)
+        .delete(`/api/item/${postedId}1`)
         .set('Authorization', `bearer ${token}`)
         .end((err, res) => {
           res.should.have.status(404);
           res.body.should.include.keys(BASE_RESPONSE_STRUCTURE);
           res.body.meta.success.should.be.eql(false);
-          res.body.meta.message.should.be.eql('fail to update row');
+          res.body.meta.message.should.be.eql('data not found');
           done();
         });
     });
