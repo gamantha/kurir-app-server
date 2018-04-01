@@ -10,6 +10,7 @@ import {
   MailService,
   DroppointService,
   S3Service,
+  CourierProposalService,
 } from '../services/index';
 
 export default class UserController {
@@ -23,6 +24,7 @@ export default class UserController {
     this.mailService = new MailService();
     this.droppointService = new DroppointService();
     this.S3Service = new S3Service();
+    this.courierProposalService = new CourierProposalService();
   }
 
   // TODO: dont get user that has role sysadmin
@@ -676,10 +678,10 @@ export default class UserController {
      */
     // base64 format: data:image/${extension};base64,${base64}
     const { base64, type, extension } = req.body;
-    if (type !== 'ID' && type !== 'Photo') {
+    if (type !== 'ID' && type !== 'Photo' && type !== 'Passbook') {
       res.status(400).json(
         new ResponseBuilder()
-          .setMessage('type only ID or Photo')
+          .setMessage('type only ID, Photo, Passbook')
           .setSuccess(false)
           .build()
       );
@@ -708,26 +710,34 @@ export default class UserController {
             return data;
           });
           if (type === 'ID') {
-            await this.service.proposeModel.update(
+            await this.courierProposalService.update(
               {
                 idLink: link,
               },
               {
-                where: {
-                  UserId: res.locals.user.id,
-                },
-              }
+                UserId: res.locals.user.id,
+              },
+              undefined
             );
           } else if (type === 'Photo') {
-            await this.service.proposeModel.update(
+            await this.courierProposalService.update(
               {
                 photoLink: link,
               },
               {
-                where: {
-                  UserId: res.locals.user.id,
-                },
-              }
+                UserId: res.locals.user.id,
+              },
+              undefined
+            );
+          } else if (type === 'Passbook') {
+            await this.courierProposalService.update(
+              {
+                passbookLink: link,
+              },
+              {
+                UserId: res.locals.user.id,
+              },
+              undefined
             );
           }
           res.status(200).json(

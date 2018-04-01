@@ -21,5 +21,5 @@ module.exports = {
       queryInterface.removeColumn('CourierProposals', 'phone'),
       queryInterface.removeColumn('CourierProposals', 'address'),
     ];
-  }
+  },
 };
