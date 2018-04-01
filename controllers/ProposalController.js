@@ -11,6 +11,22 @@ export default class ProposalController {
   }
 
   async proposeToCourier(req, res) {
+    const {
+      phone,
+      bankAccount,
+      address
+    } = req.body;
+    if (typeof phone == 'undefined' ||
+      typeof bankAccount == 'undefined' ||
+      typeof address == 'undefined') {
+      res.status(422).json(
+        new ResponseBuilder()
+          .setMessage('invalid payload')
+          .setSuccess(false)
+          .build()
+      );
+      return;
+    }
     try {
       // make sure sender not double request
       const checkUser = await this.service.findOne({
@@ -23,6 +39,9 @@ export default class ProposalController {
         const response = await this.service.create({
           status: 'waiting',
           UserId: res.locals.user.id,
+          phone: phone,
+          bankAccount: bankAccount,
+          address: address,
           proposeDate: new Date(),
         });
         res.status(201).json(
