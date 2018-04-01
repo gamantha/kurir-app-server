@@ -75,3 +75,23 @@ sequelize db:migrate
 
 * https://developers.google.com/maps/documentation/distance-matrix/get-api-key to get the distance matrix api key
 * set to .env
+
+### Compile and deploy to heroku
+
+**Required commands**
+
+* please pass all the test first, with `npm run test`
+* make sure you're on the `heroku` branch using `git checkout heroku`
+* make sure folder `config/config.json` has value of `https://kurirbackend-dev.herokuapp.com/` in the `domain.base_url` property
+* run `npm run heroku` in the project root directory
+* add the changes with `git add .`
+* commit the changes `git commit 'updating dist'`
+* push the changes to production server `git push heroku heroku:master`
+
+  **If you have new migration files**
+
+* run the migration on heroku database `heroku run sequelize db:migrate`
+
+  **Base URL**
+
+* https://kurirbackend-dev.herokuapp.com/

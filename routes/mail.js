@@ -11,4 +11,8 @@ router.post('/registration/link', (req, res) => {
   mailController.sendRegisValidationLink(req, res);
 });
 
+router.post('/registration/link-again', (req, res) => {
+  mailController.sendRegisValidationLinkAgain(req, res);
+});
+
 module.exports = router;

@@ -18,6 +18,7 @@ import facebook from './routes/facebook';
 import proposal from './routes/proposal';
 import map from './routes/map';
 import airport from './routes/airport';
+import homepage from './routes/homepage';
 
 const app = express();
 // const http = Http.Server(app);
@@ -48,6 +49,7 @@ app.use(
   })
 );
 
+app.use('/', homepage);
 app.use('/api/item', item);
 app.use('/api/user', user);
 app.use('/api/receiver', receiver);

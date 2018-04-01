@@ -11,6 +11,7 @@ import CourierProposalService from './CourierProposalService';
 import ItemService from './ItemService';
 import MapService from './MapService';
 import AirportService from './AirportService';
+import CourierService from './CourierService';
 
 /**
  * Services export
@@ -29,4 +30,5 @@ export {
   ItemService,
   MapService,
   AirportService,
+  CourierService,
 };

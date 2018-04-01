@@ -7,6 +7,7 @@ import ProposalController from './ProposalController';
 import ItemController from './ItemController';
 import MapController from './MapController';
 import AirportController from './AirportController';
+import HomepageController from './HomepageController';
 
 /**
  * Controller singleton initialization
@@ -20,3 +21,4 @@ export const proposalController = new ProposalController();
 export const itemController = new ItemController();
 export const mapController = new MapController();
 export const airportController = new AirportController();
+export const homepageController = new HomepageController();

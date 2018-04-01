@@ -47,4 +47,22 @@ export default class MailController {
       .status(response[0])
       .json(new ResponseBuilder().setMessage(response[1]).build());
   }
+
+  async sendRegisValidationLinkAgain(req, res) {
+    const { email } = req.body;
+    const result = await this.service.sendRegisValidationLinkAgain(email);
+
+    const response = result
+      ? [200, `Successfully sent verification link to ${email}`]
+      : [
+        422,
+        `${
+          email ? email : 'email'
+        } is not valid or you already verified your email!`,
+      ];
+
+    res
+      .status(response[0])
+      .json(new ResponseBuilder().setMessage(response[1]).build());
+  }
 }

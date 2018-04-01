@@ -2,6 +2,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
+import { advTemplate, simpleTemplate, mediumTemplate } from '../helpers/email';
 import BaseService from './BaseService';
 import randtoken from 'rand-token';
 import models from '../models';
@@ -69,18 +70,29 @@ export default class MailService extends BaseService {
   setMailgunTemplate(email, template, payload) {
     let html, subject;
     if (template === 'code') {
-      html = `<b>This is your verification code number. Do not share it with anyone.</b> ${payload}`;
+      html = simpleTemplate(payload, 'Don\'t share this code with anyone.');
       subject = 'Your verification code for Kurir.id forgot password';
     }
     if (template === 'welcome') {
-      html =
-        '<h1>Your email has been verified! Thank your for being awesome and being part of Kurir.id</h1>';
+      html = advTemplate(
+        'Curious?',
+        'How Kurir.id works',
+        'Thank you! You had successfully activate your email. Now you can use our service. Wondering why you will be happy using Kurir.id? You can take a look at our detailed information by clicking the link below.',
+        payload,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/thumbsup.gif'
+      );
+      // '<h1>Your email has been verified! Thank your for being awesome and being part of Kurir.id</h1>';
       subject = 'Welcome to Kurir.id';
     }
     if (template === 'link') {
-      html = `Please verify your account by clicking on this link <u>${payload}</u>
-      <strong>Note: this link will expire in 1 hour.</strong>`;
-      subject = 'Email Verification for Newly Onboarding User';
+      html = advTemplate(
+        'Activate',
+        'Welcome to Kurir.id!',
+        'We pleased and happy to be able to giving you an easy and cheap service for your package and courier needs. We want you to have the best experience for using Kurir.id, so please activate your account by clicking the button below. <i>Note: this link will expire in 1 hour</i>',
+        payload,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/welcome.gif'
+      );
+      subject = 'Email Verification for new user';
     }
     if (template === 'change-password') {
       html = `<div>This email inform you that you have successfully change your password.
@@ -88,8 +100,69 @@ export default class MailService extends BaseService {
        Please keep it in safe place. </div>`;
       subject = 'Change password information';
     }
-    if (template == 'reactivate-account') {
+    if (template === 'reactivate-account') {
       html = `Please reactivate your account by clicking on this link <u>${payload}</u>`;
+      subject = 'Reactivate account';
+    }
+    if (template === 'again') {
+      html = simpleTemplate('Your new email verification link', payload);
+      subject = 'Your new email verification link';
+    }
+    if (template === 'stillWaitingCourier') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `Thank you for sending your item with Kurir.id! Please keep the ticket number of this package: <strong> ${payload}.</strong> The status of this package is: <strong>still waiting for a courier to pick it up.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'pickedByCourier') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>Has been picked up by a courier.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'startDroppoint') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>Arrived at origin airport droppoint.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'onTravel') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>On the way to arrival airport droppoint.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'endDroppoint') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>Arrived at destination airport droppoint.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'ontheway') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>On the way to receiver address.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
+    }
+    if (template === 'received') {
+      html = mediumTemplate(
+        'Package Status Updated',
+        `We inform you that the package status with ticket number of ${payload} is: <strong>Package successfully received by the receiver.</strong> You will receive another update soon.`,
+        'https://s3-ap-southeast-1.amazonaws.com/kurir-assets/email-status.png'
+      );
+      subject = `Package status for ${payload}`;
     }
 
     return {
@@ -131,7 +204,7 @@ export default class MailService extends BaseService {
           const welcomeMessage = this.setMailgunTemplate(
             email,
             'welcome',
-            null
+            `${config.domain.base_url}/article/how-kuririd-works/`
           );
           await this.sendMailgunEmail(welcomeMessage);
           return true;
@@ -273,5 +346,57 @@ export default class MailService extends BaseService {
       return false;
     }
     return false;
+  }
+
+  /**
+   * Send email on item status update.
+   *
+   * @param  {Object} senderEmail, ticketNumber
+   * @param  {String} type
+   * @return {Boolean}
+   */
+  async onUpdateItemStatus(payload, type) {
+    try {
+      const message = this.setMailgunTemplate(
+        payload.senderEmail,
+        type,
+        payload.ticketNumber
+      );
+      await this.sendMailgunEmail(message);
+      return true;
+    } catch (error) {
+      throw Error(error.message);
+    }
+  }
+
+  /**
+   * Send an email verification again to registered user.
+   *
+   * @param  {String}  email
+   * @return {Boolean}
+   */
+  async sendRegisValidationLinkAgain(email) {
+    const tokenifyEmail = jwt.sign({ email }, process.env.SECRET, {
+      expiresIn: '1h',
+      issuer: 'kurir-id-backend',
+      subject: 'email-validation',
+    });
+    const userEmail = await this.findOne({ email });
+    if (userEmail && !userEmail.dataValues.isEmailValidated) {
+      const verificationLink = `${
+        config.domain.base_url
+      }/api/mail/registration/check/${tokenifyEmail}`;
+
+      const verificationMessage = this.setMailgunTemplate(
+        email,
+        'again',
+        verificationLink
+      );
+
+      await this.sendMailgunEmail(verificationMessage);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
