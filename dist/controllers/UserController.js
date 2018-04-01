@@ -61,6 +61,7 @@ var UserController = function () {
     this.mailService = new _index.MailService();
     this.droppointService = new _index.DroppointService();
     this.S3Service = new _index.S3Service();
+    this.courierProposalService = new _index.CourierProposalService();
   }
 
   // TODO: dont get user that has role sysadmin
@@ -1012,13 +1013,13 @@ var UserController = function () {
                 // base64 format: data:image/${extension};base64,${base64}
                 _req$body5 = req.body, base64 = _req$body5.base64, type = _req$body5.type, extension = _req$body5.extension;
 
-                if (!(type !== 'ID' && type !== 'Photo')) {
+                if (!(type !== 'ID' && type !== 'Photo' && type !== 'Passbook')) {
                   _context12.next = 5;
                   break;
                 }
 
-                res.status(400).json(new _ResponseBuilder2.default().setMessage('type only ID or Photo').setSuccess(false).build());
-                _context12.next = 32;
+                res.status(400).json(new _ResponseBuilder2.default().setMessage('type only ID, Photo, Passbook').setSuccess(false).build());
+                _context12.next = 37;
                 break;
 
               case 5:
@@ -1049,60 +1050,73 @@ var UserController = function () {
                 }
 
                 _context12.next = 16;
-                return this.service.proposeModel.update({
+                return this.courierProposalService.update({
                   idLink: link
                 }, {
-                  where: {
-                    UserId: res.locals.user.id
-                  }
-                });
+                  UserId: res.locals.user.id
+                }, undefined);
 
               case 16:
-                _context12.next = 21;
+                _context12.next = 26;
                 break;
 
               case 18:
                 if (!(type === 'Photo')) {
-                  _context12.next = 21;
+                  _context12.next = 23;
                   break;
                 }
 
                 _context12.next = 21;
-                return this.service.proposeModel.update({
+                return this.courierProposalService.update({
                   photoLink: link
                 }, {
-                  where: {
-                    UserId: res.locals.user.id
-                  }
-                });
+                  UserId: res.locals.user.id
+                }, undefined);
 
               case 21:
-                res.status(200).json(new _ResponseBuilder2.default().setMessage('successfully upload image to S3').setSuccess(true).build());
-                _context12.next = 27;
+                _context12.next = 26;
                 break;
 
-              case 24:
-                _context12.prev = 24;
-                _context12.t0 = _context12['catch'](10);
+              case 23:
+                if (!(type === 'Passbook')) {
+                  _context12.next = 26;
+                  break;
+                }
 
-                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context12.t0.message).setSuccess(false).build());
+                _context12.next = 26;
+                return this.courierProposalService.update({
+                  passbookLink: link
+                }, {
+                  UserId: res.locals.user.id
+                }, undefined);
 
-              case 27:
+              case 26:
+                res.status(200).json(new _ResponseBuilder2.default().setMessage('successfully upload image to S3').setSuccess(true).build());
                 _context12.next = 32;
                 break;
 
               case 29:
                 _context12.prev = 29;
+                _context12.t0 = _context12['catch'](10);
+
+                res.status(400).json(new _ResponseBuilder2.default().setMessage(_context12.t0.message).setSuccess(false).build());
+
+              case 32:
+                _context12.next = 37;
+                break;
+
+              case 34:
+                _context12.prev = 34;
                 _context12.t1 = _context12['catch'](5);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage(_context12.t1.message).setSuccess(false).build());
 
-              case 32:
+              case 37:
               case 'end':
                 return _context12.stop();
             }
           }
-        }, _callee12, this, [[5, 29], [10, 24]]);
+        }, _callee12, this, [[5, 34], [10, 29]]);
       }));
 
       function uploadImg(_x23, _x24) {

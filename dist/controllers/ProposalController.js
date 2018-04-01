@@ -43,62 +43,77 @@ var ProposalController = function () {
     key: 'proposeToCourier',
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(req, res) {
-        var checkUser, response;
+        var _req$body, phone, bankAccount, address, checkUser, response;
+
         return _regenerator2.default.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.prev = 0;
-                _context.next = 3;
+                _req$body = req.body, phone = _req$body.phone, bankAccount = _req$body.bankAccount, address = _req$body.address;
+
+                if (!(typeof phone == 'undefined' || typeof bankAccount == 'undefined' || typeof address == 'undefined')) {
+                  _context.next = 4;
+                  break;
+                }
+
+                res.status(422).json(new _ResponseBuilder2.default().setMessage('invalid payload').setSuccess(false).build());
+                return _context.abrupt('return');
+
+              case 4:
+                _context.prev = 4;
+                _context.next = 7;
                 return this.service.findOne({
                   // where must provided, otherwise won't work
                   UserId: res.locals.user.id
                 });
 
-              case 3:
+              case 7:
                 checkUser = _context.sent;
 
                 if (!(checkUser === null)) {
-                  _context.next = 11;
+                  _context.next = 15;
                   break;
                 }
 
-                _context.next = 7;
+                _context.next = 11;
                 return this.service.create({
                   status: 'waiting',
                   UserId: res.locals.user.id,
+                  phone: phone,
+                  bankAccount: bankAccount,
+                  address: address,
                   proposeDate: new Date()
                 });
 
-              case 7:
+              case 11:
                 response = _context.sent;
 
                 res.status(201).json(new _ResponseBuilder2.default().setData(response).setMessage('We\'ll be reviewing your proposal \
               and respond very soon. Thank you').setSuccess(true).build());
                 // user that rejected send another request
-                _context.next = 18;
+                _context.next = 22;
                 break;
 
-              case 11:
+              case 15:
                 if (!(checkUser.status === 'rejected')) {
-                  _context.next = 17;
+                  _context.next = 21;
                   break;
                 }
 
-                _context.next = 14;
+                _context.next = 18;
                 return this.service.update({
                   status: 'waiting'
                 }, {
                   UserId: res.locals.user.id
                 });
 
-              case 14:
+              case 18:
                 res.status(200).json(new _ResponseBuilder2.default().setSuccess(true).setMessage('We\'ll be reviewing your proposal and \
               respond very soon. Thank you').build());
-                _context.next = 18;
+                _context.next = 22;
                 break;
 
-              case 17:
+              case 21:
                 if (checkUser.status === 'verified') {
                   res.status(401).json(new _ResponseBuilder2.default().setMessage('You already a courier').setSuccess(false).build());
                 } else {
@@ -106,22 +121,22 @@ var ProposalController = function () {
               Please wait for our team to reach you.').setSuccess(false).build());
                 }
 
-              case 18:
-                _context.next = 23;
+              case 22:
+                _context.next = 27;
                 break;
 
-              case 20:
-                _context.prev = 20;
-                _context.t0 = _context['catch'](0);
+              case 24:
+                _context.prev = 24;
+                _context.t0 = _context['catch'](4);
 
                 res.status(400).json(new _ResponseBuilder2.default().setMessage('unknown error occured, contact our technical support.').setSuccess(false).build());
 
-              case 23:
+              case 27:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this, [[0, 20]]);
+        }, _callee, this, [[4, 24]]);
       }));
 
       function proposeToCourier(_x, _x2) {
@@ -137,13 +152,13 @@ var ProposalController = function () {
     key: 'updateSenderProposal',
     value: function () {
       var _ref2 = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee2(req, res) {
-        var _req$body, status, UserId, rejectReason, updated, _updated, _updated2;
+        var _req$body2, status, UserId, rejectReason, updated, _updated, _updated2;
 
         return _regenerator2.default.wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
               case 0:
-                _req$body = req.body, status = _req$body.status, UserId = _req$body.UserId, rejectReason = _req$body.rejectReason;
+                _req$body2 = req.body, status = _req$body2.status, UserId = _req$body2.UserId, rejectReason = _req$body2.rejectReason;
 
                 if (!(status === 'verified' || status === 'rejected' || status === 'waiting')) {
                   _context2.next = 28;
