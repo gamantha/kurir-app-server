@@ -350,7 +350,7 @@ export default class UserController {
             return;
           }
         } else {
-          res.status(200).json(
+          res.status(401).json(
             new ResponseBuilder()
               .setMessage('Invalid password')
               .setSuccess(false)
@@ -410,7 +410,7 @@ export default class UserController {
                 return;
               }
             } else {
-              res.status(200).json(
+              res.status(401).json(
                 new ResponseBuilder()
                   .setMessage('Invalid password')
                   .setSuccess(false)
