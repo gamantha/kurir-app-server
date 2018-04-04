@@ -545,7 +545,7 @@ var UserController = function () {
                 break;
 
               case 27:
-                res.status(200).json(new _ResponseBuilder2.default().setMessage('Invalid password').setSuccess(false).build());
+                res.status(401).json(new _ResponseBuilder2.default().setMessage('Invalid password').setSuccess(false).build());
                 return _context5.abrupt('return');
 
               case 29:
@@ -614,7 +614,7 @@ var UserController = function () {
                 break;
 
               case 58:
-                res.status(200).json(new _ResponseBuilder2.default().setMessage('Invalid password').setSuccess(false).build());
+                res.status(401).json(new _ResponseBuilder2.default().setMessage('Invalid password').setSuccess(false).build());
                 return _context5.abrupt('return');
 
               case 60:
